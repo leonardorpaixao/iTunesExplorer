@@ -28,9 +28,15 @@ class ListingScreenModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
             
             try {
+                val mediaType = if (state.value.selectedMediaType == MediaType.ALL) {
+                    null
+                } else {
+                    state.value.selectedMediaType.value
+                }
+
                 val response = iTunesApi.search(
                     term = query,
-                    media = state.value.selectedMediaType.value,
+                    media = mediaType,
                     limit = 50
                 )
                 

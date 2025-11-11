@@ -79,6 +79,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.coroutines.swing)
         }
         wasmJsMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)

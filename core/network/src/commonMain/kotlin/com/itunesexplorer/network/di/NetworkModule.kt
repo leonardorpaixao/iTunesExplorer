@@ -6,6 +6,7 @@ import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
+import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
@@ -30,7 +31,8 @@ private fun createJson(): Json = Json {
 private fun createHttpClient(json: Json): HttpClient {
     return HttpClient {
         install(ContentNegotiation) {
-            json(json)
+            json(json, contentType = ContentType.Application.Json)
+            json(json, contentType = ContentType.Text.JavaScript)
         }
 
         install(Logging) {
