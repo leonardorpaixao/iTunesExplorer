@@ -1,5 +1,6 @@
 package com.itunesexplorer.network.api
 
+import com.itunesexplorer.network.models.ITunesRssResponse
 import com.itunesexplorer.network.models.ITunesSearchResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -48,5 +49,9 @@ class ITunesApiImpl(
             parameter("limit", limit)
             parameter("sort", sort)
         }.body()
+    }
+
+    override suspend fun topAlbums(limit: Int, country: String): ITunesRssResponse {
+        return httpClient.get("${baseUrl}${country}/rss/topalbums/limit=${limit}/json").body()
     }
 }

@@ -1,5 +1,6 @@
 package com.itunesexplorer.network.api
 
+import com.itunesexplorer.network.models.ITunesRssResponse
 import com.itunesexplorer.network.models.ITunesSearchResponse
 
 interface ITunesApi {
@@ -23,4 +24,9 @@ interface ITunesApi {
         limit: Int = 50,
         sort: String = "recent"
     ): ITunesSearchResponse
+
+    suspend fun topAlbums(
+        limit: Int = 10,
+        country: String = "us"
+    ): ITunesRssResponse
 }

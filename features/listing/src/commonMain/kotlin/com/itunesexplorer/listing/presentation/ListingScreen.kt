@@ -1,9 +1,12 @@
 package com.itunesexplorer.listing.presentation
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +18,7 @@ import com.itunesexplorer.common.extensions.toFormattedPrice
 import com.itunesexplorer.design.components.*
 import com.itunesexplorer.network.models.ITunesItem
 import com.itunesexplorer.network.models.MediaType
+import com.itunesexplorer.network.models.RssFeedEntry
 
 class ListingScreen : Screen {
 
@@ -31,7 +35,8 @@ class ListingScreen : Screen {
             onItemClick = { item ->
                 // TODO: Implement item detail view
             },
-            onRetry = screenModel::retry
+            onRetry = screenModel::retry,
+            onSurpriseMe = screenModel::surpriseMe
         )
     }
 }
@@ -44,12 +49,30 @@ fun ListingContent(
     onSearch: () -> Unit,
     onMediaTypeSelected: (MediaType) -> Unit,
     onItemClick: (ITunesItem) -> Unit,
-    onRetry: () -> Unit
+    onRetry: () -> Unit,
+    onSurpriseMe: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("iTunes Explorer") }
+                title = {
+                    Row(
+                        modifier = Modifier
+                            .clickable { onSurpriseMe() }
+                            .padding(vertical = 8.dp)
+                            .padding(end = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "iTunes Explorer")
+                        Icon(
+                            imageVector = Icons.Filled.PlayCircle,
+                            contentDescription = "Surprise Me",
+                            modifier = Modifier
+                                .padding(start = 12.dp)
+                                .size(28.dp)
+                        )
+                    }
+                }
             )
         }
     ) { paddingValues ->
@@ -104,19 +127,64 @@ fun ListingContent(
                         onRetry = onRetry
                     )
                 }
-                state.items.isEmpty() -> {
+                state.items.isEmpty() && state.searchQuery.isNotEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = if (state.searchQuery.isEmpty()) 
-                                "Search for your favorite content" 
-                            else 
-                                "No results found",
+                            text = "No results found",
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                    }
+                }
+                state.showRecommendations -> {
+                    // Show recommendations when "Surprise Me" is clicked or on startup
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp)
+                    ) {
+                        item {
+                            Column(modifier = Modifier.padding(bottom = 16.dp)) {
+                                Text(
+                                    text = "Top Álbuns",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
+                                Text(
+                                    text = "The top trend albuns",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+
+                        if (state.isLoadingRecommendations) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 32.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        } else {
+                            items(state.recommendations) { album ->
+                                RecommendationCard(album = album)
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+                        }
+                    }
+                }
+                state.items.isEmpty() && state.searchQuery.isEmpty() && !state.showRecommendations -> {
+                    // This state should rarely be reached since recommendations load on init
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
                 else -> {
@@ -130,7 +198,7 @@ fun ListingContent(
                                 title = item.trackName ?: item.collectionName ?: "Unknown",
                                 subtitle = item.artistName ?: "Unknown Artist",
                                 imageUrl = item.artworkUrl100,
-                                price = item.trackPrice?.toFormattedPrice() 
+                                price = item.trackPrice?.toFormattedPrice()
                                     ?: item.collectionPrice?.toFormattedPrice(),
                                 onClick = { onItemClick(item) }
                             )
@@ -140,4 +208,19 @@ fun ListingContent(
             }
         }
     }
+}
+
+@Composable
+fun RecommendationCard(album: RssFeedEntry) {
+    val imageUrl = album.imImage.lastOrNull()?.label ?: ""
+    val artistName = album.imArtist?.label ?: "Unknown Artist"
+    val price = album.imPrice?.label
+
+    MediaCard(
+        title = album.imName.label,
+        subtitle = "$artistName • ${album.category.attributes.label}",
+        imageUrl = imageUrl,
+        price = price,
+        onClick = { /* TODO: Navigate to album details */ }
+    )
 }
