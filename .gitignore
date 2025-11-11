@@ -47,6 +47,7 @@ captures/
 # IntelliJ
 *.iml
 .idea/
+!.idea/runConfigurations/
 
 # Keystore files
 *.jks
