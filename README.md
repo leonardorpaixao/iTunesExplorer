@@ -7,8 +7,8 @@ Um aplicativo multiplataforma construído com Kotlin Multiplatform (KMP) e Compo
 - **Kotlin Multiplatform (KMP)** - Compartilhamento de código entre plataformas
 - **Compose Multiplatform** - UI declarativa para todas as plataformas
 - **Voyager** - Navegação multiplataforma
-- **Koin** - Injeção de dependência
-- **Ktorfit** - Cliente HTTP type-safe baseado em Ktor
+- **Kodein** - Injeção de dependência
+- **Ktor Client** - Cliente HTTP multiplataforma
 - **Coroutines** - Programação assíncrona
 
 ## 📱 Plataformas Suportadas
@@ -45,35 +45,58 @@ O projeto segue uma arquitetura modular limpa:
 
 ## 🔧 Como Executar
 
+### Desktop (JVM)
+```bash
+./gradlew :composeApp:runDesktop
+```
+
+### Web (WASM)
+```bash
+./gradlew :composeApp:runWasm
+```
+O aplicativo ficará disponível em http://localhost:8080/
+
 ### Android
 ```bash
+# Instalar e executar em dispositivo/emulador conectado
+./gradlew :composeApp:runAndroid
+
+# Ou apenas construir o APK
 ./gradlew :composeApp:assembleDebug
 ```
 
 ### iOS
 ```bash
-./gradlew :composeApp:iosSimulatorArm64Binaries
-```
-Abra o projeto iOS no Xcode para executar no simulador.
+# Build para Simulador
+./gradlew :composeApp:buildIosSimulator
 
-### Web (WASM)
+# Build para Dispositivo
+./gradlew :composeApp:buildIosDevice
+```
+Depois do build, abra o projeto no Xcode:
 ```bash
-./gradlew :composeApp:wasmJsBrowserRun
+open iosApp/iosApp.xcodeproj
 ```
 
-### Desktop
-```bash
-./gradlew :composeApp:run
-```
+## 📋 Tasks Gradle Disponíveis
+
+| Task | Descrição |
+|------|-----------|
+| `runDesktop` | Executa o app Desktop (JVM) |
+| `runWasm` | Executa o app WASM no navegador |
+| `runAndroid` | Instala e executa o app Android em dispositivo/emulador |
+| `buildIosSimulator` | Compila o framework iOS para simulador |
+| `buildIosDevice` | Compila o framework iOS para dispositivo |
 
 ## 📦 Dependências Principais
 
 - Compose Multiplatform 1.7.0
 - Kotlin 2.0.0
-- Voyager 1.1.0-beta02
-- Koin 4.0.0
+- Voyager 1.1.0-beta03
+- Kodein 7.22.0
 - Ktor 3.0.0
-- Ktorfit 2.1.0
+- Kotlinx Serialization 1.7.1
+- Kotlinx Coroutines 1.9.0
 
 ## 🔑 API
 

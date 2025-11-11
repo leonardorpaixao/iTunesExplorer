@@ -131,3 +131,39 @@ compose.desktop {
         mainClass = "com.itunesexplorer.MainKt"
     }
 }
+
+// Custom tasks to run each target
+tasks.register("runDesktop") {
+    group = "application"
+    description = "Run the Desktop (JVM) application"
+    dependsOn("run")
+}
+
+tasks.register("runWasm") {
+    group = "application"
+    description = "Run the WASM application in browser"
+    dependsOn("wasmJsBrowserRun")
+}
+
+tasks.register("runAndroid") {
+    group = "application"
+    description = "Install and run the Android application on connected device/emulator"
+    dependsOn("installDebug")
+    doLast {
+        exec {
+            commandLine("adb", "shell", "am", "start", "-n", "com.itunesexplorer/.MainActivity")
+        }
+    }
+}
+
+tasks.register("buildIosSimulator") {
+    group = "build"
+    description = "Build iOS framework for simulator"
+    dependsOn("linkDebugFrameworkIosSimulatorArm64")
+}
+
+tasks.register("buildIosDevice") {
+    group = "build"
+    description = "Build iOS framework for device"
+    dependsOn("linkDebugFrameworkIosArm64")
+}
