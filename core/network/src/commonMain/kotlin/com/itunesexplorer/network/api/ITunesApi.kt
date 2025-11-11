@@ -15,7 +15,7 @@ interface ITunesApi {
         country: String = "US"
     ): ITunesSearchResponse
 
-    suspend fun lookup(
+    suspend fun details(
         id: String? = null,
         amgArtistId: String? = null,
         upc: String? = null,

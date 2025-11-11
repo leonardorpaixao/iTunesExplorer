@@ -31,7 +31,7 @@ class ITunesApiImpl(
         }.body()
     }
 
-    override suspend fun lookup(
+    override suspend fun details(
         id: String?,
         amgArtistId: String?,
         upc: String?,
