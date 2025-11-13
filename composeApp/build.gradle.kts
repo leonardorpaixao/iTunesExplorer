@@ -54,6 +54,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.coil.network.okhttp)
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -62,19 +63,20 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
-            
-            implementation(project(":core:network"))
-            implementation(project(":core:error"))
-            implementation(project(":core:common"))
-            implementation(project(":design-system"))
-            implementation(project(":features:listing"))
-            
+
+            implementation(projects.core.network)
+            implementation(projects.core.error)
+            implementation(projects.core.common)
+            implementation(projects.designSystem)
+            implementation(projects.features.listing)
+
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.kodein)
             implementation(libs.voyager.transitions)
             implementation(libs.kodein.di)
             implementation(libs.kodein.di.framework.compose)
+            implementation(libs.coil.compose)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -92,7 +94,7 @@ kotlin {
 
 android {
     namespace = "com.itunesexplorer"
-    compileSdk = 34
+    compileSdk = 35
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -101,7 +103,7 @@ android {
     defaultConfig {
         applicationId = "com.itunesexplorer"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }

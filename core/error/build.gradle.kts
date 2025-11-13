@@ -28,7 +28,7 @@ kotlin {
 
 android {
     namespace = "com.itunesexplorer.error"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         minSdk = 24
     }

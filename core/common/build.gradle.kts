@@ -30,7 +30,7 @@ kotlin {
 
 android {
     namespace = "com.itunesexplorer.common"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         minSdk = 24
     }
