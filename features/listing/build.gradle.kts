@@ -29,10 +29,10 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.ui)
 
-            implementation(project(":core:network"))
-            implementation(project(":core:error"))
-            implementation(project(":core:common"))
-            implementation(project(":design-system"))
+            implementation(projects.core.network)
+            implementation(projects.core.error)
+            implementation(projects.core.common)
+            implementation(projects.designSystem)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
