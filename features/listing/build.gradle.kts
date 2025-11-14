@@ -1,8 +1,9 @@
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -13,39 +14,41 @@ kotlin {
             }
         }
     }
-    jvm()
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    wasmJs {
-        browser()
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach {
+        it.binaries.framework {
+            baseName = "listing"
+            isStatic = true
+        }
     }
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
-            implementation(compose.ui)
-
-            implementation(projects.core.network)
-            implementation(projects.core.error)
-            implementation(projects.core.common)
-            implementation(projects.designSystem)
-
-            implementation(libs.voyager.navigator)
-            implementation(libs.voyager.screenModel)
-            implementation(libs.voyager.kodein)
-            implementation(libs.kodein.di.framework.compose)
-            implementation(libs.kotlinx.coroutines.core)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(libs.voyager.navigator)
+                implementation(libs.voyager.screenModel)
+                implementation(libs.voyager.kodein)
+                implementation(libs.kodein.di)
+                implementation(project(":core:common"))
+                implementation(project(":core:network"))
+                implementation(project(":design-system"))
+                implementation(libs.lyricist)
+            }
         }
     }
 }
 
 android {
     namespace = "com.itunesexplorer.listing"
-    compileSdk = 36
+    compileSdk = 35
     defaultConfig {
         minSdk = 24
     }
@@ -53,4 +56,25 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        compose = true
+    }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.lyricist.processor)
+}
+
+ksp {
+    arg("lyricist.moduleName", "Listing")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().all {
+    if(name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 }

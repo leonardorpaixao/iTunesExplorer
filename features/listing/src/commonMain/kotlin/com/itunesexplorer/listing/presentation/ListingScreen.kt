@@ -5,17 +5,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cafe.adriel.lyricist.LocalListingStrings
 import cafe.adriel.voyager.kodein.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import com.itunesexplorer.common.extensions.toFormattedPrice
+import com.itunesexplorer.listing.i18n.ListingStrings
 import com.itunesexplorer.design.components.*
+import com.itunesexplorer.design.icons.rememberPlayCircleIcon
 import com.itunesexplorer.network.models.ITunesItem
 import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.network.models.RssFeedEntry
@@ -26,9 +27,11 @@ class ListingScreen : Screen {
     override fun Content() {
         val screenModel = rememberScreenModel<ListingScreenModel>()
         val state by screenModel.state.collectAsState()
+        val strings = LocalListingStrings.current
 
         ListingContent(
             state = state,
+            strings = strings,
             onSearchQueryChange = screenModel::updateSearchQuery,
             onSearch = { screenModel.search() },
             onMediaTypeSelected = screenModel::selectMediaType,
@@ -45,6 +48,7 @@ class ListingScreen : Screen {
 @Composable
 fun ListingContent(
     state: ListingState,
+    strings: ListingStrings,
     onSearchQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onMediaTypeSelected: (MediaType) -> Unit,
@@ -63,10 +67,10 @@ fun ListingContent(
                             .padding(end = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "iTunes Explorer")
+                        Text(text = strings.appName)
                         Icon(
-                            imageVector = Icons.Filled.PlayCircle,
-                            contentDescription = "Surprise Me",
+                            imageVector = rememberPlayCircleIcon(),
+                            contentDescription = strings.surpriseMe,
                             modifier = Modifier
                                 .padding(start = 12.dp)
                                 .size(28.dp)
@@ -91,7 +95,8 @@ fun ListingContent(
                     query = state.searchQuery,
                     onQueryChange = onSearchQueryChange,
                     onSearch = onSearch,
-                    placeholder = "Search music, movies, podcasts..."
+                    placeholder = strings.searchPlaceholder,
+                    searchIconContentDescription = strings.search
                 )
             }
             
@@ -107,9 +112,7 @@ fun ListingContent(
                         onClick = { onMediaTypeSelected(mediaType) },
                         label = { 
                             Text(
-                                mediaType.name.replace("_", " ")
-                                    .lowercase()
-                                    .replaceFirstChar { it.uppercase() }
+                             strings.mediaTypeChip(mediaType)
                             )
                         }
                     )
@@ -124,7 +127,8 @@ fun ListingContent(
                 state.error != null -> {
                     ErrorMessage(
                         message = state.error,
-                        onRetry = onRetry
+                        onRetry = onRetry,
+                        retryText = strings.retry
                     )
                 }
                 state.items.isEmpty() && state.searchQuery.isNotEmpty() -> {
@@ -133,7 +137,7 @@ fun ListingContent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No results found",
+                            text = strings.noResults,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -148,11 +152,11 @@ fun ListingContent(
                         item {
                             Column(modifier = Modifier.padding(bottom = 16.dp)) {
                                 Text(
-                                    text = "Top Álbuns",
+                                    text = strings.topAlbums,
                                     style = MaterialTheme.typography.headlineSmall
                                 )
                                 Text(
-                                    text = "The top trend albuns",
+                                    text = strings.topAlbumsDescription,
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

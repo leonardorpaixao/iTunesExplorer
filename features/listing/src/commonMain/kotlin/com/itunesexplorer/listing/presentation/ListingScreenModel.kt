@@ -117,8 +117,4 @@ class ListingScreenModel(
             loadRecommendations()
         }
     }
-
-    fun clearRecommendations() {
-        mutableState.update { it.copy(showRecommendations = false) }
-    }
 }
