@@ -1,11 +1,11 @@
-package com.itunesexplorer.listing.i18n
+package com.itunesexplorer.home.i18n
 
 import cafe.adriel.lyricist.LyricistStrings
 import com.itunesexplorer.i18n.Locales
 import com.itunesexplorer.network.models.MediaType
 
 @LyricistStrings(languageTag = Locales.EN, default = true)
-val EnListingStrings = ListingStrings(
+val EnHomeStrings = HomeStrings(
     appName = "iTunes Explorer",
     search = "Search",
     searchPlaceholder = "Search for music, movies, apps...",
@@ -32,7 +32,7 @@ val EnListingStrings = ListingStrings(
 )
 
 @LyricistStrings(languageTag = Locales.PT_BR, default = false)
-val PtBrListingStrings = ListingStrings(
+val PtBrHomeStrings = HomeStrings(
     appName = "iTunes Explorer",
     search = "Pesquisar",
     searchPlaceholder = "Pesquisar músicas, filmes, apps...",
@@ -59,7 +59,7 @@ val PtBrListingStrings = ListingStrings(
 )
 
 @LyricistStrings(languageTag = Locales.PT_PT, default = false)
-val PtPtListingStrings = ListingStrings(
+val PtPtHomeStrings = HomeStrings(
     appName = "iTunes Explorer",
     search = "Pesquisar",
     searchPlaceholder = "Pesquisar música, filmes, aplicações...",
@@ -86,7 +86,7 @@ val PtPtListingStrings = ListingStrings(
 )
 
 @LyricistStrings(languageTag = Locales.FR, default = false)
-val FrListingStrings = ListingStrings(
+val FrHomeStrings = HomeStrings(
     appName = "iTunes Explorer",
     search = "Rechercher",
     searchPlaceholder = "Rechercher musique, films, apps...",
@@ -113,7 +113,7 @@ val FrListingStrings = ListingStrings(
 )
 
 @LyricistStrings(languageTag = Locales.ES, default = false)
-val EsListingStrings = ListingStrings(
+val EsHomeStrings = HomeStrings(
     appName = "iTunes Explorer",
     search = "Buscar",
     searchPlaceholder = "Buscar música, películas, apps...",
@@ -140,7 +140,7 @@ val EsListingStrings = ListingStrings(
 )
 
 @LyricistStrings(languageTag = Locales.DE, default = false)
-val DeListingStrings = ListingStrings(
+val DeHomeStrings = HomeStrings(
     appName = "iTunes Explorer",
     search = "Suchen",
     searchPlaceholder = "Musik, Filme, Apps suchen...",

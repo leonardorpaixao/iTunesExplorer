@@ -40,4 +40,4 @@ include(":core:common")
 include(":design-system")
 
 // Features
-include(":features:listing")
+include(":features:home")

@@ -69,7 +69,7 @@ kotlin {
             implementation(projects.core.error)
             implementation(projects.core.common)
             implementation(projects.designSystem)
-            implementation(projects.features.listing)
+            implementation(projects.features.home)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)

@@ -31,7 +31,7 @@ O projeto segue uma arquitetura modular limpa:
 │   └── common/          # Utilitários comuns
 ├── design-system/       # Componentes de UI reutilizáveis
 └── features/
-    ├── listing/         # Tela de listagem
+    ├── home/            # Tela inicial
     └── details/         # Tela de detalhes
 ```
 

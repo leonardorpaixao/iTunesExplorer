@@ -1,8 +1,8 @@
-package com.itunesexplorer.listing.i18n
+package com.itunesexplorer.home.i18n
 
 import com.itunesexplorer.network.models.MediaType
 
-data class ListingStrings(
+data class HomeStrings(
     val appName: String,
     val search: String,
     val searchPlaceholder: String,

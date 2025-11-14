@@ -47,7 +47,7 @@ iTunesExplorer/
 │   └── common/          # Common utilities
 ├── design-system/       # Reusable UI components
 └── features/
-    └── listing/         # Listing and search screen
+    └── home/            # Home screen with search and browse
 ```
 
 ### Core Modules (`core/`)
@@ -69,7 +69,7 @@ iTunesExplorer/
 ### Features (`features/`)
 Feature modules follow a presentation layer pattern with Voyager:
 
-- **`features:listing`** - Search and browse iTunes content
+- **`features:home`** - Home screen with search and browse functionality
   - Uses `StateScreenModel` for state management
   - Supports media type filtering
   - Integrates directly with `ITunesApi`
@@ -86,7 +86,7 @@ Feature modules follow a presentation layer pattern with Voyager:
 ### Dependency Injection
 - **Kodein-DI** is used for DI across all platforms
 - DI setup in `composeApp/src/commonMain/kotlin/com/itunesexplorer/di/AppModule.kt`
-- Modules are imported: `networkModule`, `listingModule`
+- Modules are imported: `networkModule`, `homeModule`
 - Each feature module provides its own Kodein module
 - Compose integration via `org.kodein.di.compose.withDI`
 
@@ -94,7 +94,7 @@ Feature modules follow a presentation layer pattern with Voyager:
 - **Voyager** handles multiplatform navigation
 - Screens extend Voyager's `Screen` interface
 - ScreenModels extend `StateScreenModel` for state management
-- Navigator initialized in `App.kt` with `ListingScreen` as the starting point
+- Navigator initialized in `App.kt` with `HomeScreen` as the starting point
 
 ### Network Layer
 - **Ktorfit** provides type-safe API definitions

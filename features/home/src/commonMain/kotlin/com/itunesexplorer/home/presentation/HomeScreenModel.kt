@@ -1,4 +1,4 @@
-package com.itunesexplorer.listing.presentation
+package com.itunesexplorer.home.presentation
 
 import cafe.adriel.voyager.core.model.StateScreenModel
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -9,7 +9,7 @@ import com.itunesexplorer.network.models.RssFeedEntry
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-data class ListingState(
+data class HomeState(
     val isLoading: Boolean = false,
     val items: List<ITunesItem> = emptyList(),
     val recommendations: List<RssFeedEntry> = emptyList(),
@@ -20,9 +20,9 @@ data class ListingState(
     val selectedMediaType: MediaType = MediaType.ALL
 )
 
-class ListingScreenModel(
+class HomeScreenModel(
     private val iTunesApi: ITunesApi
-) : StateScreenModel<ListingState>(ListingState()) {
+) : StateScreenModel<HomeState>(HomeState()) {
 
     init {
         loadRecommendations()

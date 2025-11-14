@@ -21,7 +21,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "listing"
+            baseName = "home"
             isStatic = true
         }
     }
@@ -47,7 +47,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.itunesexplorer.listing"
+    namespace = "com.itunesexplorer.home"
     compileSdk = 35
     defaultConfig {
         minSdk = 24
@@ -66,7 +66,7 @@ dependencies {
 }
 
 ksp {
-    arg("lyricist.moduleName", "Listing")
+    arg("lyricist.moduleName", "Home")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().all {

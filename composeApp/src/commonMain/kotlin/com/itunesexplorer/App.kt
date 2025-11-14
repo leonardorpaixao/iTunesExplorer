@@ -15,7 +15,7 @@ import cafe.adriel.lyricist.ProvideStrings
 import cafe.adriel.lyricist.rememberStrings
 import com.itunesexplorer.i18n.ProvideFeatureStrings
 import com.itunesexplorer.i18n.getSystemLanguage
-import com.itunesexplorer.listing.presentation.ListingScreen
+import com.itunesexplorer.home.presentation.HomeScreen
 import org.kodein.di.compose.withDI
 
 @Composable
@@ -39,7 +39,7 @@ fun App() {
             ProvideFeatureStrings(appStrings = LocalStrings.current) {
                 ITunesExplorerTheme {
                     Navigator(
-                        screen = ListingScreen(),
+                        screen = HomeScreen(),
                         content = { navigator ->
                             SlideTransition(navigator)
                         }

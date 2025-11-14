@@ -1,44 +1,44 @@
 package com.itunesexplorer.i18n
 
 import cafe.adriel.lyricist.LyricistStrings
-import com.itunesexplorer.listing.i18n.DeListingStrings
-import com.itunesexplorer.listing.i18n.EnListingStrings
-import com.itunesexplorer.listing.i18n.EsListingStrings
-import com.itunesexplorer.listing.i18n.FrListingStrings
-import com.itunesexplorer.listing.i18n.ListingStrings
-import com.itunesexplorer.listing.i18n.PtBrListingStrings
-import com.itunesexplorer.listing.i18n.PtPtListingStrings
+import com.itunesexplorer.home.i18n.DeHomeStrings
+import com.itunesexplorer.home.i18n.EnHomeStrings
+import com.itunesexplorer.home.i18n.EsHomeStrings
+import com.itunesexplorer.home.i18n.FrHomeStrings
+import com.itunesexplorer.home.i18n.HomeStrings
+import com.itunesexplorer.home.i18n.PtBrHomeStrings
+import com.itunesexplorer.home.i18n.PtPtHomeStrings
 
 data class AppStrings(
-    val listing: ListingStrings,
+    val home: HomeStrings,
 )
 
 @LyricistStrings(languageTag = Locales.EN, default = true)
 val EnStrings = AppStrings(
-    listing = EnListingStrings,
+    home =EnHomeStrings,
 )
 
 @LyricistStrings(languageTag = Locales.PT_BR)
 val PtBrStrings = AppStrings(
-    listing = PtBrListingStrings,
+    home =PtBrHomeStrings,
 )
 
 @LyricistStrings(languageTag = Locales.PT_PT)
 val PtPtStrings = AppStrings(
-    listing = PtPtListingStrings,
+    home =PtPtHomeStrings,
 )
 
 @LyricistStrings(languageTag = Locales.FR)
 val FrStrings = AppStrings(
-    listing = FrListingStrings,
+    home =FrHomeStrings,
 )
 
 @LyricistStrings(languageTag = Locales.ES)
 val EsStrings = AppStrings(
-    listing = EsListingStrings,
+    home =EsHomeStrings,
 )
 
 @LyricistStrings(languageTag = Locales.DE)
 val DeStrings = AppStrings(
-    listing = DeListingStrings,
+    home =DeHomeStrings,
 )

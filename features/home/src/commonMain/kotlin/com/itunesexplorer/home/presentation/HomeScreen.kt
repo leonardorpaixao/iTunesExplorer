@@ -1,4 +1,4 @@
-package com.itunesexplorer.listing.presentation
+package com.itunesexplorer.home.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,26 +10,26 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.lyricist.LocalListingStrings
+import cafe.adriel.lyricist.LocalHomeStrings
 import cafe.adriel.voyager.kodein.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
 import com.itunesexplorer.common.extensions.toFormattedPrice
-import com.itunesexplorer.listing.i18n.ListingStrings
+import com.itunesexplorer.home.i18n.HomeStrings
 import com.itunesexplorer.design.components.*
 import com.itunesexplorer.design.icons.rememberPlayCircleIcon
 import com.itunesexplorer.network.models.ITunesItem
 import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.network.models.RssFeedEntry
 
-class ListingScreen : Screen {
+class HomeScreen : Screen {
 
     @Composable
     override fun Content() {
-        val screenModel = rememberScreenModel<ListingScreenModel>()
+        val screenModel = rememberScreenModel<HomeScreenModel>()
         val state by screenModel.state.collectAsState()
-        val strings = LocalListingStrings.current
+        val strings = LocalHomeStrings.current
 
-        ListingContent(
+        HomeContent(
             state = state,
             strings = strings,
             onSearchQueryChange = screenModel::updateSearchQuery,
@@ -46,9 +46,9 @@ class ListingScreen : Screen {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListingContent(
-    state: ListingState,
-    strings: ListingStrings,
+fun HomeContent(
+    state: HomeState,
+    strings: HomeStrings,
     onSearchQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onMediaTypeSelected: (MediaType) -> Unit,
