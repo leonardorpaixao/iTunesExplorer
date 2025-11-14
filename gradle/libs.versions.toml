@@ -11,7 +11,8 @@ ktorfit = "2.1.0"
 kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.1"
 kotlinx-datetime = "0.6.0"
-coil = "3.3.0"
+coil = "3.0.4"
+lyricist = "1.7.0"
 
 [libraries]
 # Kotlin
@@ -59,6 +60,10 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 # Coil for Image Loading
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+
+# Lyricist for i18n
+lyricist = { module = "cafe.adriel.lyricist:lyricist", version.ref = "lyricist" }
+lyricist-processor = { module = "cafe.adriel.lyricist:lyricist-processor", version.ref = "lyricist" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

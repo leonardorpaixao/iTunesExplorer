@@ -209,3 +209,4 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
    - All KMP modules with `androidTarget()` need:
      - `com.android.library` plugin applied
      - Android configuration block with namespace, compileSdk, minSdk, and compileOptions
+- sempre execute a build de mobile como padrão

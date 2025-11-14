@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -77,6 +78,7 @@ kotlin {
             implementation(libs.kodein.di)
             implementation(libs.kodein.di.framework.compose)
             implementation(libs.coil.compose)
+            implementation(libs.lyricist)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -133,6 +135,20 @@ compose.desktop {
     application {
         mainClass = "com.itunesexplorer.MainKt"
     }
+}
+
+dependencies {
+    add("kspCommonMainMetadata", libs.lyricist.processor)
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().all {
+    if(name != "kspCommonMainKotlinMetadata") {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
 }
 
 // Custom tasks to run each target

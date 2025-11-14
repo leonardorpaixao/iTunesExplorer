@@ -2,8 +2,6 @@ package com.itunesexplorer.design.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.itunesexplorer.design.icons.rememberSearchIcon
 
 @Composable
 fun MediaCard(
@@ -90,7 +89,8 @@ fun LoadingIndicator(
 fun ErrorMessage(
     message: String,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    retryText: String = "Retry"
 ) {
     Column(
         modifier = modifier
@@ -106,7 +106,7 @@ fun ErrorMessage(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = onRetry) {
-            Text("Retry")
+            Text(retryText)
         }
     }
 }
@@ -117,7 +117,8 @@ fun SearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     placeholder: String = "Search...",
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    searchIconContentDescription: String = "Search"
 ) {
     OutlinedTextField(
         value = query,
@@ -133,8 +134,8 @@ fun SearchBar(
         trailingIcon = {
             IconButton(onClick = onSearch) {
                 Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search"
+                    imageVector = rememberSearchIcon(),
+                    contentDescription = searchIconContentDescription
                 )
             }
         }

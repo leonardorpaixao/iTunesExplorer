@@ -30,6 +30,24 @@ kotlin {
             implementation(compose.components.resources)
             implementation(libs.coil.compose)
         }
+
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.compose.material.icons.extended)
+            }
+        }
+
+        val jvmMain by getting {
+            dependencies {
+                implementation(libs.compose.material.icons.extended)
+            }
+        }
+
+        val iosMain by creating {
+            dependencies {
+                implementation(libs.compose.material.icons.extended)
+            }
+        }
     }
 }
 
