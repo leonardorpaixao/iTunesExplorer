@@ -15,6 +15,9 @@ val EnHomeStrings = HomeStrings(
     topAlbums = "Top Albums",
     topAlbumsDescription = "The top trending albums",
     surpriseMe = "Surprise Me",
+    tabAlbums = "Albums",
+    tabSearch = "Search",
+    tabPreferences = "Preferences",
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "All"
@@ -42,6 +45,9 @@ val PtBrHomeStrings = HomeStrings(
     topAlbums = "Top Álbuns",
     topAlbumsDescription = "Os principais álbuns em alta",
     surpriseMe = "Surpreenda-me",
+    tabAlbums = "Álbuns",
+    tabSearch = "Procurar",
+    tabPreferences = "Preferências",
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Todos"
@@ -69,6 +75,9 @@ val PtPtHomeStrings = HomeStrings(
     topAlbums = "Principais Álbuns",
     topAlbumsDescription = "Os principais álbuns em destaque",
     surpriseMe = "Surpreende-me",
+    tabAlbums = "Álbuns",
+    tabSearch = "Procurar",
+    tabPreferences = "Preferências",
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Todos"
@@ -96,6 +105,9 @@ val FrHomeStrings = HomeStrings(
     topAlbums = "Meilleurs Albums",
     topAlbumsDescription = "Les albums les plus populaires",
     surpriseMe = "Surprenez-moi",
+    tabAlbums = "Albums",
+    tabSearch = "Rechercher",
+    tabPreferences = "Préférences",
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Tout"
@@ -123,6 +135,9 @@ val EsHomeStrings = HomeStrings(
     topAlbums = "Mejores Álbumes",
     topAlbumsDescription = "Los álbumes más populares",
     surpriseMe = "Sorpréndeme",
+    tabAlbums = "Álbumes",
+    tabSearch = "Buscar",
+    tabPreferences = "Preferencias",
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Todos"
@@ -150,6 +165,9 @@ val DeHomeStrings = HomeStrings(
     topAlbums = "Top-Alben",
     topAlbumsDescription = "Die beliebtesten Alben",
     surpriseMe = "Überrasche mich",
+    tabAlbums = "Alben",
+    tabSearch = "Suchen",
+    tabPreferences = "Einstellungen",
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Alle"

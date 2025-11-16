@@ -12,5 +12,9 @@ data class HomeStrings(
     val topAlbums: String,
     val topAlbumsDescription: String,
     val surpriseMe: String,
-    val mediaTypeChip: (MediaType) -> String
+    val mediaTypeChip: (MediaType) -> String,
+    // Bottom Navigation Tabs
+    val tabAlbums: String,
+    val tabSearch: String,
+    val tabPreferences: String
 )
