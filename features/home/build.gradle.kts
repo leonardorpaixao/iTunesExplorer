@@ -37,10 +37,19 @@ kotlin {
                 implementation(libs.voyager.screenModel)
                 implementation(libs.voyager.kodein)
                 implementation(libs.kodein.di)
+                implementation(libs.kodein.di.framework.compose)
                 implementation(project(":core:common"))
                 implementation(project(":core:network"))
                 implementation(project(":design-system"))
                 implementation(libs.lyricist)
+            }
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.turbine)
             }
         }
     }
