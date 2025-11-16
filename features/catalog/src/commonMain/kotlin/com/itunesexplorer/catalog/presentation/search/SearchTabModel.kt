@@ -16,7 +16,8 @@ data class SearchViewState(
     val items: List<ITunesItem> = emptyList(),
     val error: String? = null,
     val selectedMediaType: MediaType = MediaType.ALL,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val showRegionHint: Boolean = false
 ) : ViewState
 
 sealed class SearchIntent : ViewIntent {
@@ -59,10 +60,8 @@ class SearchTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                // Don't send media parameter for MOVIE type as it doesn't work in iTunes API
-                // We'll filter by 'kind' field on client side instead
                 val mediaType = when (state.value.selectedMediaType) {
-                    MediaType.ALL, MediaType.MOVIE -> null
+                    MediaType.ALL -> null
                     else -> state.value.selectedMediaType.value
                 }
 
@@ -76,19 +75,14 @@ class SearchTabModel(
                     country = country
                 )
 
-                // Filter results client-side for MOVIE type
-                val filteredResults = if (state.value.selectedMediaType == MediaType.MOVIE) {
-                    response.results.filter { item ->
-                        item.kind == "feature-movie"
-                    }
-                } else {
-                    response.results
-                }
+                val hasCountrySelected = country?.isNotEmpty() == true
+                val showHint = response.results.isEmpty() && hasCountrySelected
 
                 mutableState.update {
                     it.copy(
                         isLoading = false,
-                        items = filteredResults
+                        items = response.results,
+                        showRegionHint = showHint
                     )
                 }
             } catch (e: Exception) {

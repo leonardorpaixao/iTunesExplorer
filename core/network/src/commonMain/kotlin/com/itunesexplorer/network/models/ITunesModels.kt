@@ -48,7 +48,6 @@ data class ITunesItem(
 
 enum class MediaType(val value: String) {
     ALL("all"),
-    MOVIE("movie"),
     PODCAST("podcast"),
     MUSIC("music"),
     MUSIC_VIDEO("musicVideo"),

@@ -18,7 +18,6 @@ val EnCatalogStrings = CatalogStrings(
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "All"
-            MediaType.MOVIE -> "Movie"
             MediaType.PODCAST -> "Podcast"
             MediaType.MUSIC -> "Music"
             MediaType.MUSIC_VIDEO -> "Music Video"
@@ -54,7 +53,8 @@ val EnCatalogStrings = CatalogStrings(
     releaseDate = "Release Date",
     trackCount = "Tracks",
     openInStore = "Open in iTunes Store",
-    back = "Back"
+    back = "Back",
+    changeRegionHint = "Changing your country in Preferences may show different results."
 )
 
 @LyricistStrings(languageTag = Locales.PT_BR, default = false)
@@ -70,7 +70,6 @@ val PtBrCatalogStrings = CatalogStrings(
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Todos"
-            MediaType.MOVIE -> "Filme"
             MediaType.PODCAST -> "Podcast"
             MediaType.MUSIC -> "Música"
             MediaType.MUSIC_VIDEO -> "Vídeo Musical"
@@ -106,7 +105,8 @@ val PtBrCatalogStrings = CatalogStrings(
     releaseDate = "Data de Lançamento",
     trackCount = "Faixas",
     openInStore = "Abrir na iTunes Store",
-    back = "Voltar"
+    back = "Voltar",
+    changeRegionHint = "Alterar o país nas Preferências pode mostrar resultados diferentes."
 )
 
 @LyricistStrings(languageTag = Locales.PT_PT, default = false)
@@ -122,7 +122,6 @@ val PtPtCatalogStrings = CatalogStrings(
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Todos"
-            MediaType.MOVIE -> "Filme"
             MediaType.PODCAST -> "Podcast"
             MediaType.MUSIC -> "Música"
             MediaType.MUSIC_VIDEO -> "Vídeo Musical"
@@ -158,7 +157,8 @@ val PtPtCatalogStrings = CatalogStrings(
     releaseDate = "Data de Lançamento",
     trackCount = "Faixas",
     openInStore = "Abrir na iTunes Store",
-    back = "Voltar"
+    back = "Voltar",
+    changeRegionHint = "Alterar o país nas Preferências pode mostrar resultados diferentes."
 )
 
 @LyricistStrings(languageTag = Locales.FR, default = false)
@@ -174,7 +174,6 @@ val FrCatalogStrings = CatalogStrings(
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Tout"
-            MediaType.MOVIE -> "Film"
             MediaType.PODCAST -> "Podcast"
             MediaType.MUSIC -> "Musique"
             MediaType.MUSIC_VIDEO -> "Clip musical"
@@ -210,7 +209,8 @@ val FrCatalogStrings = CatalogStrings(
     releaseDate = "Date de sortie",
     trackCount = "Pistes",
     openInStore = "Ouvrir dans iTunes Store",
-    back = "Retour"
+    back = "Retour",
+    changeRegionHint = "Changer de pays dans les Préférences peut afficher des résultats différents."
 )
 
 @LyricistStrings(languageTag = Locales.ES, default = false)
@@ -226,7 +226,6 @@ val EsCatalogStrings = CatalogStrings(
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Todos"
-            MediaType.MOVIE -> "Película"
             MediaType.PODCAST -> "Podcast"
             MediaType.MUSIC -> "Música"
             MediaType.MUSIC_VIDEO -> "Vídeo musical"
@@ -262,7 +261,8 @@ val EsCatalogStrings = CatalogStrings(
     releaseDate = "Fecha de Lanzamiento",
     trackCount = "Pistas",
     openInStore = "Abrir en iTunes Store",
-    back = "Volver"
+    back = "Volver",
+    changeRegionHint = "Cambiar el país en Preferencias puede mostrar resultados diferentes."
 )
 
 @LyricistStrings(languageTag = Locales.DE, default = false)
@@ -278,7 +278,6 @@ val DeCatalogStrings = CatalogStrings(
     mediaTypeChip = { mediaType ->
         when(mediaType) {
             MediaType.ALL -> "Alle"
-            MediaType.MOVIE -> "Film"
             MediaType.PODCAST -> "Podcast"
             MediaType.MUSIC -> "Musik"
             MediaType.MUSIC_VIDEO -> "Musikvideo"
@@ -314,5 +313,6 @@ val DeCatalogStrings = CatalogStrings(
     releaseDate = "Veröffentlichungsdatum",
     trackCount = "Titel",
     openInStore = "Im iTunes Store öffnen",
-    back = "Zurück"
+    back = "Zurück",
+    changeRegionHint = "Das Ändern des Landes in den Einstellungen kann andere Ergebnisse anzeigen."
 )
