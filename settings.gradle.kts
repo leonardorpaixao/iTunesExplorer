@@ -35,6 +35,7 @@ include(":shared")
 include(":core:network")
 include(":core:error")
 include(":core:common")
+include(":core:settings")
 
 // Design System
 include(":design-system")

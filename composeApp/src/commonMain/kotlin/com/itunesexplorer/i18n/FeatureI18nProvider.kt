@@ -2,7 +2,9 @@ package com.itunesexplorer.i18n
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import cafe.adriel.lyricist.LocalCatalogStrings
 import cafe.adriel.lyricist.LocalHomeStrings
+import cafe.adriel.lyricist.LocalPreferencesStrings
 
 /**
  * Centralized provider for all feature module i18n strings.
@@ -20,6 +22,8 @@ fun ProvideFeatureStrings(
 ) {
     CompositionLocalProvider(
         LocalHomeStrings provides appStrings.home,
+        LocalCatalogStrings provides appStrings.catalog,
+        LocalPreferencesStrings provides appStrings.preferences,
         // Add new feature strings here as the app grows:
         // LocalDetailsStrings provides appStrings.details,
         // LocalProfileStrings provides appStrings.profile,

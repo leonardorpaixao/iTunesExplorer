@@ -68,8 +68,11 @@ kotlin {
             implementation(projects.core.network)
             implementation(projects.core.error)
             implementation(projects.core.common)
+            implementation(projects.core.settings)
             implementation(projects.designSystem)
             implementation(projects.features.home)
+            implementation(projects.features.catalog)
+            implementation(projects.features.preferences)
 
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.screenModel)
