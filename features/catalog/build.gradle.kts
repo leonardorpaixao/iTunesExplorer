@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
 }
 
@@ -21,7 +22,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "home"
+            baseName = "catalog"
             isStatic = true
         }
     }
@@ -39,10 +40,12 @@ kotlin {
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
                 implementation(project(":core:common"))
+                implementation(project(":core:network"))
                 implementation(project(":design-system"))
-                implementation(project(":features:catalog"))
-                implementation(project(":features:preferences"))
                 implementation(libs.lyricist)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.ktor.client.core)
+                implementation(libs.coil.compose)
             }
         }
 
@@ -57,7 +60,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.itunesexplorer.home"
+    namespace = "com.itunesexplorer.catalog"
     compileSdk = 35
     defaultConfig {
         minSdk = 24
@@ -76,7 +79,7 @@ dependencies {
 }
 
 ksp {
-    arg("lyricist.moduleName", "Home")
+    arg("lyricist.moduleName", "Catalog")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().all {

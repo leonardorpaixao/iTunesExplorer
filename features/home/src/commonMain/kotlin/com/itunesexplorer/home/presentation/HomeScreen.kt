@@ -12,17 +12,22 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalHomeStrings
 import cafe.adriel.voyager.kodein.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.itunesexplorer.design.components.BottomNavItem
 import com.itunesexplorer.design.components.BottomNavigationBar
 import com.itunesexplorer.design.icons.rememberAlbumIcon
 import com.itunesexplorer.design.icons.rememberPlayCircleIcon
 import com.itunesexplorer.design.icons.rememberSearchIcon
 import com.itunesexplorer.design.icons.rememberSettingsIcon
-import com.itunesexplorer.home.presentation.albums.AlbumsTab
-import com.itunesexplorer.home.presentation.search.SearchTab
-import com.itunesexplorer.home.presentation.preferences.PreferencesTab
+import com.itunesexplorer.catalog.presentation.albums.AlbumsTab
+import com.itunesexplorer.catalog.presentation.search.SearchTab
+import com.itunesexplorer.catalog.presentation.details.DetailsScreen
+import com.itunesexplorer.preferences.presentation.PreferencesTab
+import org.kodein.di.DI
+import org.kodein.di.DIAware
 
-class HomeScreen : Screen {
+class HomeScreen(override val di: DI) : Screen, DIAware {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -30,6 +35,11 @@ class HomeScreen : Screen {
         val screenModel = rememberScreenModel<HomeScreenModel>()
         val state by screenModel.state.collectAsState()
         val strings = LocalHomeStrings.current
+        val navigator = LocalNavigator.currentOrThrow
+
+        val onItemClick: (String) -> Unit = { itemId ->
+            navigator.push(DetailsScreen(itemId, di))
+        }
 
         Scaffold(
             topBar = {
@@ -83,8 +93,8 @@ class HomeScreen : Screen {
                 modifier = Modifier.padding(paddingValues)
             ) {
                 when (state.selectedTab) {
-                    HomeTab.ALBUMS -> AlbumsTab()
-                    HomeTab.SEARCH -> SearchTab()
+                    HomeTab.ALBUMS -> AlbumsTab(onItemClick = onItemClick)
+                    HomeTab.SEARCH -> SearchTab(onItemClick = onItemClick)
                     HomeTab.PREFERENCES -> PreferencesTab()
                 }
             }

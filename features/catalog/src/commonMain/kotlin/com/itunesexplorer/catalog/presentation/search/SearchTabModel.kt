@@ -1,4 +1,4 @@
-package com.itunesexplorer.home.presentation.search
+package com.itunesexplorer.catalog.presentation.search
 
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
@@ -24,7 +24,6 @@ sealed class SearchIntent : ViewIntent {
     data object Search : SearchIntent()
     data class SelectMediaType(val mediaType: MediaType) : SearchIntent()
     data object Retry : SearchIntent()
-    data object LoadTopContent : SearchIntent()
 }
 
 sealed class SearchEffect : ViewEffect {
@@ -37,17 +36,12 @@ class SearchTabModel(
     initialState = SearchViewState()
 ) {
 
-    init {
-        onAction(SearchIntent.LoadTopContent)
-    }
-
     override fun onAction(intent: SearchIntent) {
         when (intent) {
             is SearchIntent.UpdateSearchQuery -> updateSearchQuery(intent.query)
             is SearchIntent.Search -> search()
             is SearchIntent.SelectMediaType -> selectMediaType(intent.mediaType)
             is SearchIntent.Retry -> retry()
-            is SearchIntent.LoadTopContent -> loadTopContent()
         }
     }
 
@@ -58,7 +52,6 @@ class SearchTabModel(
     private fun search() {
         val query = state.value.searchQuery
         if (query.isBlank()) {
-            loadTopContent()
             return
         }
 
@@ -97,56 +90,16 @@ class SearchTabModel(
         }
     }
 
-    private fun loadTopContent() {
-        screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null) }
-
-            try {
-                val mediaType = if (state.value.selectedMediaType == MediaType.ALL) {
-                    null
-                } else {
-                    state.value.selectedMediaType.value
-                }
-
-                val response = iTunesApi.search(
-                    term = "top",
-                    media = mediaType,
-                    limit = 50
-                )
-
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        items = response.results
-                    )
-                }
-            } catch (e: Exception) {
-                val errorMessage = e.message ?: "An error occurred"
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = errorMessage
-                    )
-                }
-                sendEffect(SearchEffect.ShowError(errorMessage))
-            }
-        }
-    }
-
     private fun selectMediaType(mediaType: MediaType) {
         mutableState.update { it.copy(selectedMediaType = mediaType) }
         if (state.value.searchQuery.isNotBlank()) {
             search()
-        } else {
-            loadTopContent()
         }
     }
 
     private fun retry() {
         if (state.value.searchQuery.isNotBlank()) {
             search()
-        } else {
-            loadTopContent()
         }
     }
 }

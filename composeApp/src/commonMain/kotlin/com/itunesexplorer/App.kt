@@ -17,10 +17,12 @@ import com.itunesexplorer.i18n.ProvideFeatureStrings
 import com.itunesexplorer.i18n.getSystemLanguage
 import com.itunesexplorer.home.presentation.HomeScreen
 import org.kodein.di.compose.withDI
+import org.kodein.di.compose.localDI
 
 @Composable
 fun App() {
     withDI(appDI) {
+        val di = localDI()
         setSingletonImageLoaderFactory { context ->
             ImageLoader.Builder(context)
                 .crossfade(true)
@@ -39,7 +41,7 @@ fun App() {
             ProvideFeatureStrings(appStrings = LocalStrings.current) {
                 ITunesExplorerTheme {
                     Navigator(
-                        screen = HomeScreen(),
+                        screen = HomeScreen(di),
                         content = { navigator ->
                             SlideTransition(navigator)
                         }

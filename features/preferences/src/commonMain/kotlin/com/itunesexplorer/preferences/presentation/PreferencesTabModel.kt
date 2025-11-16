@@ -1,4 +1,4 @@
-package com.itunesexplorer.home.presentation.preferences
+package com.itunesexplorer.preferences.presentation
 
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect

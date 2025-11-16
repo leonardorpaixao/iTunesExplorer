@@ -21,7 +21,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach {
         it.binaries.framework {
-            baseName = "home"
+            baseName = "preferences"
             isStatic = true
         }
     }
@@ -40,8 +40,6 @@ kotlin {
                 implementation(libs.kodein.di.framework.compose)
                 implementation(project(":core:common"))
                 implementation(project(":design-system"))
-                implementation(project(":features:catalog"))
-                implementation(project(":features:preferences"))
                 implementation(libs.lyricist)
             }
         }
@@ -57,7 +55,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.itunesexplorer.home"
+    namespace = "com.itunesexplorer.preferences"
     compileSdk = 35
     defaultConfig {
         minSdk = 24
@@ -76,7 +74,7 @@ dependencies {
 }
 
 ksp {
-    arg("lyricist.moduleName", "Home")
+    arg("lyricist.moduleName", "Preferences")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().all {

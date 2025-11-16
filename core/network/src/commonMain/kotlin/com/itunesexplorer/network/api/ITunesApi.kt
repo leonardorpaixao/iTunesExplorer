@@ -1,6 +1,5 @@
 package com.itunesexplorer.network.api
 
-import com.itunesexplorer.network.models.ITunesRssResponse
 import com.itunesexplorer.network.models.ITunesSearchResponse
 
 interface ITunesApi {
@@ -15,6 +14,13 @@ interface ITunesApi {
         country: String = "US"
     ): ITunesSearchResponse
 
+    suspend fun searchByGenre(
+        genre: String,
+        limit: Int = 50,
+        lang: String = "en_us",
+        country: String = "US"
+    ): ITunesSearchResponse
+
     suspend fun details(
         id: String? = null,
         amgArtistId: String? = null,
@@ -24,9 +30,4 @@ interface ITunesApi {
         limit: Int = 50,
         sort: String = "recent"
     ): ITunesSearchResponse
-
-    suspend fun topAlbums(
-        limit: Int = 10,
-        country: String = "us"
-    ): ITunesRssResponse
 }

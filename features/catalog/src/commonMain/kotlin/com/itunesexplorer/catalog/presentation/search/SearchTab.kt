@@ -1,4 +1,4 @@
-package com.itunesexplorer.home.presentation.search
+package com.itunesexplorer.catalog.presentation.search
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,7 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cafe.adriel.lyricist.LocalHomeStrings
+import cafe.adriel.lyricist.LocalCatalogStrings
 import com.itunesexplorer.common.extensions.toFormattedPrice
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.LoadingIndicator
@@ -18,14 +18,17 @@ import com.itunesexplorer.network.models.MediaType
 import org.kodein.di.compose.rememberInstance
 
 @Composable
-fun SearchTab() {
+fun SearchTab(
+    onItemClick: (String) -> Unit = {}
+) {
     val screenModel: SearchTabModel by rememberInstance()
     val state by screenModel.state.collectAsState()
-    val strings = LocalHomeStrings.current
+    val strings = LocalCatalogStrings.current
 
     SearchTabContent(
         state = state,
         onAction = screenModel::onAction,
+        onItemClick = onItemClick,
         strings = strings
     )
 }
@@ -34,7 +37,8 @@ fun SearchTab() {
 fun SearchTabContent(
     state: SearchViewState,
     onAction: (SearchIntent) -> Unit,
-    strings: com.itunesexplorer.home.i18n.HomeStrings
+    onItemClick: (String) -> Unit,
+    strings: com.itunesexplorer.catalog.i18n.CatalogStrings
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -99,13 +103,16 @@ fun SearchTabContent(
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     items(state.items) { item ->
+                        val itemId = item.trackId?.toString()
+                            ?: item.collectionId?.toString()
+                            ?: ""
                         MediaCard(
                             title = item.trackName ?: item.collectionName ?: "Unknown",
                             subtitle = item.artistName ?: "Unknown Artist",
                             imageUrl = item.artworkUrl100,
                             price = item.trackPrice?.toFormattedPrice()
                                 ?: item.collectionPrice?.toFormattedPrice(),
-                            onClick = { }
+                            onClick = { onItemClick(itemId) }
                         )
                     }
                 }

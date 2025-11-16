@@ -1,6 +1,5 @@
 package com.itunesexplorer.network.api
 
-import com.itunesexplorer.network.models.ITunesRssResponse
 import com.itunesexplorer.network.models.ITunesSearchResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -31,6 +30,37 @@ class ITunesApiImpl(
         }.body()
     }
 
+    override suspend fun searchByGenre(
+        genre: String,
+        limit: Int,
+        lang: String,
+        country: String
+    ): ITunesSearchResponse {
+        val response = httpClient.get("${baseUrl}search") {
+            parameter("term", genre)
+            parameter("media", "music")
+            parameter("entity", "album")
+            parameter("limit", limit)
+            parameter("lang", lang)
+            parameter("country", country)
+        }.body<ITunesSearchResponse>()
+
+        // Filter results client-side by primaryGenreName to ensure accuracy
+        // Only filter if genre is not "top albums" (which means ALL)
+        val filteredResults = if (genre == "top albums") {
+            response.results
+        } else {
+            response.results.filter { item ->
+                item.primaryGenreName?.contains(genre, ignoreCase = true) == true
+            }
+        }
+
+        return response.copy(
+            results = filteredResults,
+            resultCount = filteredResults.size
+        )
+    }
+
     override suspend fun details(
         id: String?,
         amgArtistId: String?,
@@ -49,9 +79,5 @@ class ITunesApiImpl(
             parameter("limit", limit)
             parameter("sort", sort)
         }.body()
-    }
-
-    override suspend fun topAlbums(limit: Int, country: String): ITunesRssResponse {
-        return httpClient.get("${baseUrl}${country}/rss/topalbums/limit=${limit}/json").body()
     }
 }

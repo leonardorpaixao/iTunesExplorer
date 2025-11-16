@@ -41,3 +41,5 @@ include(":design-system")
 
 // Features
 include(":features:home")
+include(":features:catalog")
+include(":features:preferences")
