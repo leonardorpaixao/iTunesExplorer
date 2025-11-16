@@ -16,8 +16,8 @@ val catalogModule = DI.Module("catalogModule") {
     bindSingleton<CatalogApi> { CatalogApiImpl(instance()) }
 
     // Presentation layer
-    bindProvider { AlbumsTabModel(instance(), instance()) }
-    bindProvider { SearchTabModel(instance()) }
+    bindSingleton { AlbumsTabModel(instance(), instance()) }
+    bindSingleton { SearchTabModel(instance()) }
     bindFactory<String, DetailsScreenModel> { itemId ->
         DetailsScreenModel(instance(), itemId)
     }

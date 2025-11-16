@@ -14,7 +14,6 @@ data class CatalogStrings(
     val surpriseMe: String,
     val mediaTypeChip: (MediaType) -> String,
     val musicGenreChip: (MusicGenre) -> String,
-    // Details
     val details: String,
     val noDetails: String,
     val relatedItems: String,
@@ -22,5 +21,6 @@ data class CatalogStrings(
     val price: String,
     val releaseDate: String,
     val trackCount: String,
-    val openInStore: String
+    val openInStore: String,
+    val back: String
 )

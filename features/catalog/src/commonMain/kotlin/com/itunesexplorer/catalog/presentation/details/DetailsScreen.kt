@@ -54,6 +54,7 @@ data class DetailsScreen(
                 DetailsContent(
                     state = state,
                     onAction = screenModel::onAction,
+                    onBack = { navigator.pop() },
                     strings = strings
                 )
             }
@@ -65,6 +66,7 @@ data class DetailsScreen(
 fun DetailsContent(
     state: DetailsViewState,
     onAction: (DetailsIntent) -> Unit,
+    onBack: () -> Unit,
     strings: com.itunesexplorer.catalog.i18n.CatalogStrings
 ) {
     when {
@@ -96,34 +98,47 @@ fun DetailsContent(
             }
         }
         else -> {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                item {
-                    ItemDetailsCard(item = state.item, onAction = onAction, strings = strings)
+                LazyColumn(
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        ItemDetailsCard(item = state.item, onAction = onAction, strings = strings)
+                    }
+
+                    if (state.relatedItems.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = strings.relatedItems,
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+
+                        items(state.relatedItems) { relatedItem ->
+                            MediaCard(
+                                title = relatedItem.trackName ?: relatedItem.collectionName ?: "Unknown",
+                                subtitle = relatedItem.artistName ?: "Unknown Artist",
+                                imageUrl = relatedItem.artworkUrl100,
+                                price = relatedItem.trackPrice?.toFormattedPrice()
+                                    ?: relatedItem.collectionPrice?.toFormattedPrice(),
+                                onClick = { }
+                            )
+                        }
+                    }
                 }
 
-                if (state.relatedItems.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = strings.relatedItems,
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        )
-                    }
-
-                    items(state.relatedItems) { relatedItem ->
-                        MediaCard(
-                            title = relatedItem.trackName ?: relatedItem.collectionName ?: "Unknown",
-                            subtitle = relatedItem.artistName ?: "Unknown Artist",
-                            imageUrl = relatedItem.artworkUrl100,
-                            price = relatedItem.trackPrice?.toFormattedPrice()
-                                ?: relatedItem.collectionPrice?.toFormattedPrice(),
-                            onClick = { }
-                        )
-                    }
+                Button(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(strings.back)
                 }
             }
         }
@@ -144,7 +159,6 @@ fun ItemDetailsCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Artwork
             item.artworkUrl100?.let { imageUrl ->
                 AsyncImage(
                     model = imageUrl.replace("100x100", "600x600"),
@@ -157,13 +171,11 @@ fun ItemDetailsCard(
                 )
             }
 
-            // Title
             Text(
                 text = item.trackName ?: item.collectionName ?: "Unknown",
                 style = MaterialTheme.typography.headlineSmall
             )
 
-            // Artist
             item.artistName?.let {
                 Text(
                     text = it,
@@ -172,7 +184,6 @@ fun ItemDetailsCard(
                 )
             }
 
-            // Genre
             item.primaryGenreName?.let {
                 Text(
                     text = "${strings.genre}: $it",
@@ -180,7 +191,6 @@ fun ItemDetailsCard(
                 )
             }
 
-            // Price
             val price = item.trackPrice?.toFormattedPrice()
                 ?: item.collectionPrice?.toFormattedPrice()
             price?.let {
@@ -191,7 +201,6 @@ fun ItemDetailsCard(
                 )
             }
 
-            // Release Date
             item.releaseDate?.let {
                 Text(
                     text = "${strings.releaseDate}: ${it.substringBefore("T")}",
@@ -199,7 +208,6 @@ fun ItemDetailsCard(
                 )
             }
 
-            // Track Count
             item.trackCount?.let {
                 Text(
                     text = "${strings.trackCount}: $it",
@@ -207,7 +215,6 @@ fun ItemDetailsCard(
                 )
             }
 
-            // Description
             item.longDescription?.let {
                 Text(
                     text = it,
@@ -220,14 +227,6 @@ fun ItemDetailsCard(
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.padding(top = 8.dp)
                 )
-            }
-
-            // Open in Store Button
-            Button(
-                onClick = { onAction(DetailsIntent.OpenInStore) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(strings.openInStore)
             }
         }
     }

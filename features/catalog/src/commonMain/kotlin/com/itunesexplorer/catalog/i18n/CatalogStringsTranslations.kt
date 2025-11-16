@@ -53,7 +53,8 @@ val EnCatalogStrings = CatalogStrings(
     price = "Price",
     releaseDate = "Release Date",
     trackCount = "Tracks",
-    openInStore = "Open in iTunes Store"
+    openInStore = "Open in iTunes Store",
+    back = "Back"
 )
 
 @LyricistStrings(languageTag = Locales.PT_BR, default = false)
@@ -104,7 +105,8 @@ val PtBrCatalogStrings = CatalogStrings(
     price = "Preço",
     releaseDate = "Data de Lançamento",
     trackCount = "Faixas",
-    openInStore = "Abrir na iTunes Store"
+    openInStore = "Abrir na iTunes Store",
+    back = "Voltar"
 )
 
 @LyricistStrings(languageTag = Locales.PT_PT, default = false)
@@ -155,7 +157,8 @@ val PtPtCatalogStrings = CatalogStrings(
     price = "Preço",
     releaseDate = "Data de Lançamento",
     trackCount = "Faixas",
-    openInStore = "Abrir na iTunes Store"
+    openInStore = "Abrir na iTunes Store",
+    back = "Voltar"
 )
 
 @LyricistStrings(languageTag = Locales.FR, default = false)
@@ -206,7 +209,8 @@ val FrCatalogStrings = CatalogStrings(
     price = "Prix",
     releaseDate = "Date de sortie",
     trackCount = "Pistes",
-    openInStore = "Ouvrir dans iTunes Store"
+    openInStore = "Ouvrir dans iTunes Store",
+    back = "Retour"
 )
 
 @LyricistStrings(languageTag = Locales.ES, default = false)
@@ -257,7 +261,8 @@ val EsCatalogStrings = CatalogStrings(
     price = "Precio",
     releaseDate = "Fecha de Lanzamiento",
     trackCount = "Pistas",
-    openInStore = "Abrir en iTunes Store"
+    openInStore = "Abrir en iTunes Store",
+    back = "Volver"
 )
 
 @LyricistStrings(languageTag = Locales.DE, default = false)
@@ -308,5 +313,6 @@ val DeCatalogStrings = CatalogStrings(
     price = "Preis",
     releaseDate = "Veröffentlichungsdatum",
     trackCount = "Titel",
-    openInStore = "Im iTunes Store öffnen"
+    openInStore = "Im iTunes Store öffnen",
+    back = "Zurück"
 )
