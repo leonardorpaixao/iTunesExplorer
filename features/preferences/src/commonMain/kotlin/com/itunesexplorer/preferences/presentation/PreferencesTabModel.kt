@@ -9,6 +9,7 @@ import com.itunesexplorer.i18n.Locales
 import com.itunesexplorer.preferences.domain.Language
 import com.itunesexplorer.settings.data.PreferencesRepository
 import com.itunesexplorer.settings.language.LanguageManager
+import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -17,7 +18,9 @@ data class PreferencesViewState(
     val selectedLanguage: String = Locales.EN,
     val pendingLanguage: String? = null,
     val showConfirmDialog: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val availableCountries: List<com.itunesexplorer.preferences.domain.Country> = emptyList(),
+    val selectedCountry: String = "US"
 ) : ViewState
 
 sealed class PreferencesIntent : ViewIntent {
@@ -25,6 +28,7 @@ sealed class PreferencesIntent : ViewIntent {
     data class SelectLanguage(val languageCode: String) : PreferencesIntent()
     data object ConfirmLanguageChange : PreferencesIntent()
     data object DismissDialog : PreferencesIntent()
+    data object LoadCountries : PreferencesIntent()
 }
 
 sealed class PreferencesEffect : ViewEffect {
@@ -39,6 +43,16 @@ class PreferencesTabModel(
 
     init {
         onAction(PreferencesIntent.LoadLanguages)
+        onAction(PreferencesIntent.LoadCountries)
+
+        // Observe country changes from CountryManager
+        screenModelScope.launch {
+            CountryManager.currentCountry.collect { country ->
+                mutableState.update { state ->
+                    state.copy(selectedCountry = country ?: "")
+                }
+            }
+        }
     }
 
     override fun onAction(intent: PreferencesIntent) {
@@ -47,6 +61,7 @@ class PreferencesTabModel(
             is PreferencesIntent.SelectLanguage -> selectLanguage(intent.languageCode)
             is PreferencesIntent.ConfirmLanguageChange -> confirmLanguageChange()
             is PreferencesIntent.DismissDialog -> dismissDialog()
+            is PreferencesIntent.LoadCountries -> loadCountries()
         }
     }
 
@@ -103,17 +118,9 @@ class PreferencesTabModel(
 
         screenModelScope.launch {
             try {
-                println("🔄 [PreferencesTabModel] Confirming language change to: $pendingLanguage")
-
-                // Save the new language preference
                 preferencesRepository.setLanguage(pendingLanguage)
-                println("💾 [PreferencesTabModel] Language saved to preferences: $pendingLanguage")
-
-                // Update the language manager (this will trigger app reload)
                 LanguageManager.setLanguage(pendingLanguage)
-                println("✅ [PreferencesTabModel] LanguageManager updated to: $pendingLanguage")
 
-                // Update local state
                 mutableState.update {
                     it.copy(
                         selectedLanguage = pendingLanguage,
@@ -122,7 +129,6 @@ class PreferencesTabModel(
                     )
                 }
             } catch (e: Exception) {
-                println("❌ [PreferencesTabModel] Error changing language: ${e.message}")
                 mutableState.update {
                     it.copy(
                         pendingLanguage = null,
@@ -140,6 +146,30 @@ class PreferencesTabModel(
                 pendingLanguage = null,
                 showConfirmDialog = false
             )
+        }
+    }
+
+    private fun loadCountries() {
+        screenModelScope.launch {
+            try {
+                // Get all available countries
+                val countries = com.itunesexplorer.preferences.domain.SupportedCountries.all
+
+                // Get saved country preference
+                val savedCountry = preferencesRepository.getCountry()
+
+                mutableState.update {
+                    it.copy(
+                        availableCountries = countries,
+                        selectedCountry = savedCountry ?: "" // Empty string for "None"
+                    )
+                }
+
+                // Initialize CountryManager if a country was saved
+                savedCountry?.let { CountryManager.initialize(it) }
+            } catch (e: Exception) {
+                sendEffect(PreferencesEffect.ShowError(e.message ?: "Failed to load countries"))
+            }
         }
     }
 }

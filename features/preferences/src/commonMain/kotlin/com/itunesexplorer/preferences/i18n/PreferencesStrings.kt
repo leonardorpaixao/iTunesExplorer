@@ -8,5 +8,9 @@ data class PreferencesStrings(
     val confirmLanguageMessage: String,
     val confirm: String,
     val cancel: String,
-    val languageName: (String) -> String
+    val languageName: (String) -> String,
+    val country: String,
+    val chooseCountry: String,
+    val currentCountry: String,
+    val countryName: (String) -> String
 )

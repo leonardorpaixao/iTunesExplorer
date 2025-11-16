@@ -6,12 +6,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalPreferencesStrings
+import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
 import com.itunesexplorer.preferences.domain.Language
 import org.kodein.di.compose.rememberInstance
 
@@ -34,6 +36,7 @@ fun PreferencesTabContent(
     onAction: (PreferencesIntent) -> Unit,
     strings: com.itunesexplorer.preferences.i18n.PreferencesStrings
 ) {
+    val bottomSheetNavigator = LocalBottomSheetNavigator.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,9 +88,58 @@ fun PreferencesTabContent(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Country Section
+        Text(
+            text = strings.country,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    bottomSheetNavigator.show(
+                        CountrySelectionScreen(selectedCountry = state.selectedCountry)
+                    )
+                },
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = strings.currentCountry,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = strings.countryName(state.selectedCountry),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 
-    // Confirmation Dialog
+    // Confirmation Dialog for Language
     if (state.showConfirmDialog) {
         LanguageChangeDialog(
             onConfirm = { onAction(PreferencesIntent.ConfirmLanguageChange) },
@@ -153,3 +205,4 @@ fun LanguageChangeDialog(
         }
     )
 }
+

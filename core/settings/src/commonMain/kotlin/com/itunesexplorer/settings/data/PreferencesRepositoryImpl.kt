@@ -12,6 +12,7 @@ class PreferencesRepositoryImpl(
 
     companion object {
         private const val KEY_LANGUAGE = "language_preference"
+        private const val KEY_COUNTRY = "country_preference"
     }
 
     override suspend fun getLanguage(): String? {
@@ -24,5 +25,17 @@ class PreferencesRepositoryImpl(
 
     override suspend fun clearLanguage() {
         settings.remove(KEY_LANGUAGE)
+    }
+
+    override suspend fun getCountry(): String? {
+        return settings.getStringOrNull(KEY_COUNTRY)
+    }
+
+    override suspend fun setCountry(countryCode: String) {
+        settings[KEY_COUNTRY] = countryCode
+    }
+
+    override suspend fun clearCountry() {
+        settings.remove(KEY_COUNTRY)
     }
 }

@@ -36,6 +36,7 @@ kotlin {
                 implementation(libs.voyager.navigator)
                 implementation(libs.voyager.screenModel)
                 implementation(libs.voyager.kodein)
+                implementation(libs.voyager.bottom.sheet.navigator)
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
                 implementation(project(":core:common"))

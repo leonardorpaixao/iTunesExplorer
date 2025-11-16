@@ -22,6 +22,48 @@ val EnPreferencesStrings = PreferencesStrings(
             Locales.DE -> "German"
             else -> code
         }
+    },
+    country = "Country",
+    chooseCountry = "Choose Country",
+    currentCountry = "Current Country",
+    countryName = { code ->
+        when (code.uppercase()) {
+            "" -> "None"
+            "AE" -> "United Arab Emirates"
+            "AR" -> "Argentina"
+            "AT" -> "Austria"
+            "AU" -> "Australia"
+            "BE" -> "Belgium"
+            "BR" -> "Brazil"
+            "CA" -> "Canada"
+            "CH" -> "Switzerland"
+            "CL" -> "Chile"
+            "CN" -> "China"
+            "CO" -> "Colombia"
+            "DE" -> "Germany"
+            "DK" -> "Denmark"
+            "ES" -> "Spain"
+            "FI" -> "Finland"
+            "FR" -> "France"
+            "GB" -> "United Kingdom"
+            "IN" -> "India"
+            "IT" -> "Italy"
+            "JP" -> "Japan"
+            "KR" -> "South Korea"
+            "MX" -> "Mexico"
+            "NL" -> "Netherlands"
+            "NO" -> "Norway"
+            "NZ" -> "New Zealand"
+            "PL" -> "Poland"
+            "PT" -> "Portugal"
+            "RU" -> "Russia"
+            "SE" -> "Sweden"
+            "SG" -> "Singapore"
+            "TH" -> "Thailand"
+            "US" -> "United States"
+            "ZA" -> "South Africa"
+            else -> code
+        }
     }
 )
 
@@ -42,6 +84,48 @@ val PtBrPreferencesStrings = PreferencesStrings(
             Locales.FR -> "Francês"
             Locales.ES -> "Espanhol"
             Locales.DE -> "Alemão"
+            else -> code
+        }
+    },
+    country = "País",
+    chooseCountry = "Escolher País",
+    currentCountry = "País Atual",
+    countryName = { code ->
+        when (code.uppercase()) {
+            "" -> "Nenhum"
+            "AE" -> "Emirados Árabes Unidos"
+            "AR" -> "Argentina"
+            "AT" -> "Áustria"
+            "AU" -> "Austrália"
+            "BE" -> "Bélgica"
+            "BR" -> "Brasil"
+            "CA" -> "Canadá"
+            "CH" -> "Suíça"
+            "CL" -> "Chile"
+            "CN" -> "China"
+            "CO" -> "Colômbia"
+            "DE" -> "Alemanha"
+            "DK" -> "Dinamarca"
+            "ES" -> "Espanha"
+            "FI" -> "Finlândia"
+            "FR" -> "França"
+            "GB" -> "Reino Unido"
+            "IN" -> "Índia"
+            "IT" -> "Itália"
+            "JP" -> "Japão"
+            "KR" -> "Coreia do Sul"
+            "MX" -> "México"
+            "NL" -> "Holanda"
+            "NO" -> "Noruega"
+            "NZ" -> "Nova Zelândia"
+            "PL" -> "Polônia"
+            "PT" -> "Portugal"
+            "RU" -> "Rússia"
+            "SE" -> "Suécia"
+            "SG" -> "Singapura"
+            "TH" -> "Tailândia"
+            "US" -> "Estados Unidos"
+            "ZA" -> "África do Sul"
             else -> code
         }
     }
@@ -66,6 +150,48 @@ val PtPtPreferencesStrings = PreferencesStrings(
             Locales.DE -> "Alemão"
             else -> code
         }
+    },
+    country = "País",
+    chooseCountry = "Escolher País",
+    currentCountry = "País Actual",
+    countryName = { code ->
+        when (code.uppercase()) {
+            "" -> "Nenhum"
+            "AE" -> "Emirados Árabes Unidos"
+            "AR" -> "Argentina"
+            "AT" -> "Áustria"
+            "AU" -> "Austrália"
+            "BE" -> "Bélgica"
+            "BR" -> "Brasil"
+            "CA" -> "Canadá"
+            "CH" -> "Suíça"
+            "CL" -> "Chile"
+            "CN" -> "China"
+            "CO" -> "Colômbia"
+            "DE" -> "Alemanha"
+            "DK" -> "Dinamarca"
+            "ES" -> "Espanha"
+            "FI" -> "Finlândia"
+            "FR" -> "França"
+            "GB" -> "Reino Unido"
+            "IN" -> "Índia"
+            "IT" -> "Itália"
+            "JP" -> "Japão"
+            "KR" -> "Coreia do Sul"
+            "MX" -> "México"
+            "NL" -> "Holanda"
+            "NO" -> "Noruega"
+            "NZ" -> "Nova Zelândia"
+            "PL" -> "Polónia"
+            "PT" -> "Portugal"
+            "RU" -> "Rússia"
+            "SE" -> "Suécia"
+            "SG" -> "Singapura"
+            "TH" -> "Tailândia"
+            "US" -> "Estados Unidos"
+            "ZA" -> "África do Sul"
+            else -> code
+        }
     }
 )
 
@@ -86,6 +212,48 @@ val FrPreferencesStrings = PreferencesStrings(
             Locales.FR -> "Français"
             Locales.ES -> "Espagnol"
             Locales.DE -> "Allemand"
+            else -> code
+        }
+    },
+    country = "Pays",
+    chooseCountry = "Choisir le Pays",
+    currentCountry = "Pays Actuel",
+    countryName = { code ->
+        when (code.uppercase()) {
+            "" -> "Aucun"
+            "AE" -> "Émirats Arabes Unis"
+            "AR" -> "Argentine"
+            "AT" -> "Autriche"
+            "AU" -> "Australie"
+            "BE" -> "Belgique"
+            "BR" -> "Brésil"
+            "CA" -> "Canada"
+            "CH" -> "Suisse"
+            "CL" -> "Chili"
+            "CN" -> "Chine"
+            "CO" -> "Colombie"
+            "DE" -> "Allemagne"
+            "DK" -> "Danemark"
+            "ES" -> "Espagne"
+            "FI" -> "Finlande"
+            "FR" -> "France"
+            "GB" -> "Royaume-Uni"
+            "IN" -> "Inde"
+            "IT" -> "Italie"
+            "JP" -> "Japon"
+            "KR" -> "Corée du Sud"
+            "MX" -> "Mexique"
+            "NL" -> "Pays-Bas"
+            "NO" -> "Norvège"
+            "NZ" -> "Nouvelle-Zélande"
+            "PL" -> "Pologne"
+            "PT" -> "Portugal"
+            "RU" -> "Russie"
+            "SE" -> "Suède"
+            "SG" -> "Singapour"
+            "TH" -> "Thaïlande"
+            "US" -> "États-Unis"
+            "ZA" -> "Afrique du Sud"
             else -> code
         }
     }
@@ -110,6 +278,48 @@ val EsPreferencesStrings = PreferencesStrings(
             Locales.DE -> "Alemán"
             else -> code
         }
+    },
+    country = "País",
+    chooseCountry = "Elegir País",
+    currentCountry = "País Actual",
+    countryName = { code ->
+        when (code.uppercase()) {
+            "" -> "Ninguno"
+            "AE" -> "Emiratos Árabes Unidos"
+            "AR" -> "Argentina"
+            "AT" -> "Austria"
+            "AU" -> "Australia"
+            "BE" -> "Bélgica"
+            "BR" -> "Brasil"
+            "CA" -> "Canadá"
+            "CH" -> "Suiza"
+            "CL" -> "Chile"
+            "CN" -> "China"
+            "CO" -> "Colombia"
+            "DE" -> "Alemania"
+            "DK" -> "Dinamarca"
+            "ES" -> "España"
+            "FI" -> "Finlandia"
+            "FR" -> "Francia"
+            "GB" -> "Reino Unido"
+            "IN" -> "India"
+            "IT" -> "Italia"
+            "JP" -> "Japón"
+            "KR" -> "Corea del Sur"
+            "MX" -> "México"
+            "NL" -> "Países Bajos"
+            "NO" -> "Noruega"
+            "NZ" -> "Nueva Zelanda"
+            "PL" -> "Polonia"
+            "PT" -> "Portugal"
+            "RU" -> "Rusia"
+            "SE" -> "Suecia"
+            "SG" -> "Singapur"
+            "TH" -> "Tailandia"
+            "US" -> "Estados Unidos"
+            "ZA" -> "Sudáfrica"
+            else -> code
+        }
     }
 )
 
@@ -130,6 +340,48 @@ val DePreferencesStrings = PreferencesStrings(
             Locales.FR -> "Französisch"
             Locales.ES -> "Spanisch"
             Locales.DE -> "Deutsch"
+            else -> code
+        }
+    },
+    country = "Land",
+    chooseCountry = "Land Wählen",
+    currentCountry = "Aktuelles Land",
+    countryName = { code ->
+        when (code.uppercase()) {
+            "" -> "Keine"
+            "AE" -> "Vereinigte Arabische Emirate"
+            "AR" -> "Argentinien"
+            "AT" -> "Österreich"
+            "AU" -> "Australien"
+            "BE" -> "Belgien"
+            "BR" -> "Brasilien"
+            "CA" -> "Kanada"
+            "CH" -> "Schweiz"
+            "CL" -> "Chile"
+            "CN" -> "China"
+            "CO" -> "Kolumbien"
+            "DE" -> "Deutschland"
+            "DK" -> "Dänemark"
+            "ES" -> "Spanien"
+            "FI" -> "Finnland"
+            "FR" -> "Frankreich"
+            "GB" -> "Vereinigtes Königreich"
+            "IN" -> "Indien"
+            "IT" -> "Italien"
+            "JP" -> "Japan"
+            "KR" -> "Südkorea"
+            "MX" -> "Mexiko"
+            "NL" -> "Niederlande"
+            "NO" -> "Norwegen"
+            "NZ" -> "Neuseeland"
+            "PL" -> "Polen"
+            "PT" -> "Portugal"
+            "RU" -> "Russland"
+            "SE" -> "Schweden"
+            "SG" -> "Singapur"
+            "TH" -> "Thailand"
+            "US" -> "Vereinigte Staaten"
+            "ZA" -> "Südafrika"
             else -> code
         }
     }

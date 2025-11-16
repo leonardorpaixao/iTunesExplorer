@@ -24,11 +24,13 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kodein.di)
             implementation(libs.multiplatform.settings.no.arg)
+            implementation(project(":core:common"))
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.turbine)
         }
     }
 }

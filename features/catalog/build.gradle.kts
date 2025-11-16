@@ -41,6 +41,7 @@ kotlin {
                 implementation(libs.kodein.di.framework.compose)
                 implementation(project(":core:common"))
                 implementation(project(":core:network"))
+                implementation(project(":core:settings"))
                 implementation(project(":design-system"))
                 implementation(libs.lyricist)
                 implementation(libs.kotlinx.serialization.json)

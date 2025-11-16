@@ -1,5 +1,6 @@
 package com.itunesexplorer.settings.language
 
+import com.itunesexplorer.i18n.setHtmlLangAttribute
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,10 +22,8 @@ object LanguageManager {
      * @param languageTag The new language tag (e.g., "en", "pt-BR")
      */
     fun setLanguage(languageTag: String) {
-        println("🌐 [LanguageManager] setLanguage called with: $languageTag")
-        println("🌐 [LanguageManager] Current value before: ${_currentLanguage.value}")
         _currentLanguage.value = languageTag
-        println("🌐 [LanguageManager] Current value after: ${_currentLanguage.value}")
+        setHtmlLangAttribute(languageTag)
     }
 
     /**
@@ -32,13 +31,9 @@ object LanguageManager {
      * @param languageTag The initial language tag
      */
     fun initialize(languageTag: String) {
-        println("🎬 [LanguageManager] initialize called with: $languageTag")
-        println("🎬 [LanguageManager] Current value: ${_currentLanguage.value}")
         if (_currentLanguage.value == null) {
             _currentLanguage.value = languageTag
-            println("✅ [LanguageManager] Initialized to: $languageTag")
-        } else {
-            println("⏭️  [LanguageManager] Already initialized, skipping")
+            setHtmlLangAttribute(languageTag)
         }
     }
 
@@ -46,4 +41,23 @@ object LanguageManager {
      * Gets the current language tag or null if not set
      */
     fun getCurrentLanguageTag(): String? = _currentLanguage.value
+
+    /**
+     * Converts the current language tag to iTunes API format (e.g., "pt-BR" -> "pt_br")
+     * @return The language tag in iTunes API format, or "en_us" as default
+     */
+    fun getITunesLanguageCode(): String {
+        val languageTag = _currentLanguage.value ?: return "en_us"
+
+        // Convert language tag format (pt-BR, pt-PT) to iTunes format (pt_br, pt_pt)
+        return when (languageTag) {
+            "pt-BR" -> "pt_br"
+            "pt-PT" -> "pt_pt"
+            "en" -> "en_us"
+            "fr" -> "fr_fr"
+            "es" -> "es_es"
+            "de" -> "de_de"
+            else -> languageTag.lowercase().replace("-", "_")
+        }
+    }
 }

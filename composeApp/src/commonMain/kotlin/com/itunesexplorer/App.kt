@@ -1,11 +1,16 @@
 package com.itunesexplorer
 
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.navigator.bottomSheet.BottomSheetNavigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import coil3.ImageLoader
 import coil3.compose.setSingletonImageLoaderFactory
@@ -19,42 +24,37 @@ import cafe.adriel.lyricist.ProvideStrings
 import cafe.adriel.lyricist.rememberStrings
 import com.itunesexplorer.i18n.ProvideFeatureStrings
 import com.itunesexplorer.i18n.getSystemLanguage
+import com.itunesexplorer.i18n.getSystemCountry
 import com.itunesexplorer.home.presentation.HomeScreen
 import com.itunesexplorer.settings.data.PreferencesRepository
 import com.itunesexplorer.settings.language.LanguageManager
+import com.itunesexplorer.settings.country.CountryManager
 import org.kodein.di.compose.withDI
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun App() {
     withDI(appDI) {
         val di = localDI()
         val preferencesRepository: PreferencesRepository by di.instance()
 
-        // Initialize language on first composition
         LaunchedEffect(Unit) {
-            // Priority: Saved preference > System language > English
             val savedLanguage = preferencesRepository.getLanguage()
             val systemLanguage = getSystemLanguage()
             val initialLanguage = savedLanguage ?: systemLanguage
-
-            println("🌍 [App] System language detected: $systemLanguage")
-            println("💾 [App] Saved language: $savedLanguage")
-            println("✅ [App] Initial language: $initialLanguage")
-
             LanguageManager.initialize(initialLanguage)
+
+            val savedCountry = preferencesRepository.getCountry()
+            val systemCountry = getSystemCountry()
+            val initialCountry = savedCountry ?: systemCountry
+            CountryManager.initialize(initialCountry)
         }
 
-        // Observe language changes from LanguageManager
         val currentLanguage by LanguageManager.currentLanguage.collectAsState()
 
-        println("🔄 [App] Current language from LanguageManager: $currentLanguage")
-
-        // Only render when language is initialized
         currentLanguage?.let { language ->
-            println("🎨 [App] Rendering with language: $language")
-
             setSingletonImageLoaderFactory { context ->
                 ImageLoader.Builder(context)
                     .crossfade(true)
@@ -67,23 +67,25 @@ fun App() {
                     .build()
             }
 
-            // Use key() to force complete recomposition when language changes
             key(language) {
-                println("🔑 [App] Key recomposition triggered for language: $language")
-
-                // Create Lyricist with current language
                 val lyricist = rememberStrings(currentLanguageTag = language)
-                println("📚 [App] Lyricist created with tag: ${lyricist.languageTag}")
 
                 ProvideStrings(lyricist = lyricist) {
                     ProvideFeatureStrings(appStrings = LocalStrings.current) {
                         ITunesExplorerTheme {
-                            Navigator(
-                                screen = HomeScreen(di),
-                                content = { navigator ->
-                                    SlideTransition(navigator)
-                                }
-                            )
+                            BottomSheetNavigator(
+                                hideOnBackPress = true,
+                                sheetShape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                                sheetBackgroundColor = MaterialTheme.colorScheme.surface,
+                                sheetContentColor = MaterialTheme.colorScheme.onSurface
+                            ) {
+                                Navigator(
+                                    screen = HomeScreen(di),
+                                    content = { navigator ->
+                                        SlideTransition(navigator)
+                                    }
+                                )
+                            }
                         }
                     }
                 }

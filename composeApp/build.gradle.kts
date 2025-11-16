@@ -60,6 +60,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
+            implementation(compose.material)
             implementation(compose.material3)
             implementation(compose.ui)
             implementation(compose.components.resources)
@@ -78,6 +79,7 @@ kotlin {
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.kodein)
             implementation(libs.voyager.transitions)
+            implementation(libs.voyager.bottom.sheet.navigator)
             implementation(libs.kodein.di)
             implementation(libs.kodein.di.framework.compose)
             implementation(libs.coil.compose)

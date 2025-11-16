@@ -69,7 +69,11 @@ class AlbumsTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val response = catalogApi.topAlbums(limit = 30)
+                val country = com.itunesexplorer.settings.country.CountryManager.getCurrentCountryCode() ?: "us"
+                val response = catalogApi.topAlbums(
+                    limit = 30,
+                    country = country.lowercase()
+                )
                 mutableState.update {
                     it.copy(
                         isLoading = false,
@@ -94,9 +98,13 @@ class AlbumsTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
+                val country = com.itunesexplorer.settings.country.CountryManager.getCurrentCountryCode()
+                val lang = com.itunesexplorer.settings.language.LanguageManager.getITunesLanguageCode()
                 val response = iTunesApi.searchByGenre(
                     genre = genre.searchTerm,
-                    limit = 30
+                    limit = 30,
+                    lang = lang,
+                    country = country
                 )
 
                 // Convert iTunes search results to RssFeedEntry format

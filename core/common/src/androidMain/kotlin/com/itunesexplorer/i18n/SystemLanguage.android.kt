@@ -17,3 +17,7 @@ actual fun getSystemLanguage(): String {
         else -> Locales.EN
     }
 }
+
+actual fun setHtmlLangAttribute(languageTag: String) {
+    // No-op on Android (not a web platform)
+}

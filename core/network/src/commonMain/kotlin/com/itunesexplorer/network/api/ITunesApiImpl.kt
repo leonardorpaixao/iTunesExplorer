@@ -17,7 +17,7 @@ class ITunesApiImpl(
         attribute: String?,
         limit: Int,
         lang: String,
-        country: String
+        country: String?
     ): ITunesSearchResponse {
         return httpClient.get("${baseUrl}search") {
             parameter("term", term)
@@ -26,7 +26,7 @@ class ITunesApiImpl(
             attribute?.let { parameter("attribute", it) }
             parameter("limit", limit)
             parameter("lang", lang)
-            parameter("country", country)
+            country?.let { parameter("country", it) }
         }.body()
     }
 
@@ -34,7 +34,7 @@ class ITunesApiImpl(
         genre: String,
         limit: Int,
         lang: String,
-        country: String
+        country: String?
     ): ITunesSearchResponse {
         val response = httpClient.get("${baseUrl}search") {
             parameter("term", genre)
@@ -42,7 +42,7 @@ class ITunesApiImpl(
             parameter("entity", "album")
             parameter("limit", limit)
             parameter("lang", lang)
-            parameter("country", country)
+            country?.let { parameter("country", it) }
         }.body<ITunesSearchResponse>()
 
         // Filter results client-side by primaryGenreName to ensure accuracy

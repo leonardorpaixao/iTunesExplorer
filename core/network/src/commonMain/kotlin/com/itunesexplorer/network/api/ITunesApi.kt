@@ -11,14 +11,14 @@ interface ITunesApi {
         attribute: String? = null,
         limit: Int = 50,
         lang: String = "en_us",
-        country: String = "US"
+        country: String? = null
     ): ITunesSearchResponse
 
     suspend fun searchByGenre(
         genre: String,
         limit: Int = 50,
         lang: String = "en_us",
-        country: String = "US"
+        country: String? = null
     ): ITunesSearchResponse
 
     suspend fun details(

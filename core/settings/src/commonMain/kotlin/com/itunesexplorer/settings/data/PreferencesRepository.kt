@@ -20,4 +20,21 @@ interface PreferencesRepository {
      * Clears the language preference
      */
     suspend fun clearLanguage()
+
+    /**
+     * Gets the saved country preference
+     * @return Country code (e.g., "US", "BR") or null if not set
+     */
+    suspend fun getCountry(): String?
+
+    /**
+     * Saves the country preference
+     * @param countryCode Country code to save (e.g., "US", "BR")
+     */
+    suspend fun setCountry(countryCode: String)
+
+    /**
+     * Clears the country preference
+     */
+    suspend fun clearCountry()
 }
