@@ -243,7 +243,7 @@ class FakeITunesApi : ITunesApi {
         attribute: String?,
         limit: Int,
         lang: String,
-        country: String
+        country: String?
     ): ITunesSearchResponse {
         throw NotImplementedError()
     }
@@ -252,7 +252,7 @@ class FakeITunesApi : ITunesApi {
         genre: String,
         limit: Int,
         lang: String,
-        country: String
+        country: String?
     ): ITunesSearchResponse {
         if (shouldFail) throw Exception("Failed to load albums")
 
