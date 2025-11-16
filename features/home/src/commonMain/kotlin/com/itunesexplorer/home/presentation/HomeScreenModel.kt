@@ -1,120 +1,37 @@
 package com.itunesexplorer.home.presentation
 
-import cafe.adriel.voyager.core.model.StateScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.ITunesItem
-import com.itunesexplorer.network.models.MediaType
-import com.itunesexplorer.network.models.RssFeedEntry
+import com.itunesexplorer.common.mvi.MviViewModel
+import com.itunesexplorer.common.mvi.ViewEffect
+import com.itunesexplorer.common.mvi.ViewIntent
+import com.itunesexplorer.common.mvi.ViewState
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
-data class HomeState(
-    val isLoading: Boolean = false,
-    val items: List<ITunesItem> = emptyList(),
-    val recommendations: List<RssFeedEntry> = emptyList(),
-    val isLoadingRecommendations: Boolean = false,
-    val showRecommendations: Boolean = false,
-    val error: String? = null,
-    val searchQuery: String = "",
-    val selectedMediaType: MediaType = MediaType.ALL
-)
+enum class HomeTab {
+    ALBUMS,
+    SEARCH,
+    PREFERENCES
+}
 
-class HomeScreenModel(
-    private val iTunesApi: ITunesApi
-) : StateScreenModel<HomeState>(HomeState()) {
+data class HomeViewState(
+    val selectedTab: HomeTab = HomeTab.ALBUMS
+) : ViewState
 
-    init {
-        loadRecommendations()
-    }
+sealed class HomeIntent : ViewIntent {
+    data class SelectTab(val tab: HomeTab) : HomeIntent()
+}
 
-    private fun loadRecommendations() {
-        screenModelScope.launch {
-            mutableState.update {
-                it.copy(
-                    isLoadingRecommendations = true,
-                    showRecommendations = true
-                )
-            }
+sealed class HomeEffect : ViewEffect
 
-            try {
-                val response = iTunesApi.topAlbums(limit = 30)
-                mutableState.update {
-                    it.copy(
-                        isLoadingRecommendations = false,
-                        recommendations = response.feed.entry
-                    )
-                }
-            } catch (e: Exception) {
-                mutableState.update {
-                    it.copy(isLoadingRecommendations = false)
-                }
-            }
+class HomeScreenModel : MviViewModel<HomeViewState, HomeIntent, HomeEffect>(
+    initialState = HomeViewState()
+) {
+    override fun onAction(intent: HomeIntent) {
+        when (intent) {
+            is HomeIntent.SelectTab -> selectTab(intent.tab)
         }
     }
 
-    fun search(query: String = state.value.searchQuery) {
-        if (query.isBlank()) return
-
-        screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null, showRecommendations = false) }
-            
-            try {
-                val mediaType = if (state.value.selectedMediaType == MediaType.ALL) {
-                    null
-                } else {
-                    state.value.selectedMediaType.value
-                }
-
-                val response = iTunesApi.search(
-                    term = query,
-                    media = mediaType,
-                    limit = 50
-                )
-                
-                mutableState.update { 
-                    it.copy(
-                        isLoading = false,
-                        items = response.results,
-                        searchQuery = query
-                    )
-                }
-            } catch (e: Exception) {
-                mutableState.update { 
-                    it.copy(
-                        isLoading = false,
-                        error = e.message ?: "An error occurred"
-                    )
-                }
-            }
-        }
-    }
-    
-    fun updateSearchQuery(query: String) {
-        mutableState.update { it.copy(searchQuery = query) }
-    }
-    
-    fun selectMediaType(mediaType: MediaType) {
-        mutableState.update { it.copy(selectedMediaType = mediaType) }
-        if (state.value.searchQuery.isNotBlank()) {
-            search()
-        }
-    }
-    
-    fun retry() {
-        search()
-    }
-
-    fun surpriseMe() {
-        mutableState.update {
-            it.copy(
-                showRecommendations = true,
-                searchQuery = "",
-                items = emptyList()
-            )
-        }
-        if (state.value.recommendations.isEmpty() && !state.value.isLoadingRecommendations) {
-            loadRecommendations()
-        }
+    private fun selectTab(tab: HomeTab) {
+        mutableState.update { it.copy(selectedTab = tab) }
     }
 }
