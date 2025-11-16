@@ -20,7 +20,7 @@ Um aplicativo multiplataforma construído com Kotlin Multiplatform (KMP) e Compo
 
 ## 🏗️ Arquitetura
 
-O projeto segue uma arquitetura modular limpa:
+O projeto segue uma arquitetura modular limpa com padrão **MVI (Model-View-Intent)**:
 
 ```
 @iTunesExplorer/
@@ -28,20 +28,41 @@ O projeto segue uma arquitetura modular limpa:
 ├── core/
 │   ├── network/         # Camada de rede e API
 │   ├── error/           # Tratamento de erros
-│   └── common/          # Utilitários comuns
+│   └── common/          # Utilitários comuns + Base MVI
 ├── design-system/       # Componentes de UI reutilizáveis
 └── features/
-    ├── home/            # Tela inicial
-    └── details/         # Tela de detalhes
+    └── home/            # Feature Home com tabs (Álbuns, Pesquisa, Preferências)
 ```
+
+### MVI (Model-View-Intent)
+
+O projeto utiliza o padrão MVI para gerenciamento de estado:
+
+- **ViewState**: Estado imutável da UI (data classes)
+- **ViewIntent**: Intenções do usuário (sealed classes)
+- **ViewEffect**: Efeitos colaterais únicos (toasts, navegação)
+- **MviViewModel**: Base para todos os ViewModels
+
+Veja a documentação completa em [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md)
 
 ## 🎨 Features
 
-- **Pesquisa de Conteúdo**: Busque por músicas, filmes, podcasts, apps e mais
-- **Filtros por Tipo de Mídia**: Filtre resultados por categoria
-- **Detalhes do Item**: Veja informações detalhadas sobre cada item
-- **Conteúdo Relacionado**: Descubra conteúdo similar
+### Tab Álbuns
+- **Top Álbuns**: Recomendações dos álbuns mais populares
+- **Navegação para Detalhes**: Clique no álbum para ver mais informações
+
+### Tab Pesquisa
+- **Busca por Texto**: Campo de pesquisa para encontrar conteúdo específico
+- **Filtros por MediaType**: Chips para filtrar por Música, Filme, Podcast, App, etc.
+- **Resultados Dinâmicos**: Atualização em tempo real conforme filtros são aplicados
+
+### Tab Preferências
+- **Em Desenvolvimento**: Área para configurações futuras
+
+### Geral
 - **Interface Responsiva**: UI adaptada para cada plataforma
+- **Bottom Navigation**: Navegação intuitiva entre tabs
+- **TopBar com Logo**: Clique no nome do app para retornar à tab Álbuns
 
 ## 🔧 Como Executar
 
@@ -101,6 +122,35 @@ open iosApp/iosApp.xcodeproj
 ## 🔑 API
 
 O app utiliza a [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html) pública da Apple.
+
+## 🧪 Testes
+
+O projeto possui testes unitários abrangentes para todos os ViewModels usando:
+
+- **Kotlin Test**: Framework de testes padrão
+- **Kotlinx Coroutines Test**: Testes de código assíncrono
+- **Turbine**: Testes de Flows
+
+### Executar Testes
+
+```bash
+# Executar todos os testes do módulo home
+./gradlew :features:home:testDebugUnitTest
+
+# Ver relatório HTML
+open features/home/build/reports/tests/testDebugUnitTest/index.html
+```
+
+### Cobertura
+
+- ✅ **HomeScreenModel**: 4 testes
+- ✅ **AlbumsTabModel**: 4 testes
+- ✅ **SearchTabModel**: 9 testes
+- ✅ **PreferencesTabModel**: 2 testes
+
+**Total**: 19 testes, 100% passando
+
+Veja a documentação completa em [docs/TESTING.md](docs/TESTING.md)
 
 ## 📄 Licença
 

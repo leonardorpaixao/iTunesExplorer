@@ -59,7 +59,10 @@ iTunesExplorer/
 
 - **`core:error`** - Centralized error handling
 
-- **`core:common`** - Shared utilities and extensions
+- **`core:common`** - Shared utilities, extensions, and MVI base classes
+  - `MviViewModel<State, Intent, Effect>`: Base class for all ViewModels
+  - `ViewState`, `ViewIntent`, `ViewEffect`: MVI marker interfaces
+  - Effect channel for one-time side effects
 
 ### Design System (`design-system/`)
 - Reusable UI components and theming
@@ -67,13 +70,27 @@ iTunesExplorer/
 - Platform-agnostic Compose components
 
 ### Features (`features/`)
-Feature modules follow a presentation layer pattern with Voyager:
+Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
 
-- **`features:home`** - Home screen with search and browse functionality
-  - Uses `StateScreenModel` for state management
-  - Supports media type filtering
-  - Integrates directly with `ITunesApi`
-  - Single feature module containing all UI screens
+- **`features:home`** - Home screen with bottom navigation tabs
+  - **HomeScreenModel**: Manages tab selection (Álbuns, Pesquisa, Preferências)
+    - State: `selectedTab`
+    - Intent: `SelectTab`
+  - **AlbumsTabModel**: Loads and displays top album recommendations
+    - State: `recommendations`, `isLoading`, `error`
+    - Intent: `LoadRecommendations`, `Retry`
+    - Effect: `ShowError`
+  - **SearchTabModel**: Text search with MediaType filters
+    - State: `items`, `searchQuery`, `selectedMediaType`, `isLoading`, `error`
+    - Intent: `UpdateSearchQuery`, `Search`, `SelectMediaType`, `Retry`, `LoadTopContent`
+    - Effect: `ShowError`
+  - **PreferencesTabModel**: Placeholder for future settings
+  - All ViewModels extend `MviViewModel<State, Intent, Effect>`
+  - Each tab has its own ViewState, ViewIntent, and ViewEffect sealed classes
+  - **UI Structure**:
+    - TopAppBar with app name (clickable to return to Albums tab)
+    - Bottom navigation with 3 tabs
+    - Content area with tab-specific screens
 
 ### Main App (`composeApp/`)
 - Platform-specific entry points (Android, iOS, WASM, Desktop)
@@ -103,10 +120,69 @@ Feature modules follow a presentation layer pattern with Voyager:
 - JSON serialization with Kotlinx Serialization
 - Configuration: lenient parsing, ignore unknown keys, 30s timeout
 
-### State Management
-- Feature screens use `StateScreenModel` from Voyager
-- State flows with immutable data classes
-- Coroutines for async operations via `screenModelScope`
+### State Management - MVI Pattern
+The project implements **MVI (Model-View-Intent)** for predictable, unidirectional data flow:
+
+**Core Concepts**:
+- **ViewState**: Immutable data classes representing complete UI state
+- **ViewIntent**: Sealed classes/interfaces representing user intentions
+- **ViewEffect**: Sealed classes for one-time side effects (toasts, navigation)
+- **MviViewModel**: Base class extending `StateScreenModel` with effect channel
+
+**Implementation Pattern**:
+```kotlin
+// State - What the UI needs to know
+data class MyViewState(
+    val data: List<Item> = emptyList(),
+    val isLoading: Boolean = false,
+    val error: String? = null
+) : ViewState
+
+// Intent - What the user can do
+sealed class MyIntent : ViewIntent {
+    data object LoadData : MyIntent()
+    data class UpdateQuery(val query: String) : MyIntent()
+}
+
+// Effect - One-time events
+sealed class MyEffect : ViewEffect {
+    data class ShowError(val message: String) : MyEffect()
+}
+
+// ViewModel
+class MyScreenModel(api: Api) : MviViewModel<MyViewState, MyIntent, MyEffect>(
+    initialState = MyViewState()
+) {
+    override fun onAction(intent: MyIntent) {
+        when (intent) {
+            is MyIntent.LoadData -> loadData()
+            is MyIntent.UpdateQuery -> updateQuery(intent.query)
+        }
+    }
+
+    private fun loadData() {
+        screenModelScope.launch {
+            mutableState.update { it.copy(isLoading = true) }
+            try {
+                val data = api.fetchData()
+                mutableState.update { it.copy(data = data, isLoading = false) }
+            } catch (e: Exception) {
+                mutableState.update { it.copy(error = e.message, isLoading = false) }
+                sendEffect(MyEffect.ShowError(e.message ?: "Error"))
+            }
+        }
+    }
+}
+```
+
+**Benefits**:
+- Unidirectional data flow (View → Intent → Model → View)
+- Immutable state for predictability
+- Easy to test (each Intent produces deterministic output)
+- Clear separation of concerns
+- Side effects handled separately from state
+
+See full documentation in `docs/MVI_ARCHITECTURE.md`
 
 ## Important Technical Details
 
@@ -133,13 +209,30 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
 
 ## Development Workflow
 
-### Adding New Features
+### Adding New Features (MVI Pattern)
 1. Create feature module in `features/`
-2. Define Kodein module for DI using `DI.Module("moduleName")`
-3. Create Voyager Screen and StateScreenModel
-4. Add module dependency in `composeApp/build.gradle.kts`
-5. Import Kodein module in `appDI` using `importAll()`
-6. Use `rememberScreenModel { ScreenModel(it.instance()) }` in screens to get dependencies
+2. Define ViewState, ViewIntent, and ViewEffect for the feature:
+   ```kotlin
+   data class MyViewState(...) : ViewState
+   sealed class MyIntent : ViewIntent { ... }
+   sealed class MyEffect : ViewEffect { ... }
+   ```
+3. Create ViewModel extending `MviViewModel`:
+   ```kotlin
+   class MyScreenModel(deps) : MviViewModel<MyViewState, MyIntent, MyEffect>(
+       initialState = MyViewState()
+   ) {
+       override fun onAction(intent: MyIntent) { ... }
+   }
+   ```
+4. Create Voyager Screen with `rememberInstance()` for DI
+5. Define Kodein module for DI using `DI.Module("moduleName")`
+6. Add module dependency in `composeApp/build.gradle.kts`
+7. Import Kodein module in `appDI` using `importAll()`
+8. In the UI, use `onAction()` for all user actions:
+   ```kotlin
+   Button(onClick = { screenModel.onAction(MyIntent.DoAction) })
+   ```
 
 ### Modifying Network Layer
 1. Update API interface in `core:network/src/commonMain/.../ITunesApi.kt`
@@ -150,6 +243,84 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
 - Public API, no authentication required
 - Documentation: https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html
 - Default parameters: limit=50, country=US, lang=en_us
+
+### Testing ViewModels (MVI Pattern)
+All ViewModels have comprehensive unit tests using:
+- **Kotlin Test**: Standard testing framework
+- **Kotlinx Coroutines Test**: `StandardTestDispatcher`, `runTest`, `advanceUntilIdle()`
+- **Turbine**: Flow testing library for state/effect assertions
+
+**Test Structure**:
+```kotlin
+@OptIn(ExperimentalCoroutinesApi::class)
+class MyScreenModelTest {
+    private val testDispatcher = StandardTestDispatcher()
+    private lateinit var fakeApi: FakeApi
+
+    @BeforeTest
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+        fakeApi = FakeApi()
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
+    @Test
+    fun `should load data successfully on init`() = runTest(testDispatcher) {
+        val viewModel = MyScreenModel(fakeApi)
+        advanceUntilIdle() // Complete async initialization
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertFalse(state.isLoading)
+            assertEquals(2, state.items.size)
+        }
+    }
+
+    @Test
+    fun `onAction should update state`() = runTest(testDispatcher) {
+        val viewModel = MyScreenModel(fakeApi)
+        advanceUntilIdle()
+
+        viewModel.state.test {
+            awaitItem() // current state
+
+            viewModel.onAction(MyIntent.UpdateQuery("test"))
+
+            val state = awaitItem()
+            assertEquals("test", state.query)
+        }
+    }
+}
+```
+
+**Key Points**:
+- Create ViewModels **inside** `runTest(testDispatcher)` blocks
+- Call `advanceUntilIdle()` after async operations
+- Use Turbine's `test {}` for Flow assertions
+- Implement Fake APIs with controllable behavior (`shouldFail` flags)
+- One concept per test
+
+**Running Tests**:
+```bash
+# Run all tests for home feature
+./gradlew :features:home:testDebugUnitTest
+
+# View HTML report
+open features/home/build/reports/tests/testDebugUnitTest/index.html
+```
+
+**Current Test Coverage**:
+- ✅ HomeScreenModel: 4 tests
+- ✅ AlbumsTabModel: 4 tests
+- ✅ SearchTabModel: 9 tests
+- ✅ PreferencesTabModel: 2 tests
+- **Total**: 19 tests, 100% passing
+
+See full testing guide in `docs/TESTING.md`
 
 ## Build System Notes
 
