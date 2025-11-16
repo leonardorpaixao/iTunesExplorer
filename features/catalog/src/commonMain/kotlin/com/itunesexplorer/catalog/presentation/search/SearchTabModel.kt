@@ -59,22 +59,36 @@ class SearchTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val mediaType = if (state.value.selectedMediaType == MediaType.ALL) {
-                    null
-                } else {
-                    state.value.selectedMediaType.value
+                // Don't send media parameter for MOVIE type as it doesn't work in iTunes API
+                // We'll filter by 'kind' field on client side instead
+                val mediaType = when (state.value.selectedMediaType) {
+                    MediaType.ALL, MediaType.MOVIE -> null
+                    else -> state.value.selectedMediaType.value
                 }
 
+                val country = com.itunesexplorer.settings.country.CountryManager.getCurrentCountryCode()
+                val lang = com.itunesexplorer.settings.language.LanguageManager.getITunesLanguageCode()
                 val response = iTunesApi.search(
                     term = query,
                     media = mediaType,
-                    limit = 50
+                    limit = 50,
+                    lang = lang,
+                    country = country
                 )
+
+                // Filter results client-side for MOVIE type
+                val filteredResults = if (state.value.selectedMediaType == MediaType.MOVIE) {
+                    response.results.filter { item ->
+                        item.kind == "feature-movie"
+                    }
+                } else {
+                    response.results
+                }
 
                 mutableState.update {
                     it.copy(
                         isLoading = false,
-                        items = response.results
+                        items = filteredResults
                     )
                 }
             } catch (e: Exception) {
