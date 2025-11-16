@@ -16,9 +16,6 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    wasmJs {
-        browser()
-    }
 
     sourceSets {
         commonMain.dependencies {
@@ -37,10 +34,6 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-        }
-
-        wasmJsMain.dependencies {
-            implementation(libs.ktor.client.js)
         }
 
         jvmMain.dependencies {

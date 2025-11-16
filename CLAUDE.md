@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-iTunes Explorer is a Kotlin Multiplatform (KMP) application built with Compose Multiplatform that allows exploring iTunes Store content across Android, iOS, Web (WASM), and Desktop (JVM) platforms.
+iTunes Explorer is a Kotlin Multiplatform (KMP) application built with Compose Multiplatform that allows exploring iTunes Store content across Android, iOS, and Desktop (JVM) platforms.
 
 ## Build & Run Commands
 
@@ -18,11 +18,6 @@ iTunes Explorer is a Kotlin Multiplatform (KMP) application built with Compose M
 ./gradlew :composeApp:iosSimulatorArm64Binaries
 ```
 Note: After building, open the iOS project in Xcode to run on simulator.
-
-### Web (WASM)
-```bash
-./gradlew :composeApp:wasmJsBrowserRun
-```
 
 ### Desktop (JVM)
 ```bash
@@ -52,7 +47,7 @@ iTunesExplorer/
 
 ### Core Modules (`core/`)
 - **`core:network`** - Network layer using Ktorfit (type-safe Ktor wrapper) for the iTunes Search API
-  - Platform-specific HTTP clients: OkHttp (Android), Darwin (iOS), JS (WASM)
+  - Platform-specific HTTP clients: OkHttp (Android), Darwin (iOS), CIO (Desktop/JVM)
   - Ktorfit requires KSP for code generation
   - Base URL: `https://itunes.apple.com/`
   - Main endpoints: `/search` and `/lookup`
@@ -93,8 +88,8 @@ Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
     - Content area with tab-specific screens
 
 ### Main App (`composeApp/`)
-- Platform-specific entry points (Android, iOS, WASM, Desktop)
-- Dependency injection setup via Koin
+- Platform-specific entry points (Android, iOS, Desktop)
+- Dependency injection setup via Kodein
 - Voyager Navigator with SlideTransition for navigation
 - Desktop main class: `com.itunesexplorer.MainKt`
 
@@ -198,13 +193,12 @@ The `core:network` module uses KSP for Ktorfit code generation. KSP configuratio
 - `kspCommonMainMetadata`
 - `kspAndroid`
 - `kspIosX64`, `kspIosArm64`, `kspIosSimulatorArm64`
-- `kspWasmJs`
 
 When adding new Ktorfit interfaces, ensure KSP is properly configured.
 
 ### Platform-Specific Dependencies
-- Android: Activity Compose, Koin Android
-- Desktop/iOS/WASM: Coroutines Core
+- Android: Activity Compose, Kodein Android
+- Desktop/iOS: Coroutines Core
 - Each platform has its own Ktor client engine
 
 ## Development Workflow
@@ -333,10 +327,6 @@ See full testing guide in `docs/TESTING.md`
 - C-interop commonization is disabled (`kotlin.mpp.enableCInteropCommonization=false`) to prevent task creation conflicts
 
 ### Known Limitations
-- **WASM Support**:
-  - Ktorfit 2.1.0 does not support WASM targets yet. WASM has been disabled in `core:network` module
-  - Voyager-Kodein integration is not available for WASM. Feature modules use platform-specific source sets to include Kodein only for non-WASM targets
-  - To re-enable WASM: uncomment WASM targets in all modules, update Ktorfit when support is available, and restructure dependency injection for WASM
 - **Ktorfit KSP**: The KSP artifact version must include the KSP compatibility suffix (e.g., `2.1.0-1.0.27` where 1.0.27 is the KSP version)
 - **Voyager Version**: Using 1.1.0-beta03 which includes Kodein integration support
 - **Kodein-DI Version**: Using 7.22.0 with Compose framework integration

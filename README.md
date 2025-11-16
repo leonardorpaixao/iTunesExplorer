@@ -15,7 +15,6 @@ Um aplicativo multiplataforma construído com Kotlin Multiplatform (KMP) e Compo
 
 - ✅ Android
 - ✅ iOS
-- ✅ Web (WASM)
 - ✅ Desktop (JVM)
 
 ## 🏗️ Arquitetura
@@ -71,12 +70,6 @@ Veja a documentação completa em [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTU
 ./gradlew :composeApp:runDesktop
 ```
 
-### Web (WASM)
-```bash
-./gradlew :composeApp:runWasm
-```
-O aplicativo ficará disponível em http://localhost:8080/
-
 ### Android
 ```bash
 # Instalar e executar em dispositivo/emulador conectado
@@ -104,7 +97,6 @@ open iosApp/iosApp.xcodeproj
 | Task | Descrição |
 |------|-----------|
 | `runDesktop` | Executa o app Desktop (JVM) |
-| `runWasm` | Executa o app WASM no navegador |
 | `runAndroid` | Instala e executa o app Android em dispositivo/emulador |
 | `buildIosSimulator` | Compila o framework iOS para simulador |
 | `buildIosDevice` | Compila o framework iOS para dispositivo |
