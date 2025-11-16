@@ -98,6 +98,13 @@ fun PreferencesTabContent(
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
+        Text(
+            text = strings.countryHelpText,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+        )
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()

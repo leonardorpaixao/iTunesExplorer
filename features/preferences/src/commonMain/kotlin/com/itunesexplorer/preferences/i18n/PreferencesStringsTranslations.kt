@@ -26,6 +26,7 @@ val EnPreferencesStrings = PreferencesStrings(
     country = "Country",
     chooseCountry = "Choose Country",
     currentCountry = "Current Country",
+    countryHelpText = "The selected country affects search results. Content availability varies by region.",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "None"
@@ -90,6 +91,7 @@ val PtBrPreferencesStrings = PreferencesStrings(
     country = "País",
     chooseCountry = "Escolher País",
     currentCountry = "País Atual",
+    countryHelpText = "O país selecionado influencia diretamente os resultados da pesquisa. A disponibilidade de conteúdo varia por região.",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Nenhum"
@@ -154,6 +156,7 @@ val PtPtPreferencesStrings = PreferencesStrings(
     country = "País",
     chooseCountry = "Escolher País",
     currentCountry = "País Actual",
+    countryHelpText = "O país selecionado influencia directamente os resultados da pesquisa. A disponibilidade de conteúdo varia por região.",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Nenhum"
@@ -218,6 +221,7 @@ val FrPreferencesStrings = PreferencesStrings(
     country = "Pays",
     chooseCountry = "Choisir le Pays",
     currentCountry = "Pays Actuel",
+    countryHelpText = "Le pays sélectionné influence directement les résultats de recherche. La disponibilité du contenu varie selon les régions.",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Aucun"
@@ -282,6 +286,7 @@ val EsPreferencesStrings = PreferencesStrings(
     country = "País",
     chooseCountry = "Elegir País",
     currentCountry = "País Actual",
+    countryHelpText = "El país seleccionado influye directamente en los resultados de búsqueda. La disponibilidad de contenido varía según la región.",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Ninguno"
@@ -346,6 +351,7 @@ val DePreferencesStrings = PreferencesStrings(
     country = "Land",
     chooseCountry = "Land Wählen",
     currentCountry = "Aktuelles Land",
+    countryHelpText = "Das ausgewählte Land beeinflusst direkt die Suchergebnisse. Die Verfügbarkeit von Inhalten variiert je nach Region.",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Keine"
