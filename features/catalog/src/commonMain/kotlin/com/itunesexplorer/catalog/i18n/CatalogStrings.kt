@@ -22,5 +22,6 @@ data class CatalogStrings(
     val releaseDate: String,
     val trackCount: String,
     val openInStore: String,
-    val back: String
+    val back: String,
+    val changeRegionHint: String
 )
