@@ -141,3 +141,27 @@ fun SearchBar(
         }
     )
 }
+
+data class BottomNavItem(
+    val label: String,
+    val icon: @Composable () -> Unit,
+    val selected: Boolean,
+    val onClick: () -> Unit
+)
+
+@Composable
+fun BottomNavigationBar(
+    items: List<BottomNavItem>,
+    modifier: Modifier = Modifier
+) {
+    NavigationBar(modifier = modifier) {
+        items.forEach { item ->
+            NavigationBarItem(
+                selected = item.selected,
+                onClick = item.onClick,
+                icon = item.icon,
+                label = { Text(item.label) }
+            )
+        }
+    }
+}
