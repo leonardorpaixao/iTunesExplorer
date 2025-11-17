@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,14 +15,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.kodein.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
-import com.itunesexplorer.common.extensions.toFormattedPrice
+import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.MediaCard
-import com.itunesexplorer.network.models.ITunesItem
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.instance
@@ -44,7 +46,10 @@ data class DetailsScreen(
                     title = { Text(strings.details) },
                     navigationIcon = {
                         IconButton(onClick = { navigator.pop() }) {
-                            Text("←")
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = strings.back
+                            )
                         }
                     }
                 )
@@ -67,7 +72,7 @@ fun DetailsContent(
     state: DetailsViewState,
     onAction: (DetailsIntent) -> Unit,
     onBack: () -> Unit,
-    strings: com.itunesexplorer.catalog.i18n.CatalogStrings
+    strings: CatalogStrings
 ) {
     when {
         state.isLoading -> {
@@ -121,11 +126,10 @@ fun DetailsContent(
 
                         items(state.relatedItems) { relatedItem ->
                             MediaCard(
-                                title = relatedItem.trackName ?: relatedItem.collectionName ?: "Unknown",
-                                subtitle = relatedItem.artistName ?: "Unknown Artist",
-                                imageUrl = relatedItem.artworkUrl100,
-                                price = relatedItem.trackPrice?.toFormattedPrice(relatedItem.currency ?: "USD")
-                                    ?: relatedItem.collectionPrice?.toFormattedPrice(relatedItem.currency ?: "USD"),
+                                title = relatedItem.name,
+                                subtitle = relatedItem.artistName ?: CatalogConstants.UNKNOWN_ARTIST,
+                                imageUrl = relatedItem.imageUrl,
+                                price = relatedItem.price,
                                 onClick = { }
                             )
                         }
@@ -147,9 +151,9 @@ fun DetailsContent(
 
 @Composable
 fun ItemDetailsCard(
-    item: ITunesItem,
+    item: SearchResult,
     onAction: (DetailsIntent) -> Unit,
-    strings: com.itunesexplorer.catalog.i18n.CatalogStrings
+    strings: CatalogStrings
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -159,10 +163,10 @@ fun ItemDetailsCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item.artworkUrl100?.let { imageUrl ->
+            item.imageUrl?.let { imageUrl ->
                 AsyncImage(
-                    model = imageUrl.replace("100x100", "600x600"),
-                    contentDescription = item.trackName ?: item.collectionName,
+                    model = imageUrl.replace(CatalogConstants.THUMBNAIL_SIZE, CatalogConstants.FULL_SIZE),
+                    contentDescription = item.name,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1f)
@@ -172,7 +176,7 @@ fun ItemDetailsCard(
             }
 
             Text(
-                text = item.trackName ?: item.collectionName ?: "Unknown",
+                text = item.name,
                 style = MaterialTheme.typography.headlineSmall
             )
 
@@ -184,16 +188,14 @@ fun ItemDetailsCard(
                 )
             }
 
-            item.primaryGenreName?.let {
+            item.genre?.let {
                 Text(
                     text = "${strings.genre}: $it",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            val price = item.trackPrice?.toFormattedPrice(item.currency ?: "USD")
-                ?: item.collectionPrice?.toFormattedPrice(item.currency ?: "USD")
-            price?.let {
+            item.price?.let {
                 Text(
                     text = "${strings.price}: $it",
                     style = MaterialTheme.typography.bodyLarge,
@@ -208,20 +210,7 @@ fun ItemDetailsCard(
                 )
             }
 
-            item.trackCount?.let {
-                Text(
-                    text = "${strings.trackCount}: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            item.longDescription?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            } ?: item.shortDescription?.let {
+            item.description?.let {
                 Text(
                     text = it,
                     style = MaterialTheme.typography.bodyMedium,
