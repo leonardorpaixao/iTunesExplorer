@@ -29,7 +29,6 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":shared")
 
 // Core modules
 include(":core:error")
