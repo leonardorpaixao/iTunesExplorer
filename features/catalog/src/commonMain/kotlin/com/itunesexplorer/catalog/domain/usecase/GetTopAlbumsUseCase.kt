@@ -1,47 +1,18 @@
 package com.itunesexplorer.catalog.domain.usecase
 
 import com.itunesexplorer.catalog.data.CatalogConstants
-import com.itunesexplorer.catalog.data.models.RssFeedEntry
 import com.itunesexplorer.catalog.domain.model.Album
-import com.itunesexplorer.catalog.domain.model.Money
-import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.settings.country.CountryManager
 
 /**
- * Use case for fetching top albums from the iTunes RSS feed.
- * Handles country configuration and transforms RSS data to domain models.
+ * Use case interface for fetching top albums from the iTunes RSS feed.
  */
-class GetTopAlbumsUseCase(
-    private val albumsRepository: AlbumsRepository,
-    private val countryManager: CountryManager
-) {
-    suspend operator fun invoke(limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT): DomainResult<List<Album>> {
-        val country = countryManager.getCurrentCountryCode() ?: CatalogConstants.DEFAULT_COUNTRY_CODE
-
-        return albumsRepository.getTopAlbumsRss(limit, country).map { rssResponse ->
-            rssResponse.feed.entry.map { mapRssToAlbum(it) }
-        }
-    }
-
-    private fun mapRssToAlbum(entry: RssFeedEntry): Album {
-        val imageUrl = entry.imImage.lastOrNull()?.label
-
-        val price = entry.imPrice?.let { priceData ->
-            val amount = priceData.attributes.amount.toDoubleOrNull()
-            val currency = priceData.attributes.currency
-            Money.fromOptional(amount, currency)
-        }
-
-        return Album(
-            id = entry.id.attributes.imId,
-            name = entry.imName.label,
-            artistName = entry.imArtist?.label ?: CatalogConstants.UNKNOWN_ARTIST,
-            imageUrl = imageUrl,
-            viewUrl = entry.link.attributes.href,
-            price = price,
-            releaseDate = entry.imReleaseDate?.attributes?.label,
-            genre = entry.category.attributes.label
-        )
-    }
+interface GetTopAlbumsUseCase {
+    /**
+     * Fetches top albums for the user's current country.
+     *
+     * @param limit Maximum number of albums to fetch
+     * @return DomainResult containing list of albums or a domain error
+     */
+    suspend operator fun invoke(limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT): DomainResult<List<Album>>
 }

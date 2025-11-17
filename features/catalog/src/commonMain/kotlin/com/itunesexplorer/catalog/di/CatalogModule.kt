@@ -7,7 +7,9 @@ import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
+import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCaseImpl
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
+import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCaseImpl
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.api.ITunesApiImpl
 import com.itunesexplorer.catalog.presentation.albums.AlbumsTabModel
@@ -51,15 +53,15 @@ val catalogModule = DI.Module("catalogModule") {
         DetailsRepositoryImpl(api = instance())
     }
 
-    bindSingleton {
-        GetTopAlbumsUseCase(
+    bindSingleton<GetTopAlbumsUseCase> {
+        GetTopAlbumsUseCaseImpl(
             albumsRepository = instance(),
             countryManager = CountryManager
         )
     }
 
-    bindSingleton {
-        GetAlbumsByGenreUseCase(
+    bindSingleton<GetAlbumsByGenreUseCase> {
+        GetAlbumsByGenreUseCaseImpl(
             albumsRepository = instance(),
             countryManager = CountryManager,
             languageManager = LanguageManager
