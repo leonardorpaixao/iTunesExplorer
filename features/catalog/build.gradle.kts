@@ -43,6 +43,7 @@ kotlin {
                 implementation(project(":core:network"))
                 implementation(project(":core:settings"))
                 implementation(project(":core:currency"))
+                implementation(project(":core:error"))
                 implementation(project(":design-system"))
                 implementation(libs.lyricist)
                 implementation(libs.kotlinx.serialization.json)
