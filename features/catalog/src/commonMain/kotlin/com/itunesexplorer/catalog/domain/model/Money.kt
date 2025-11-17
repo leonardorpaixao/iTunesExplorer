@@ -9,7 +9,6 @@ data class Money(
     val currencyCode: String
 ) {
     init {
-        require(amount >= 0) { "Money amount cannot be negative" }
         require(currencyCode.isNotBlank()) { "Currency code cannot be blank" }
     }
 
