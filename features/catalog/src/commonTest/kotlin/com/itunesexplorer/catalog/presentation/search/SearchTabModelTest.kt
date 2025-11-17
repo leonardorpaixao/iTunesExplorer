@@ -1,6 +1,7 @@
 package com.itunesexplorer.catalog.presentation.search
 
 import app.cash.turbine.test
+import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.core.common.domain.DomainError
@@ -264,7 +265,7 @@ class SearchTabModelTest {
             imageUrl = "https://example.com/artwork.jpg",
             viewUrl = "https://example.com/item",
             previewUrl = null,
-            price = "$9.99",
+            price = Money(9.99, "USD"),
             releaseDate = "2024-01-01",
             genre = "Music",
             description = null
