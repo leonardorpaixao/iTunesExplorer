@@ -35,16 +35,4 @@ sealed class DomainError {
      * Unknown or unexpected errors
      */
     data class UnknownError(val message: String, val cause: Throwable? = null) : DomainError()
-
-    /**
-     * Get a user-friendly error message for display
-     */
-    fun getUserMessage(): String = when (this) {
-        is NetworkError -> "Erro de conexão: $message"
-        is ServerError -> "Erro no servidor${code?.let { " ($it)" } ?: ""}: $message"
-        is NotFoundError -> "Não encontrado: $message"
-        is ClientError -> "Erro na requisição${code?.let { " ($it)" } ?: ""}: $message"
-        is DataError -> "Erro nos dados: $message"
-        is UnknownError -> "Erro inesperado: $message"
-    }
 }
