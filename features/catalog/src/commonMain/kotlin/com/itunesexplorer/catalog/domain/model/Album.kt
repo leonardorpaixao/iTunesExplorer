@@ -10,7 +10,7 @@ data class Album(
     val artistName: String,
     val imageUrl: String?,
     val viewUrl: String,
-    val price: String?,
+    val price: Money?,
     val releaseDate: String?,
     val genre: String
 )

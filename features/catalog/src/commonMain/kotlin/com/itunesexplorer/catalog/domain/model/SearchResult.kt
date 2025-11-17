@@ -13,7 +13,7 @@ data class SearchResult(
     val imageUrl: String?,
     val viewUrl: String?,
     val previewUrl: String?,
-    val price: String?,
+    val price: Money?,
     val releaseDate: String?,
     val genre: String?,
     val description: String?
