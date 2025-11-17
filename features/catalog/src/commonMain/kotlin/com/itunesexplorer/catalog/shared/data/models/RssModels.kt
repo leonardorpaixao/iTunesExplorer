@@ -11,7 +11,7 @@ data class ITunesRssResponse(
 
 @Serializable
 data class RssFeed(
-    val entry: List<RssFeedEntry>
+    val entry: List<RssFeedEntry> = emptyList()
 )
 
 @Serializable

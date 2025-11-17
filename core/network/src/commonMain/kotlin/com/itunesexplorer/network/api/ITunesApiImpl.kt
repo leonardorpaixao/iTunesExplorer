@@ -36,7 +36,7 @@ class ITunesApiImpl(
         lang: String,
         country: String?
     ): ITunesSearchResponse {
-        val response = httpClient.get("${baseUrl}search") {
+        return httpClient.get("${baseUrl}search") {
             parameter("term", genre)
             parameter("media", "music")
             parameter("entity", "album")
@@ -44,21 +44,6 @@ class ITunesApiImpl(
             parameter("lang", lang)
             country?.let { parameter("country", it) }
         }.body<ITunesSearchResponse>()
-
-        // Filter results client-side by primaryGenreName to ensure accuracy
-        // Only filter if genre is not "top albums" (which means ALL)
-        val filteredResults = if (genre == "top albums") {
-            response.results
-        } else {
-            response.results.filter { item ->
-                item.primaryGenreName?.contains(genre, ignoreCase = true) == true
-            }
-        }
-
-        return response.copy(
-            results = filteredResults,
-            resultCount = filteredResults.size
-        )
     }
 
     override suspend fun details(
