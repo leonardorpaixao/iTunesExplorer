@@ -36,6 +36,7 @@ include(":core:network")
 include(":core:error")
 include(":core:common")
 include(":core:settings")
+include(":core:currency")
 
 // Design System
 include(":design-system")
