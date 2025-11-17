@@ -1,24 +1,15 @@
 package com.itunesexplorer.catalog.presentation.albums
 
-import com.itunesexplorer.catalog.data.api.CatalogApi
-import com.itunesexplorer.catalog.data.models.ITunesRssResponse
-import com.itunesexplorer.catalog.data.models.RssArtist
-import com.itunesexplorer.catalog.data.models.RssCategory
-import com.itunesexplorer.catalog.data.models.RssFeed
-import com.itunesexplorer.catalog.data.models.RssFeedEntry
-import com.itunesexplorer.catalog.data.models.RssId
-import com.itunesexplorer.catalog.data.models.RssImage
-import com.itunesexplorer.catalog.data.models.RssLabel
-import com.itunesexplorer.catalog.data.models.RssLink
-import com.itunesexplorer.catalog.data.models.RssPrice
-import com.itunesexplorer.catalog.data.models.RssReleaseDate
-import com.itunesexplorer.catalog.shared.data.models.*
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.ITunesItem
-import com.itunesexplorer.network.models.ITunesSearchResponse
+import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.model.Money
+import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
+import com.itunesexplorer.core.common.domain.DomainError
+import com.itunesexplorer.core.common.domain.DomainResult
 import com.itunesexplorer.network.models.MusicGenre
+import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -29,42 +20,45 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlbumsTabModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var fakeCatalogApi: FakeCatalogApi
-    private lateinit var fakeITunesApi: FakeITunesApi
+    private lateinit var fakeRepository: FakeAlbumsRepository
     private lateinit var viewModel: AlbumsTabModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        fakeCatalogApi = FakeCatalogApi()
-        fakeITunesApi = FakeITunesApi()
+        fakeRepository = FakeAlbumsRepository()
+        CountryManager.clear()
     }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+        CountryManager.clear()
     }
 
     @Test
     fun `initial state should have ALL genre selected and load top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         val state = viewModel.state.value
         assertEquals(MusicGenre.ALL, state.selectedGenre)
         assertFalse(state.isLoading)
         assertEquals(2, state.recommendations.size)
-        assertEquals("Album 1", state.recommendations[0].imName.label)
+        assertEquals("Album 1", state.recommendations[0].name)
+        assertEquals("Artist 1", state.recommendations[0].artistName)
     }
 
     @Test
     fun `onAction SelectGenre with ROCK should update selected genre and load rock albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ROCK))
@@ -74,13 +68,13 @@ class AlbumsTabModelTest {
         assertEquals(MusicGenre.ROCK, state.selectedGenre)
         assertFalse(state.isLoading)
         assertEquals(1, state.recommendations.size)
-        assertEquals("Rock Album", state.recommendations[0].imName.label)
-        assertEquals("Rock", state.recommendations[0].category.attributes.label)
+        assertEquals("Rock Album", state.recommendations[0].name)
+        assertEquals("Rock", state.recommendations[0].genre)
     }
 
     @Test
     fun `onAction SelectGenre with JAZZ should update selected genre and load jazz albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.JAZZ))
@@ -90,13 +84,13 @@ class AlbumsTabModelTest {
         assertEquals(MusicGenre.JAZZ, state.selectedGenre)
         assertFalse(state.isLoading)
         assertEquals(1, state.recommendations.size)
-        assertEquals("Jazz Album", state.recommendations[0].imName.label)
-        assertEquals("Jazz", state.recommendations[0].category.attributes.label)
+        assertEquals("Jazz Album", state.recommendations[0].name)
+        assertEquals("Jazz", state.recommendations[0].genre)
     }
 
     @Test
-    fun `onAction SelectGenre with ALL should load top albums from RSS feed`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+    fun `onAction SelectGenre with ALL should load top albums`() = runTest(testDispatcher) {
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         // First select ROCK
@@ -111,13 +105,13 @@ class AlbumsTabModelTest {
         assertEquals(MusicGenre.ALL, state.selectedGenre)
         assertFalse(state.isLoading)
         assertEquals(2, state.recommendations.size)
-        assertEquals("Album 1", state.recommendations[0].imName.label)
+        assertEquals("Album 1", state.recommendations[0].name)
     }
 
     @Test
     fun `onAction SelectGenre with error should set error state`() = runTest(testDispatcher) {
-        fakeITunesApi.shouldFail = true
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        fakeRepository.shouldFailOnGenre = true
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ROCK))
@@ -126,12 +120,13 @@ class AlbumsTabModelTest {
         val state = viewModel.state.value
         assertEquals(MusicGenre.ROCK, state.selectedGenre)
         assertFalse(state.isLoading)
-        assertEquals("Failed to load albums", state.error)
+        assertNotNull(state.error)
+        assertTrue(state.error!!.contains("Failed"))
     }
 
     @Test
     fun `onAction Retry with ALL genre should reload top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.Retry)
@@ -145,7 +140,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction Retry with specific genre should reload that genre`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         // Select ROCK
@@ -160,12 +155,12 @@ class AlbumsTabModelTest {
         assertEquals(MusicGenre.ROCK, state.selectedGenre)
         assertFalse(state.isLoading)
         assertEquals(1, state.recommendations.size)
-        assertEquals("Rock Album", state.recommendations[0].imName.label)
+        assertEquals("Rock Album", state.recommendations[0].name)
     }
 
     @Test
     fun `should switch between different genres correctly`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeCatalogApi, fakeITunesApi)
+        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         // Select ROCK
@@ -173,14 +168,14 @@ class AlbumsTabModelTest {
         advanceUntilIdle()
         val rockState = viewModel.state.value
         assertEquals(MusicGenre.ROCK, rockState.selectedGenre)
-        assertEquals("Rock Album", rockState.recommendations[0].imName.label)
+        assertEquals("Rock Album", rockState.recommendations[0].name)
 
         // Select JAZZ
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.JAZZ))
         advanceUntilIdle()
         val jazzState = viewModel.state.value
         assertEquals(MusicGenre.JAZZ, jazzState.selectedGenre)
-        assertEquals("Jazz Album", jazzState.recommendations[0].imName.label)
+        assertEquals("Jazz Album", jazzState.recommendations[0].name)
 
         // Back to ALL
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ALL))
@@ -192,135 +187,52 @@ class AlbumsTabModelTest {
 }
 
 // Fake implementations for testing
-class FakeCatalogApi : CatalogApi {
-    var shouldFail = false
+class FakeAlbumsRepository : AlbumsRepository {
+    var shouldFailOnTop = false
+    var shouldFailOnGenre = false
 
-    override suspend fun topAlbums(limit: Int, country: String): ITunesRssResponse {
-        if (shouldFail) throw Exception("Failed to load top albums")
-
-        return ITunesRssResponse(
-            feed = RssFeed(
-                entry = listOf(
-                    createRssFeedEntry("1", "Album 1", "Artist 1", "Pop"),
-                    createRssFeedEntry("2", "Album 2", "Artist 2", "Rock")
+    override suspend fun getTopAlbums(limit: Int): DomainResult<List<Album>> {
+        return if (shouldFailOnTop) {
+            DomainResult.failure(DomainError.NetworkError("Failed to load top albums"))
+        } else {
+            DomainResult.success(
+                listOf(
+                    createAlbum("1", "Album 1", "Artist 1", "Pop"),
+                    createAlbum("2", "Album 2", "Artist 2", "Rock")
                 )
             )
-        )
+        }
     }
 
-    private fun createRssFeedEntry(
+    override suspend fun getAlbumsByGenre(genre: MusicGenre, limit: Int): DomainResult<List<Album>> {
+        return if (shouldFailOnGenre) {
+            DomainResult.failure(DomainError.NetworkError("Failed to load albums by genre"))
+        } else {
+            val album = when (genre) {
+                MusicGenre.ROCK -> createAlbum("3", "Rock Album", "Rock Artist", "Rock")
+                MusicGenre.JAZZ -> createAlbum("4", "Jazz Album", "Jazz Artist", "Jazz")
+                else -> createAlbum("5", "Pop Album", "Pop Artist", "Pop")
+            }
+            DomainResult.success(listOf(album))
+        }
+    }
+
+    private fun createAlbum(
         id: String,
         name: String,
         artist: String,
         genre: String
-    ): RssFeedEntry {
-        return RssFeedEntry(
-            id = RssId(
-                label = id,
-                attributes = RssId.RssIdAttributes(imId = id)
-            ),
-            imName = RssLabel(name),
-            imImage = listOf(
-                RssImage("https://example.com/image.jpg", RssImage.RssImageAttributes("100"))
-            ),
-            title = RssLabel(name),
-            link = RssLink(
-                attributes = RssLink.RssLinkAttributes(href = "https://example.com")
-            ),
-            category = RssCategory(
-                attributes = RssCategory.RssCategoryAttributes(label = genre)
-            ),
-            imArtist = RssArtist(artist),
-            imPrice = RssPrice(
-                label = "$9.99",
-                attributes = RssPrice.RssPriceAttributes(amount = "9.99", currency = "USD")
-            ),
-            imReleaseDate = RssReleaseDate(
-                attributes = RssReleaseDate.RssReleaseDateAttributes(label = "2024-01-01")
-            )
+    ): Album {
+        return Album(
+            id = id,
+            name = name,
+            artistName = artist,
+            imageUrl = "https://example.com/image.jpg",
+            viewUrl = "https://example.com/album/$id",
+            price = Money(9.99, "USD"),
+            releaseDate = "2024-01-01",
+            genre = genre
         )
     }
 }
 
-class FakeITunesApi : ITunesApi {
-    var shouldFail = false
-
-    override suspend fun search(
-        term: String,
-        media: String?,
-        entity: String?,
-        attribute: String?,
-        limit: Int,
-        lang: String,
-        country: String?
-    ): ITunesSearchResponse {
-        throw NotImplementedError()
-    }
-
-    override suspend fun searchByGenre(
-        genre: String,
-        limit: Int,
-        lang: String,
-        country: String?
-    ): ITunesSearchResponse {
-        if (shouldFail) throw Exception("Failed to load albums")
-
-        return when {
-            genre.contains("rock", ignoreCase = true) -> {
-                ITunesSearchResponse(
-                    resultCount = 1,
-                    results = listOf(
-                        createITunesItem(1L, "Rock Album", "Rock Artist", "Rock")
-                    )
-                )
-            }
-            genre.contains("jazz", ignoreCase = true) -> {
-                ITunesSearchResponse(
-                    resultCount = 1,
-                    results = listOf(
-                        createITunesItem(2L, "Jazz Album", "Jazz Artist", "Jazz")
-                    )
-                )
-            }
-            else -> {
-                ITunesSearchResponse(
-                    resultCount = 0,
-                    results = emptyList()
-                )
-            }
-        }
-    }
-
-    override suspend fun details(
-        id: String?,
-        amgArtistId: String?,
-        upc: String?,
-        isbn: String?,
-        entity: String?,
-        limit: Int,
-        sort: String
-    ): ITunesSearchResponse {
-        throw NotImplementedError()
-    }
-
-    private fun createITunesItem(
-        collectionId: Long,
-        collectionName: String,
-        artistName: String,
-        genre: String
-    ): ITunesItem {
-        return ITunesItem(
-            wrapperType = "collection",
-            collectionId = collectionId,
-            collectionName = collectionName,
-            artistName = artistName,
-            primaryGenreName = genre,
-            artworkUrl60 = "https://example.com/art60.jpg",
-            artworkUrl100 = "https://example.com/art100.jpg",
-            collectionPrice = 9.99,
-            currency = "USD",
-            collectionViewUrl = "https://example.com/collection",
-            releaseDate = "2024-01-01T00:00:00Z"
-        )
-    }
-}
