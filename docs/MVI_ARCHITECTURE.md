@@ -1,21 +1,21 @@
-# Arquitetura MVI (Model-View-Intent)
+# MVI Architecture (Model-View-Intent)
 
-Este projeto utiliza o padrão arquitetural MVI (Model-View-Intent) para gerenciamento de estado e fluxo de dados unidirecional.
+This project uses the MVI (Model-View-Intent) architectural pattern for state management and unidirectional data flow.
 
-## Visão Geral
+## Overview
 
-MVI é um padrão arquitetural que promove:
-- **Fluxo unidirecional de dados**: View → Intent → Model → View
-- **Estado imutável**: Todos os estados são representados por data classes imutáveis
-- **Previsibilidade**: Cada Intent produz um resultado determinístico
-- **Testabilidade**: Fácil testar Intents, States e Effects isoladamente
-- **Rastreabilidade**: Simples debugar o fluxo de dados
+MVI is an architectural pattern that promotes:
+- **Unidirectional data flow**: View → Intent → Model → View
+- **Immutable state**: All states are represented by immutable data classes
+- **Predictability**: Each Intent produces a deterministic result
+- **Testability**: Easy to test Intents, States, and Effects in isolation
+- **Traceability**: Simple to debug data flow
 
-## Componentes
+## Components
 
 ### 1. ViewState
 
-Representa o estado completo da UI em um determinado momento.
+Represents the complete UI state at a given moment.
 
 ```kotlin
 data class HomeViewState(
@@ -23,15 +23,15 @@ data class HomeViewState(
 ) : ViewState
 ```
 
-**Características:**
-- Sempre uma `data class` imutável
-- Implementa a interface `ViewState`
-- Contém TODOS os dados necessários para renderizar a UI
-- Valores padrão para estado inicial
+**Characteristics:**
+- Always an immutable `data class`
+- Implements the `ViewState` interface
+- Contains ALL data needed to render the UI
+- Default values for initial state
 
 ### 2. ViewIntent
 
-Representa as intenções/ações do usuário.
+Represents user intentions/actions.
 
 ```kotlin
 sealed class HomeIntent : ViewIntent {
@@ -39,15 +39,15 @@ sealed class HomeIntent : ViewIntent {
 }
 ```
 
-**Características:**
-- Sempre uma `sealed class` ou `sealed interface`
-- Implementa a interface `ViewIntent`
-- Cada ação do usuário é um Intent específico
-- Pode conter dados necessários para processar a ação
+**Characteristics:**
+- Always a `sealed class` or `sealed interface`
+- Implements the `ViewIntent` interface
+- Each user action is a specific Intent
+- Can contain data needed to process the action
 
 ### 3. ViewEffect
 
-Representa efeitos colaterais (side effects) que não fazem parte do estado.
+Represents side effects that are not part of the state.
 
 ```kotlin
 sealed class SearchEffect : ViewEffect {
@@ -55,15 +55,15 @@ sealed class SearchEffect : ViewEffect {
 }
 ```
 
-**Características:**
-- Sempre uma `sealed class`
-- Implementa a interface `ViewEffect`
-- Usado para eventos únicos (toasts, navegação, etc.)
-- Não persiste no estado
+**Characteristics:**
+- Always a `sealed class`
+- Implements the `ViewEffect` interface
+- Used for one-time events (toasts, navigation, etc.)
+- Does not persist in state
 
 ### 4. MviViewModel
 
-Base class que implementa o padrão MVI.
+Base class that implements the MVI pattern.
 
 ```kotlin
 abstract class MviViewModel<State : ViewState, Intent : ViewIntent, Effect : ViewEffect>(
@@ -83,33 +83,33 @@ abstract class MviViewModel<State : ViewState, Intent : ViewIntent, Effect : Vie
 }
 ```
 
-## Fluxo de Dados
+## Data Flow
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                         VIEW                            │
-│  - Renderiza UI baseada no State                       │
-│  - Envia Intents em resposta a ações do usuário        │
-│  - Observa Effects para eventos únicos                 │
+│  - Renders UI based on State                           │
+│  - Sends Intents in response to user actions           │
+│  - Observes Effects for one-time events                │
 └────────────┬──────────────────────────┬─────────────────┘
              │                          │
              │ Intent                   │ State/Effect
              ▼                          │
 ┌─────────────────────────────────────┐ │
 │         MviViewModel                │ │
-│  - Recebe Intent via onAction()     │ │
-│  - Processa lógica de negócio       │ │
-│  - Atualiza State (imutável)        │◄┘
-│  - Envia Effects quando necessário  │
+│  - Receives Intent via onAction()   │ │
+│  - Processes business logic         │ │
+│  - Updates State (immutable)        │◄┘
+│  - Sends Effects when needed        │
 └─────────────────────────────────────┘
 ```
 
-## Exemplo Completo: SearchTabModel
+## Complete Example: SearchTabModel
 
-### 1. Definir State, Intent e Effect
+### 1. Define State, Intent, and Effect
 
 ```kotlin
-// State - O que a UI precisa saber
+// State - What the UI needs to know
 data class SearchViewState(
     val isLoading: Boolean = false,
     val items: List<ITunesItem> = emptyList(),
@@ -118,7 +118,7 @@ data class SearchViewState(
     val searchQuery: String = ""
 ) : ViewState
 
-// Intent - O que o usuário pode fazer
+// Intent - What the user can do
 sealed class SearchIntent : ViewIntent {
     data class UpdateSearchQuery(val query: String) : SearchIntent()
     data object Search : SearchIntent()
@@ -126,13 +126,13 @@ sealed class SearchIntent : ViewIntent {
     data object Retry : SearchIntent()
 }
 
-// Effect - Eventos únicos
+// Effect - One-time events
 sealed class SearchEffect : ViewEffect {
     data class ShowError(val message: String) : SearchEffect()
 }
 ```
 
-### 2. Implementar ViewModel
+### 2. Implement ViewModel
 
 ```kotlin
 class SearchTabModel(
@@ -179,7 +179,7 @@ class SearchTabModel(
 }
 ```
 
-### 3. Usar na View
+### 3. Use in View
 
 ```kotlin
 @Composable
@@ -187,12 +187,12 @@ fun SearchTab() {
     val screenModel: SearchTabModel by rememberInstance()
     val state by screenModel.state.collectAsState()
 
-    // Observar effects
+    // Observe effects
     LaunchedEffect(Unit) {
         screenModel.effect.collect { effect ->
             when (effect) {
                 is SearchEffect.ShowError -> {
-                    // Mostrar toast, snackbar, etc.
+                    // Show toast, snackbar, etc.
                 }
             }
         }
@@ -228,11 +228,11 @@ fun SearchTabContent(
 }
 ```
 
-## Benefícios
+## Benefits
 
-### 1. Testabilidade
+### 1. Testability
 
-Testes são simples e diretos:
+Tests are simple and straightforward:
 
 ```kotlin
 @Test
@@ -240,7 +240,7 @@ fun `onAction UpdateSearchQuery should update query`() = runTest {
     val viewModel = SearchTabModel(fakeApi)
 
     viewModel.state.test {
-        awaitItem() // estado inicial
+        awaitItem() // initial state
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
 
@@ -252,74 +252,194 @@ fun `onAction UpdateSearchQuery should update query`() = runTest {
 
 ### 2. Debugging
 
-Fácil rastrear o fluxo:
-- Intent enviado → logs
-- State alterado → logs
-- Effect emitido → logs
+Easy to trace the flow:
+- Intent sent → logs
+- State changed → logs
+- Effect emitted → logs
 
-### 3. Previsibilidade
+### 3. Predictability
 
-Mesmo Intent + Mesmo State = Mesmo Resultado
+Same Intent + Same State = Same Result
 
-### 4. Separação de Responsabilidades
+### 4. Separation of Concerns
 
-- **View**: Apenas renderização
-- **ViewModel**: Apenas lógica de negócio
-- **State**: Apenas dados
+- **View**: Only rendering
+- **ViewModel**: Only business logic
+- **State**: Only data
 
-## Melhores Práticas
+## Error Handling with MVI
+
+### Using DomainError
+
+The project uses `DomainError` from `core:error` module for type-safe error handling:
+
+```kotlin
+// Domain error types
+sealed class DomainError {
+    data class NetworkError(val message: String) : DomainError()
+    data class ApiError(val code: Int, val message: String) : DomainError()
+    data class UnknownError(val throwable: Throwable) : DomainError()
+}
+
+// Extension function for safe error handling
+suspend fun <T> runCatchingDomain(block: suspend () -> T): Either<DomainError, T>
+```
+
+### Integration with MVI
+
+```kotlin
+class MyScreenModel(
+    private val repository: MyRepository
+) : MviViewModel<MyViewState, MyIntent, MyEffect>(
+    initialState = MyViewState()
+) {
+
+    private fun loadData() {
+        screenModelScope.launch {
+            mutableState.update { it.copy(isLoading = true) }
+
+            when (val result = repository.fetchData()) {
+                is Either.Left -> {
+                    val errorMessage = when (val error = result.value) {
+                        is DomainError.NetworkError -> error.message
+                        is DomainError.ApiError -> "API Error: ${error.message}"
+                        is DomainError.UnknownError -> "Unknown error occurred"
+                    }
+                    mutableState.update {
+                        it.copy(isLoading = false, error = errorMessage)
+                    }
+                    sendEffect(MyEffect.ShowError(errorMessage))
+                }
+                is Either.Right -> {
+                    mutableState.update {
+                        it.copy(isLoading = false, data = result.value)
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+## Settings and Preferences with MVI
+
+### Settings Repository Pattern
+
+The `core:settings` module provides user preferences management:
+
+```kotlin
+// Settings repository interface
+interface SettingsRepository {
+    suspend fun getCountry(): String
+    suspend fun setCountry(country: String)
+    suspend fun getLanguage(): String
+    suspend fun setLanguage(language: String)
+}
+```
+
+### Integration with MVI
+
+```kotlin
+class PreferencesTabModel(
+    private val settingsRepository: SettingsRepository
+) : MviViewModel<PreferencesViewState, PreferencesIntent, PreferencesEffect>(
+    initialState = PreferencesViewState()
+) {
+
+    init {
+        loadSettings()
+    }
+
+    override fun onAction(intent: PreferencesIntent) {
+        when (intent) {
+            is PreferencesIntent.SelectCountry -> updateCountry(intent.country)
+            is PreferencesIntent.SelectLanguage -> updateLanguage(intent.language)
+        }
+    }
+
+    private fun loadSettings() {
+        screenModelScope.launch {
+            val country = settingsRepository.getCountry()
+            val language = settingsRepository.getLanguage()
+            mutableState.update {
+                it.copy(selectedCountry = country, selectedLanguage = language)
+            }
+        }
+    }
+
+    private fun updateCountry(country: String) {
+        screenModelScope.launch {
+            settingsRepository.setCountry(country)
+            mutableState.update { it.copy(selectedCountry = country) }
+        }
+    }
+}
+```
+
+**Key Points:**
+- Settings are loaded in `init` block
+- Settings updates are persisted immediately
+- State reflects current settings for UI
+- No effects needed for simple updates
+
+## Best Practices
 
 ### ✅ DO
 
 ```kotlin
-// State imutável
+// Immutable state
 data class MyState(val count: Int = 0) : ViewState
 
-// Intent específico
+// Specific intent
 sealed class MyIntent : ViewIntent {
     data class Increment(val amount: Int) : MyIntent()
 }
 
-// Atualização imutável
+// Immutable update
 mutableState.update { it.copy(count = it.count + amount) }
 ```
 
 ### ❌ DON'T
 
 ```kotlin
-// State mutável
+// Mutable state
 var count = 0
 
-// Intent genérico
+// Generic intent
 data class UpdateState(val newState: MyState) : MyIntent()
 
-// Atualização direta
+// Direct update
 state.count = state.count + 1
 ```
 
-## ViewModels no Projeto
+## ViewModels in the Project
 
 ### HomeScreenModel
-- **State**: Tab selecionada
+- **State**: Selected tab
 - **Intents**: SelectTab
-- **Effects**: Nenhum (navegação é parte do state)
+- **Effects**: None (navigation is part of state)
 
 ### AlbumsTabModel
-- **State**: Recomendações, loading, erro
-- **Intents**: LoadRecommendations, Retry
+- **State**: Recommendations, loading, error, selected genre
+- **Intents**: LoadRecommendations, SelectGenre, Retry
 - **Effects**: ShowError
 
 ### SearchTabModel
-- **State**: Items, query, mediaType, loading, erro
+- **State**: Items, query, mediaType, loading, error
 - **Intents**: UpdateSearchQuery, Search, SelectMediaType, Retry
 - **Effects**: ShowError
 
 ### PreferencesTabModel
-- **State**: Placeholder (para expansão futura)
-- **Intents**: (para expansão futura)
-- **Effects**: (para expansão futura)
+- **State**: Selected country, selected language
+- **Intents**: SelectCountry, SelectLanguage
+- **Effects**: None (settings are persisted directly)
 
-## Referências
+### DetailsScreenModel
+- **State**: Item details, related items, loading, error
+- **Intents**: Retry
+- **Effects**: ShowError
+
+## References
 
 - [MVI Pattern](https://hannesdorfmann.com/android/mosby3-mvi-1/)
 - [Unidirectional Data Flow](https://developer.android.com/topic/architecture/ui-layer#udf)

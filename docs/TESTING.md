@@ -1,15 +1,15 @@
-# Guia de Testes
+# Testing Guide
 
-Este documento descreve a estratégia de testes, ferramentas e melhores práticas usadas no projeto.
+This document describes the testing strategy, tools, and best practices used in the project.
 
-## Visão Geral
+## Overview
 
-O projeto utiliza testes unitários para ViewModels baseados na arquitetura MVI, garantindo que a lógica de negócio funcione corretamente.
+The project uses unit tests for ViewModels based on the MVI architecture, ensuring that business logic works correctly.
 
-## Ferramentas de Teste
+## Testing Tools
 
 ### 1. Kotlin Test
-Framework de testes padrão do Kotlin.
+Standard Kotlin testing framework.
 
 ```kotlin
 import kotlin.test.Test
@@ -18,7 +18,7 @@ import kotlin.test.assertTrue
 ```
 
 ### 2. Kotlinx Coroutines Test
-Para testar código assíncrono com coroutines.
+For testing asynchronous code with coroutines.
 
 ```kotlin
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -26,13 +26,13 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.advanceUntilIdle
 ```
 
-**Principais funcionalidades:**
-- `StandardTestDispatcher`: Dispatcher controlável para testes
-- `runTest`: Escopo de teste para coroutines
-- `advanceUntilIdle()`: Avança todas as coroutines pendentes
+**Key features:**
+- `StandardTestDispatcher`: Controllable dispatcher for tests
+- `runTest`: Test scope for coroutines
+- `advanceUntilIdle()`: Advances all pending coroutines
 
 ### 3. Turbine
-Biblioteca para testar Flows de forma simples e expressiva.
+Library for testing Flows in a simple and expressive way.
 
 ```kotlin
 import app.cash.turbine.test
@@ -43,9 +43,9 @@ flow.test {
 }
 ```
 
-## Estrutura de Testes
+## Test Structure
 
-### Setup Padrão
+### Standard Setup
 
 ```kotlin
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -83,9 +83,9 @@ class MyViewModelTest {
 }
 ```
 
-## Testando ViewModels MVI
+## Testing MVI ViewModels
 
-### 1. Testar Estado Inicial
+### 1. Test Initial State
 
 ```kotlin
 @Test
@@ -103,12 +103,12 @@ fun `should load data successfully on init`() = runTest(testDispatcher) {
 }
 ```
 
-**Pontos importantes:**
-- Criar ViewModel dentro de `runTest` para garantir dispatcher correto
-- Usar `advanceUntilIdle()` para completar inicialização assíncrona
-- Verificar estado final após inicialização
+**Key points:**
+- Create ViewModel inside `runTest` to ensure correct dispatcher
+- Use `advanceUntilIdle()` to complete async initialization
+- Verify final state after initialization
 
-### 2. Testar Intents
+### 2. Test Intents
 
 ```kotlin
 @Test
@@ -117,7 +117,7 @@ fun `onAction UpdateSearchQuery should update query`() = runTest(testDispatcher)
     advanceUntilIdle()
 
     viewModel.state.test {
-        awaitItem() // estado atual
+        awaitItem() // current state
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
 
@@ -127,12 +127,12 @@ fun `onAction UpdateSearchQuery should update query`() = runTest(testDispatcher)
 }
 ```
 
-**Pontos importantes:**
-- Aguardar inicialização antes de enviar intents
-- `awaitItem()` para pular estados intermediários
-- Verificar apenas a mudança relevante
+**Key points:**
+- Wait for initialization before sending intents
+- `awaitItem()` to skip intermediate states
+- Verify only the relevant change
 
-### 3. Testar Operações Assíncronas
+### 3. Test Async Operations
 
 ```kotlin
 @Test
@@ -141,17 +141,17 @@ fun `onAction Search should search with query`() = runTest(testDispatcher) {
     advanceUntilIdle()
 
     viewModel.state.test {
-        awaitItem() // estado inicial
+        awaitItem() // initial state
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("Beatles"))
-        awaitItem() // query atualizada
+        awaitItem() // query updated
 
         viewModel.onAction(SearchIntent.Search)
         awaitItem() // loading
 
-        advanceUntilIdle() // aguardar busca
+        advanceUntilIdle() // wait for search
 
-        val state = awaitItem() // resultado
+        val state = awaitItem() // result
         assertFalse(state.isLoading)
         assertEquals(2, state.items.size)
         assertEquals("Beatles", fakeApi.lastSearchTerm)
@@ -161,12 +161,12 @@ fun `onAction Search should search with query`() = runTest(testDispatcher) {
 }
 ```
 
-**Pontos importantes:**
-- `awaitItem()` para cada emissão de estado
-- `advanceUntilIdle()` para completar operações assíncronas
-- `cancelAndIgnoreRemainingEvents()` no final
+**Key points:**
+- `awaitItem()` for each state emission
+- `advanceUntilIdle()` to complete async operations
+- `cancelAndIgnoreRemainingEvents()` at the end
 
-### 4. Testar Tratamento de Erros
+### 4. Test Error Handling
 
 ```kotlin
 @Test
@@ -185,7 +185,7 @@ fun `should handle error on init`() = runTest(testDispatcher) {
 }
 ```
 
-### 5. Testar Effects
+### 5. Test Effects
 
 ```kotlin
 @Test
@@ -203,9 +203,142 @@ fun `effect should be sent on error`() = runTest(testDispatcher) {
 }
 ```
 
+## Testing Error Handling with DomainError
+
+### Testing Repository Error Handling
+
+When testing repositories that use `DomainError`, verify that errors are correctly mapped:
+
+```kotlin
+@Test
+fun `should return NetworkError on network failure`() = runTest {
+    // Arrange
+    fakeApi.throwNetworkException = true
+    val repository = MyRepositoryImpl(fakeApi)
+
+    // Act
+    val result = repository.fetchData()
+
+    // Assert
+    assertTrue(result is Either.Left)
+    val error = (result as Either.Left).value
+    assertTrue(error is DomainError.NetworkError)
+    assertEquals("Network unavailable", error.message)
+}
+
+@Test
+fun `should return ApiError on API failure`() = runTest {
+    // Arrange
+    fakeApi.responseCode = 404
+    val repository = MyRepositoryImpl(fakeApi)
+
+    // Act
+    val result = repository.fetchData()
+
+    // Assert
+    assertTrue(result is Either.Left)
+    val error = (result as Either.Left).value
+    assertTrue(error is DomainError.ApiError)
+    assertEquals(404, (error as DomainError.ApiError).code)
+}
+```
+
+### Testing ViewModels with DomainError
+
+```kotlin
+@Test
+fun `should handle NetworkError from repository`() = runTest(testDispatcher) {
+    fakeRepository.returnError = DomainError.NetworkError("No connection")
+    val viewModel = MyScreenModel(fakeRepository)
+
+    advanceUntilIdle()
+
+    viewModel.state.test {
+        val state = awaitItem()
+        assertEquals("No connection", state.error)
+    }
+
+    viewModel.effect.test {
+        val effect = awaitItem()
+        assertTrue(effect is MyEffect.ShowError)
+        assertEquals("No connection", (effect as MyEffect.ShowError).message)
+    }
+}
+```
+
+## Testing Platform-Specific Code
+
+### Expect/Actual Testing
+
+When testing code with `expect/actual` declarations, create tests for each platform:
+
+```kotlin
+// commonTest
+class CurrencyFormatterTest {
+    @Test
+    fun `should format USD correctly`() {
+        val formatter = CurrencyFormatter()
+        val result = formatter.format(99.99, "USD")
+        assertTrue(result.contains("99.99"))
+        assertTrue(result.contains("$") || result.contains("USD"))
+    }
+}
+
+// androidTest (if platform-specific behavior needs testing)
+class AndroidCurrencyFormatterTest {
+    @Test
+    fun `should use Android NumberFormat`() {
+        val formatter = CurrencyFormatter()
+        val result = formatter.format(1000.50, "USD")
+        // Test Android-specific formatting behavior
+        assertEquals("$1,000.50", result)
+    }
+}
+```
+
+**Key points:**
+- Write common tests in `commonTest` for shared behavior
+- Write platform-specific tests when behavior differs
+- Use fake implementations to avoid platform dependencies
+
+### Mocking Platform Dependencies
+
+```kotlin
+// Create a fake for platform-specific functionality
+class FakeSettingsRepository : SettingsRepository {
+    private var country = "US"
+    private var language = "en"
+
+    override suspend fun getCountry(): String = country
+    override suspend fun setCountry(country: String) {
+        this.country = country
+    }
+    override suspend fun getLanguage(): String = language
+    override suspend fun setLanguage(language: String) {
+        this.language = language
+    }
+}
+
+@Test
+fun `should load settings from repository`() = runTest(testDispatcher) {
+    val fakeSettings = FakeSettingsRepository()
+    fakeSettings.setCountry("BR")
+    fakeSettings.setLanguage("pt")
+
+    val viewModel = PreferencesTabModel(fakeSettings)
+    advanceUntilIdle()
+
+    viewModel.state.test {
+        val state = awaitItem()
+        assertEquals("BR", state.selectedCountry)
+        assertEquals("pt", state.selectedLanguage)
+    }
+}
+```
+
 ## Fake Implementations
 
-### Implementar Fake API
+### Implement Fake API
 
 ```kotlin
 class FakeSearchApi : ITunesApi {
@@ -252,72 +385,74 @@ class FakeSearchApi : ITunesApi {
 }
 ```
 
-**Características de um bom Fake:**
-- Implementa a mesma interface
-- Permite controlar sucesso/falha com flags
-- Captura parâmetros para verificação
-- Retorna dados realistas mas simples
+**Characteristics of a good Fake:**
+- Implements the same interface
+- Allows controlling success/failure with flags
+- Captures parameters for verification
+- Returns realistic but simple data
 
-## Executar Testes
+## Running Tests
 
 ### Android Unit Tests
 
 ```bash
-# Executar todos os testes
+# Run all tests
 ./gradlew :features:home:testDebugUnitTest
 
-# Executar com relatório
+# Run with report
 ./gradlew :features:home:testDebugUnitTest --continue
 
-# Ver relatório HTML
+# View HTML report
 open features/home/build/reports/tests/testDebugUnitTest/index.html
 ```
 
-### Testes Específicos
+### Specific Tests
 
 ```bash
-# Rodar uma classe específica
+# Run a specific class
 ./gradlew :features:home:testDebugUnitTest --tests "HomeScreenModelTest"
 
-# Rodar um teste específico
+# Run a specific test
 ./gradlew :features:home:testDebugUnitTest --tests "HomeScreenModelTest.should select tab correctly"
 ```
 
-## Cobertura de Testes
+## Test Coverage
 
-### O que Testar
+### What to Test
 
-✅ **DEVE ser testado:**
-- Estados iniciais
-- Mudanças de estado via Intents
-- Operações assíncronas (loading, success, error)
-- Lógica de negócio
+✅ **SHOULD be tested:**
+- Initial states
+- State changes via Intents
+- Async operations (loading, success, error)
+- Business logic
 - Effects/Side effects
 - Retry/Refresh logic
+- Error handling scenarios
+- Platform-agnostic behavior
 
-❌ **NÃO precisa ser testado:**
-- UI Composables (use testes de UI para isso)
-- Navegação simples
-- Formatação de strings
-- Getters/Setters triviais
+❌ **DOES NOT need to be tested:**
+- UI Composables (use UI tests for that)
+- Simple navigation
+- String formatting
+- Trivial getters/setters
 
-### Exemplo de Cobertura Completa
+### Complete Coverage Example
 
-Para `SearchTabModel`:
+For `SearchTabModel`:
 
 ```kotlin
 class SearchTabModelTest {
-    // ✅ Estado inicial
+    // ✅ Initial state
     @Test fun `should load top content on init`()
 
-    // ✅ Intents básicos
+    // ✅ Basic intents
     @Test fun `onAction UpdateSearchQuery should update query`()
 
-    // ✅ Operações assíncronas
+    // ✅ Async operations
     @Test fun `onAction Search should search with query`()
     @Test fun `onAction Search with empty query should load top content`()
 
-    // ✅ Lógica complexa
+    // ✅ Complex logic
     @Test fun `onAction SelectMediaType should update media type and search`()
     @Test fun `onAction SelectMediaType with query should search with query and media type`()
 
@@ -330,19 +465,19 @@ class SearchTabModelTest {
 }
 ```
 
-## Melhores Práticas
+## Best Practices
 
-### 1. Nomenclatura de Testes
+### 1. Test Naming
 
 ```kotlin
-// ✅ BOM - Descreve comportamento
+// ✅ GOOD - Describes behavior
 @Test
 fun `should load albums successfully on init`()
 
 @Test
 fun `onAction SelectTab should update selected tab to SEARCH`()
 
-// ❌ RUIM - Não descreve comportamento
+// ❌ BAD - Does not describe behavior
 @Test
 fun testInit()
 
@@ -370,35 +505,35 @@ fun `should handle error correctly`() = runTest(testDispatcher) {
 }
 ```
 
-### 3. Um Conceito por Teste
+### 3. One Concept per Test
 
 ```kotlin
-// ✅ BOM - Testa apenas query update
+// ✅ GOOD - Tests only query update
 @Test
 fun `onAction UpdateSearchQuery should update query`() {
     viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
     assertEquals("test", state.searchQuery)
 }
 
-// ❌ RUIM - Testa múltiplos conceitos
+// ❌ BAD - Tests multiple concepts
 @Test
 fun `should update query and search and show results`() {
-    // Muito código testando coisas diferentes
+    // Too much code testing different things
 }
 ```
 
-### 4. Usar cancelAndIgnoreRemainingEvents()
+### 4. Use cancelAndIgnoreRemainingEvents()
 
 ```kotlin
 viewModel.state.test {
     // ... assertions
 
-    // Sempre cancelar no final de testes com múltiplas emissões
+    // Always cancel at the end of tests with multiple emissions
     cancelAndIgnoreRemainingEvents()
 }
 ```
 
-### 5. Testar Valores Capturados no Fake
+### 5. Test Captured Values in Fake
 
 ```kotlin
 @Test
@@ -409,67 +544,67 @@ fun `should pass correct parameters to API`() = runTest(testDispatcher) {
     viewModel.onAction(SearchIntent.SelectMediaType(MediaType.MUSIC))
     advanceUntilIdle()
 
-    // Verificar que o fake recebeu os parâmetros corretos
+    // Verify that the fake received the correct parameters
     assertEquals("music", fakeApi.lastMediaType)
 }
 ```
 
 ## Troubleshooting
 
-### Problema: Testes timeout
+### Problem: Tests Timeout
 
 ```kotlin
-// ❌ ERRADO - Esqueceu advanceUntilIdle()
+// ❌ WRONG - Forgot advanceUntilIdle()
 @Test
 fun myTest() = runTest {
     viewModel.doAsync()
-    // timeout esperando coroutine completar
+    // timeout waiting for coroutine to complete
 }
 
-// ✅ CORRETO
+// ✅ CORRECT
 @Test
 fun myTest() = runTest(testDispatcher) {
     viewModel.doAsync()
-    advanceUntilIdle() // Avança coroutines
+    advanceUntilIdle() // Advance coroutines
 }
 ```
 
-### Problema: Dispatcher não configurado
+### Problem: Dispatcher Not Configured
 
 ```kotlin
-// ❌ ERRADO - ViewModel criado antes de runTest
-val viewModel = MyViewModel() // Usa dispatcher errado
+// ❌ WRONG - ViewModel created before runTest
+val viewModel = MyViewModel() // Uses wrong dispatcher
 
 @Test
 fun myTest() = runTest(testDispatcher) {
     // ...
 }
 
-// ✅ CORRETO
+// ✅ CORRECT
 @Test
 fun myTest() = runTest(testDispatcher) {
-    val viewModel = MyViewModel() // Criado dentro de runTest
+    val viewModel = MyViewModel() // Created inside runTest
     // ...
 }
 ```
 
-### Problema: State não emite
+### Problem: State Does Not Emit
 
 ```kotlin
-// ❌ ERRADO - Não aguarda inicialização
+// ❌ WRONG - Does not wait for initialization
 @Test
 fun myTest() = runTest(testDispatcher) {
     val viewModel = MyViewModel()
     viewModel.state.test {
-        // Estado ainda não foi emitido
+        // State has not been emitted yet
     }
 }
 
-// ✅ CORRETO
+// ✅ CORRECT
 @Test
 fun myTest() = runTest(testDispatcher) {
     val viewModel = MyViewModel()
-    advanceUntilIdle() // Aguarda inicialização
+    advanceUntilIdle() // Wait for initialization
 
     viewModel.state.test {
         val state = awaitItem()
@@ -478,20 +613,20 @@ fun myTest() = runTest(testDispatcher) {
 }
 ```
 
-## Resultado dos Testes
+## Test Results
 
-### Status Atual
+### Current Status
 
 ```
-✅ HomeScreenModelTest: 4 testes passando
-✅ AlbumsTabModelTest: 4 testes passando
-✅ SearchTabModelTest: 9 testes passando
-✅ PreferencesTabModelTest: 2 testes passando
+✅ HomeScreenModelTest: 4 tests passing
+✅ AlbumsTabModelTest: 4 tests passing
+✅ SearchTabModelTest: 9 tests passing
+✅ PreferencesTabModelTest: 2 tests passing
 
-Total: 19 testes, 100% passando
+Total: 19 tests, 100% passing
 ```
 
-## Recursos Adicionais
+## Additional Resources
 
 - [Kotlin Test Documentation](https://kotlinlang.org/api/latest/kotlin.test/)
 - [Coroutines Test Guide](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-test/)

@@ -40,7 +40,8 @@ iTunesExplorer/
 │   ├── error/           # Error handling
 │   ├── common/          # Common utilities and MVI base classes
 │   ├── settings/        # User settings and preferences
-│   └── currency/        # Currency formatting utilities
+│   ├── currency/        # Currency formatting utilities
+│   └── logger/          # Multiplatform logging
 ├── design-system/       # Reusable UI components
 └── features/
     ├── home/            # Home screen with bottom navigation
@@ -64,6 +65,12 @@ iTunesExplorer/
 
 - **`core:currency`** - Currency formatting utilities
   - Locale-aware currency formatting
+
+- **`core:logger`** - Multiplatform logging
+  - `Logger`: Interface for platform-agnostic logging
+  - `LogLevel`: Enum for log levels (DEBUG, INFO, WARNING, ERROR, NONE)
+  - Platform implementations: Android (Logcat), iOS (NSLog), Desktop (colored console)
+  - Integrated with MviViewModel for automatic Intent/State/Effect logging
 
 ### Design System (`design-system/`)
 - Reusable UI components and theming
@@ -238,8 +245,11 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
    ```
 3. Create ViewModel extending `MviViewModel`:
    ```kotlin
-   class MyScreenModel(deps) : MviViewModel<MyViewState, MyIntent, MyEffect>(
-       initialState = MyViewState()
+   class MyScreenModel(
+       private val logger: Logger
+   ) : MviViewModel<MyViewState, MyIntent, MyEffect>(
+       initialState = MyViewState(),
+       logger = logger  // Optional: enables automatic logging
    ) {
        override fun onAction(intent: MyIntent) { ... }
    }
@@ -252,6 +262,72 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
    ```kotlin
    Button(onClick = { screenModel.onAction(MyIntent.DoAction) })
    ```
+
+### Using the Logger
+The project includes a multiplatform logger (`core:logger`) for consistent logging across platforms:
+
+**Basic Usage:**
+```kotlin
+class MyRepository(
+    private val logger: Logger
+) {
+    suspend fun fetchData() {
+        logger.debug("MyRepository", "Fetching data...")
+        try {
+            val result = api.getData()
+            logger.info("MyRepository", "Data fetched successfully: ${result.size} items")
+        } catch (e: Exception) {
+            logger.error("MyRepository", "Failed to fetch data", e)
+        }
+    }
+}
+```
+
+**With MviViewModel (Automatic Logging):**
+```kotlin
+class MyScreenModel(
+    logger: Logger
+) : MviViewModel<MyViewState, MyIntent, MyEffect>(
+    initialState = MyViewState(),
+    logger = logger  // Enables automatic Intent/State/Effect logging
+) {
+    override fun onAction(intent: MyIntent) {
+        // Intent is automatically logged before this method is called
+        when (intent) {
+            is MyIntent.LoadData -> loadData()
+        }
+    }
+
+    private fun loadData() {
+        screenModelScope.launch {
+            updateState { copy(isLoading = true) }  // State change logged
+            // ... load data
+        }
+    }
+}
+```
+
+**Log Levels:**
+- `DEBUG`: Detailed troubleshooting info (development only)
+- `INFO`: Informational messages about app flow
+- `WARNING`: Potentially harmful situations
+- `ERROR`: Error events with optional throwable
+- `NONE`: Disable all logging (production)
+
+**Platform Implementations:**
+- **Android**: Uses `android.util.Log` (Logcat)
+- **iOS**: Uses `NSLog` with level prefixes
+- **Desktop**: Colored console output with timestamps
+
+**Changing Log Level:**
+Edit `core/logger/src/commonMain/kotlin/com/itunesexplorer/core/logger/di/LoggerModule.kt`:
+```kotlin
+val loggerModule = DI.Module("loggerModule") {
+    bindSingleton<Logger> {
+        createPlatformLogger(LogLevel.ERROR)  // Only log errors in production
+    }
+}
+```
 
 ### Modifying iTunes API
 1. Update API interface in `features/catalog/src/commonMain/kotlin/com/itunesexplorer/catalog/data/api/ITunesApi.kt`
@@ -407,4 +483,3 @@ See full testing guide in `docs/TESTING.md`
    - All KMP modules with `androidTarget()` need:
      - `com.android.library` plugin applied
      - Android configuration block with namespace, compileSdk, minSdk, and compileOptions
-- sempre execute a build de mobile como padrão

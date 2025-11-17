@@ -1,69 +1,75 @@
 # iTunes Explorer
 
-Um aplicativo multiplataforma construído com Kotlin Multiplatform (KMP) e Compose Multiplatform que permite explorar o conteúdo do iTunes Store.
+A multiplatform application built with Kotlin Multiplatform (KMP) and Compose Multiplatform that allows exploring iTunes Store content.
 
-## 🚀 Tecnologias
+## 🚀 Technologies
 
-- **Kotlin Multiplatform (KMP)** - Compartilhamento de código entre plataformas
-- **Compose Multiplatform** - UI declarativa para todas as plataformas
-- **Voyager** - Navegação multiplataforma
-- **Kodein** - Injeção de dependência
-- **Ktor Client** - Cliente HTTP multiplataforma
-- **Coroutines** - Programação assíncrona
+- **Kotlin Multiplatform (KMP)** - Code sharing across platforms
+- **Compose Multiplatform** - Declarative UI for all platforms
+- **Voyager** - Multiplatform navigation
+- **Kodein** - Dependency injection
+- **Ktor Client** - Multiplatform HTTP client
+- **Coroutines** - Asynchronous programming
 
-## 📱 Plataformas Suportadas
+## 📱 Supported Platforms
 
 - ✅ Android
 - ✅ iOS
 - ✅ Desktop (JVM)
 
-## 🏗️ Arquitetura
+## 🏗️ Architecture
 
-O projeto segue uma arquitetura modular limpa com padrão **MVI (Model-View-Intent)**:
+The project follows a clean modular architecture with **MVI (Model-View-Intent)** pattern:
 
 ```
-@iTunesExplorer/
-├── composeApp/          # Aplicação principal
+iTunesExplorer/
+├── composeApp/          # Main application
 ├── core/
-│   ├── network/         # Camada de rede e API
-│   ├── error/           # Tratamento de erros
-│   └── common/          # Utilitários comuns + Base MVI
-├── design-system/       # Componentes de UI reutilizáveis
+│   ├── error/           # Error handling
+│   ├── common/          # Common utilities + MVI base classes
+│   ├── settings/        # User settings and preferences
+│   └── currency/        # Currency formatting utilities
+├── design-system/       # Reusable UI components
 └── features/
-    └── home/            # Feature Home com tabs (Álbuns, Pesquisa, Preferências)
+    ├── home/            # Home screen with bottom navigation
+    ├── catalog/         # iTunes catalog browsing and search
+    └── preferences/     # User preferences and settings
 ```
 
 ### MVI (Model-View-Intent)
 
-O projeto utiliza o padrão MVI para gerenciamento de estado:
+The project uses the MVI pattern for state management:
 
-- **ViewState**: Estado imutável da UI (data classes)
-- **ViewIntent**: Intenções do usuário (sealed classes)
-- **ViewEffect**: Efeitos colaterais únicos (toasts, navegação)
-- **MviViewModel**: Base para todos os ViewModels
+- **ViewState**: Immutable UI state (data classes)
+- **ViewIntent**: User intentions (sealed classes)
+- **ViewEffect**: One-time side effects (toasts, navigation)
+- **MviViewModel**: Base class for all ViewModels
 
-Veja a documentação completa em [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md)
+See complete documentation at [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md)
 
 ## 🎨 Features
 
-### Tab Álbuns
-- **Top Álbuns**: Recomendações dos álbuns mais populares
-- **Navegação para Detalhes**: Clique no álbum para ver mais informações
+### Albums Tab
+- **Top Albums**: Recommendations of the most popular albums
+- **Genre Filter**: Filter albums by music genre
+- **Details Navigation**: Click on an album to see more information
 
-### Tab Pesquisa
-- **Busca por Texto**: Campo de pesquisa para encontrar conteúdo específico
-- **Filtros por MediaType**: Chips para filtrar por Música, Filme, Podcast, App, etc.
-- **Resultados Dinâmicos**: Atualização em tempo real conforme filtros são aplicados
+### Search Tab
+- **Text Search**: Search field to find specific content
+- **MediaType Filters**: Chips to filter by Music, Movie, Podcast, App, etc.
+- **Dynamic Results**: Real-time updates as filters are applied
 
-### Tab Preferências
-- **Em Desenvolvimento**: Área para configurações futuras
+### Preferences Tab
+- **Country Selection**: Choose your preferred country for content
+- **Language Selection**: Choose your preferred language
+- **Settings Persistence**: Preferences are saved and applied across the app
 
-### Geral
-- **Interface Responsiva**: UI adaptada para cada plataforma
-- **Bottom Navigation**: Navegação intuitiva entre tabs
-- **TopBar com Logo**: Clique no nome do app para retornar à tab Álbuns
+### General
+- **Responsive Interface**: UI adapted for each platform
+- **Bottom Navigation**: Intuitive navigation between tabs
+- **TopBar with Logo**: Click on app name to return to Albums tab
 
-## 🔧 Como Executar
+## 🔧 How to Run
 
 ### Desktop (JVM)
 ```bash
@@ -72,36 +78,43 @@ Veja a documentação completa em [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTU
 
 ### Android
 ```bash
-# Instalar e executar em dispositivo/emulador conectado
+# Install and run on connected device/emulator
 ./gradlew :composeApp:runAndroid
 
-# Ou apenas construir o APK
+# Or just build the APK
 ./gradlew :composeApp:assembleDebug
 ```
 
 ### iOS
+First, compile the Kotlin Multiplatform framework:
 ```bash
-# Build para Simulador
-./gradlew :composeApp:buildIosSimulator
+# Build for Simulator (arm64)
+./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
 
-# Build para Dispositivo
-./gradlew :composeApp:buildIosDevice
+# Build for Device (arm64)
+./gradlew :composeApp:linkDebugFrameworkIosArm64
 ```
-Depois do build, abra o projeto no Xcode:
+
+After building, open the project in Xcode:
 ```bash
 open iosApp/iosApp.xcodeproj
 ```
 
-## 📋 Tasks Gradle Disponíveis
+**Important**:
+- The iOS project is already configured to use the ComposeApp framework
+- Before running in Xcode, always compile the corresponding framework (Simulator or Device)
+- To switch between Simulator and Device, you need to recompile the appropriate framework
 
-| Task | Descrição |
-|------|-----------|
-| `runDesktop` | Executa o app Desktop (JVM) |
-| `runAndroid` | Instala e executa o app Android em dispositivo/emulador |
-| `buildIosSimulator` | Compila o framework iOS para simulador |
-| `buildIosDevice` | Compila o framework iOS para dispositivo |
+## 📋 Available Gradle Tasks
 
-## 📦 Dependências Principais
+| Task | Description |
+|------|-------------|
+| `runDesktop` | Runs the Desktop (JVM) app |
+| `runAndroid` | Installs and runs the Android app on device/emulator |
+| `buildIosSimulator` | Compiles the iOS framework for simulator |
+| `buildIosDevice` | Compiles the iOS framework for device |
+
+## 📦 Main Dependencies
 
 - Compose Multiplatform 1.7.0
 - Kotlin 2.0.0
@@ -113,47 +126,47 @@ open iosApp/iosApp.xcodeproj
 
 ## 🔑 API
 
-O app utiliza a [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html) pública da Apple.
+The app uses Apple's public [iTunes Search API](https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html).
 
-## 🧪 Testes
+## 🧪 Testing
 
-O projeto possui testes unitários abrangentes para todos os ViewModels usando:
+The project has comprehensive unit tests for all ViewModels using:
 
-- **Kotlin Test**: Framework de testes padrão
-- **Kotlinx Coroutines Test**: Testes de código assíncrono
-- **Turbine**: Testes de Flows
+- **Kotlin Test**: Standard testing framework
+- **Kotlinx Coroutines Test**: Asynchronous code testing
+- **Turbine**: Flow testing
 
-### Executar Testes
+### Running Tests
 
 ```bash
-# Executar todos os testes do módulo home
+# Run all tests for the home module
 ./gradlew :features:home:testDebugUnitTest
 
-# Ver relatório HTML
+# View HTML report
 open features/home/build/reports/tests/testDebugUnitTest/index.html
 ```
 
-### Cobertura
+### Coverage
 
-- ✅ **HomeScreenModel**: 4 testes
-- ✅ **AlbumsTabModel**: 4 testes
-- ✅ **SearchTabModel**: 9 testes
-- ✅ **PreferencesTabModel**: 2 testes
+- ✅ **HomeScreenModel**: 4 tests
+- ✅ **AlbumsTabModel**: 4 tests
+- ✅ **SearchTabModel**: 9 tests
+- ✅ **PreferencesTabModel**: 2 tests
 
-**Total**: 19 testes, 100% passando
+**Total**: 19 tests, 100% passing
 
-Veja a documentação completa em [docs/TESTING.md](docs/TESTING.md)
+See complete documentation at [docs/TESTING.md](docs/TESTING.md)
 
-## 📄 Licença
+## 📄 License
 
-Este projeto é de código aberto para fins educacionais.
+This project is open source for educational purposes.
 
-## 👨‍💻 Desenvolvimento
+## 👨‍💻 Development
 
-Para contribuir com o projeto:
+To contribute to the project:
 
-1. Faça um fork do repositório
-2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
-3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
-4. Push para a branch (`git push origin feature/MinhaFeature`)
-5. Abra um Pull Request
+1. Fork the repository
+2. Create a branch for your feature (`git checkout -b feature/MyFeature`)
+3. Commit your changes (`git commit -m 'Add MyFeature'`)
+4. Push to the branch (`git push origin feature/MyFeature`)
+5. Open a Pull Request
