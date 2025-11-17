@@ -32,7 +32,17 @@ kotlin {
     
     sourceSets {
         val desktopMain by getting
-        
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain.get())
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -51,6 +61,7 @@ kotlin {
             implementation(projects.core.common)
             implementation(projects.core.settings)
             implementation(projects.core.currency)
+            implementation(projects.core.logger)
             implementation(projects.designSystem)
             implementation(projects.features.home)
             implementation(projects.features.catalog)
@@ -73,6 +84,7 @@ kotlin {
         }
         iosMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.coil.network.ktor)
         }
     }
 }

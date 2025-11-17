@@ -13,10 +13,8 @@ import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.bottomSheet.BottomSheetNavigator
 import cafe.adriel.voyager.transitions.SlideTransition
 import coil3.ImageLoader
+import coil3.PlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
-import coil3.memory.MemoryCache
-import coil3.request.crossfade
-import coil3.util.DebugLogger
 import com.itunesexplorer.design.theme.ITunesExplorerTheme
 import com.itunesexplorer.di.appDI
 import cafe.adriel.lyricist.LocalStrings
@@ -32,6 +30,8 @@ import com.itunesexplorer.settings.country.CountryManager
 import org.kodein.di.compose.withDI
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance
+
+expect fun getAsyncImageLoader(context: PlatformContext): ImageLoader
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -56,15 +56,7 @@ fun App() {
 
         currentLanguage?.let { language ->
             setSingletonImageLoaderFactory { context ->
-                ImageLoader.Builder(context)
-                    .crossfade(true)
-                    .logger(DebugLogger())
-                    .memoryCache {
-                        MemoryCache.Builder()
-                            .maxSizePercent(context, 0.25)
-                            .build()
-                    }
-                    .build()
+                getAsyncImageLoader(context)
             }
 
             key(language) {

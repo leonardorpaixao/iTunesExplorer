@@ -1,13 +1,13 @@
 [versions]
 agp = "8.2.2"
-kotlin = "2.1.0"
+kotlin = "2.1.10"
 compose = "1.7.1"
-androidx-activityCompose = "1.9.0"
-androidx-lifecycle = "2.8.0"
-voyager = "1.1.0-beta03"
-kodein = "7.22.0"
-ktor = "3.0.0"
-ktorfit = "2.1.0"
+androidx-activityCompose = "1.9.2"
+androidx-lifecycle = "2.8.2"
+voyager = "1.1.0-beta02"
+kodein = "7.21.2"
+ktor = "3.0.2"
+ktorfit = "2.2.0"
 kotlinx-coroutines = "1.9.0"
 kotlinx-serialization = "1.7.1"
 kotlinx-datetime = "0.6.0"
@@ -68,6 +68,7 @@ turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 # Coil for Image Loading
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-network-ktor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 
 # Lyricist for i18n
 lyricist = { module = "cafe.adriel.lyricist:lyricist", version.ref = "lyricist" }
@@ -85,4 +86,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version = "2.1.0-1.0.29" }
+ksp = { id = "com.google.devtools.ksp", version = "2.1.10-1.0.30" }
