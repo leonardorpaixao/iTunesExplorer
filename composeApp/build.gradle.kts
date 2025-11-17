@@ -47,7 +47,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(projects.core.network)
             implementation(projects.core.error)
             implementation(projects.core.common)
             implementation(projects.core.settings)

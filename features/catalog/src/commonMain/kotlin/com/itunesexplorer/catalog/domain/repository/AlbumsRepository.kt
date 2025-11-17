@@ -2,8 +2,8 @@ package com.itunesexplorer.catalog.domain.repository
 
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.network.models.MusicGenre
 
 /**
  * Repository interface for fetching album data from iTunes Store.

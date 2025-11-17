@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
 import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.MediaCard
-import com.itunesexplorer.network.models.MusicGenre
 import org.kodein.di.compose.rememberInstance
 
 @Composable

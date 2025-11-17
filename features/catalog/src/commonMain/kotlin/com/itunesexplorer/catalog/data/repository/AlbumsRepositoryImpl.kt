@@ -1,14 +1,14 @@
 package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.data.api.CatalogApi
+import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.mapper.AlbumMapper
 import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
-import com.itunesexplorer.catalog.data.api.CatalogApi
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.MusicGenre
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
 
@@ -16,7 +16,7 @@ import com.itunesexplorer.settings.language.LanguageManager
  * Implementation of AlbumsRepository.
  * Coordinates between RSS feed API (for top albums) and Search API (for genre filtering).
  */
-class AlbumsRepositoryImpl(
+internal class AlbumsRepositoryImpl(
     private val catalogApi: CatalogApi,
     private val iTunesApi: ITunesApi,
     private val countryManager: CountryManager,

@@ -1,7 +1,7 @@
 package com.itunesexplorer.catalog.presentation.i18n
 
-import com.itunesexplorer.network.models.MediaType
-import com.itunesexplorer.network.models.MusicGenre
+import com.itunesexplorer.catalog.domain.model.MediaType
+import com.itunesexplorer.catalog.domain.model.MusicGenre
 
 data class CatalogStrings(
     val search: String,

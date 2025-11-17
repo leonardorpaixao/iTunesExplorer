@@ -1,11 +1,10 @@
-package com.itunesexplorer.network.api
+package com.itunesexplorer.catalog.data.api
 
-import com.itunesexplorer.network.models.ITunesSearchResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 
-class ITunesApiImpl(
+internal class ITunesApiImpl(
     private val httpClient: HttpClient,
     private val baseUrl: String
 ) : ITunesApi {

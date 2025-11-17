@@ -1,16 +1,16 @@
 package com.itunesexplorer.catalog.presentation.search
 
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.domain.model.MediaType
+import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
-import cafe.adriel.voyager.core.model.screenModelScope
-import com.itunesexplorer.catalog.domain.model.SearchResult
-import com.itunesexplorer.catalog.domain.repository.SearchRepository
-import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.settings.country.CountryManager
+import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 

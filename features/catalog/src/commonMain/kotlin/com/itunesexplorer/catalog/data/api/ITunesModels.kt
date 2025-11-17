@@ -1,15 +1,15 @@
-package com.itunesexplorer.network.models
+package com.itunesexplorer.catalog.data.api
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ITunesSearchResponse(
+internal data class ITunesSearchResponse(
     val resultCount: Int,
     val results: List<ITunesItem>
 )
 
 @Serializable
-data class ITunesItem(
+internal data class ITunesItem(
     val wrapperType: String? = null,
     val kind: String? = null,
     val artistId: Long? = null,
@@ -45,31 +45,3 @@ data class ITunesItem(
     val shortDescription: String? = null,
     val longDescription: String? = null
 )
-
-enum class MediaType(val value: String) {
-    ALL("all"),
-    PODCAST("podcast"),
-    MUSIC("music"),
-    MUSIC_VIDEO("musicVideo"),
-    AUDIOBOOK("audiobook"),
-    SHORT_FILM("shortFilm"),
-    TV_SHOW("tvShow"),
-    SOFTWARE("software"),
-    EBOOK("ebook")
-}
-
-enum class MusicGenre(val searchTerm: String, val genreName: String) {
-    ALL("top albums", "All"),
-    ROCK("rock", "Rock"),
-    POP("pop", "Pop"),
-    JAZZ("jazz", "Jazz"),
-    BLUES("blues", "Blues"),
-    CLASSICAL("classical", "Classical"),
-    HIP_HOP_RAP("hip hop", "Hip-Hop/Rap"),
-    ELECTRONIC("electronic", "Electronic"),
-    COUNTRY("country", "Country"),
-    R_B_SOUL("r&b soul", "R&B/Soul"),
-    ALTERNATIVE("alternative", "Alternative"),
-    METAL("metal", "Metal"),
-    INDIE("indie", "Indie Rock")
-}

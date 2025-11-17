@@ -1,14 +1,14 @@
 package com.itunesexplorer.catalog.data.mapper
 
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.data.api.ITunesItem
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
-import com.itunesexplorer.network.models.ITunesItem
 
 /**
  * Maps ITunesItem (network model) to SearchResult (domain model).
  */
-object SearchResultMapper {
+internal object SearchResultMapper {
     /**
      * Convert an ITunesItem to a SearchResult.
      * Handles different item types (track, collection, etc.) and selects appropriate fields.

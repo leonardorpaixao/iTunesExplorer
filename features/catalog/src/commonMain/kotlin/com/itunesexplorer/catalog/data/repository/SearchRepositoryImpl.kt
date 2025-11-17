@@ -1,12 +1,12 @@
 package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.core.error.runCatchingDomain
+import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.mapper.SearchResultMapper
+import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
 
@@ -14,7 +14,7 @@ import com.itunesexplorer.settings.language.LanguageManager
  * Implementation of SearchRepository using iTunes Search API.
  * Handles country/language settings and data transformation.
  */
-class SearchRepositoryImpl(
+internal class SearchRepositoryImpl(
     private val api: ITunesApi,
     private val countryManager: CountryManager,
     private val languageManager: LanguageManager

@@ -1,11 +1,11 @@
 package com.itunesexplorer.catalog.data.repository
 
+import com.itunesexplorer.catalog.data.api.ITunesApi
+import com.itunesexplorer.catalog.data.api.ITunesItem
+import com.itunesexplorer.catalog.data.api.ITunesSearchResponse
+import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.core.common.domain.DomainError
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.ITunesItem
-import com.itunesexplorer.network.models.ITunesSearchResponse
-import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
 import kotlinx.coroutines.test.runTest
@@ -134,7 +134,7 @@ class SearchRepositoryImplTest {
     }
 }
 
-class FakeITunesApi : ITunesApi {
+internal class FakeITunesApi : ITunesApi {
     var shouldFail = false
     var mockResults: List<ITunesItem> = emptyList()
     var lastMedia: String? = null

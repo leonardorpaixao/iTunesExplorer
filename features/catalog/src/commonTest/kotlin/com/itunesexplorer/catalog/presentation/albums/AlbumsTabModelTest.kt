@@ -2,10 +2,10 @@ package com.itunesexplorer.catalog.presentation.albums
 
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.Money
+import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.core.common.domain.DomainError
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.network.models.MusicGenre
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

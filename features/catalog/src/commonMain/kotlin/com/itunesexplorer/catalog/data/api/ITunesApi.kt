@@ -1,8 +1,6 @@
-package com.itunesexplorer.network.api
+package com.itunesexplorer.catalog.data.api
 
-import com.itunesexplorer.network.models.ITunesSearchResponse
-
-interface ITunesApi {
+internal interface ITunesApi {
 
     suspend fun search(
         term: String,

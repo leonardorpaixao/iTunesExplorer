@@ -1,17 +1,17 @@
 package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.core.error.runCatchingDomain
+import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.mapper.SearchResultMapper
 import com.itunesexplorer.catalog.domain.model.ItemDetails
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.core.common.domain.DomainError
-import com.itunesexplorer.network.api.ITunesApi
 
 /**
  * Implementation of DetailsRepository using iTunes Lookup API.
  * Fetches item details and separates main item from related items.
  */
-class DetailsRepositoryImpl(
+internal class DetailsRepositoryImpl(
     private val api: ITunesApi
 ) : DetailsRepository {
 

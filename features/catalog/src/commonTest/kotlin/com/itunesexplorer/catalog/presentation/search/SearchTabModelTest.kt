@@ -1,11 +1,11 @@
 package com.itunesexplorer.catalog.presentation.search
 
 import app.cash.turbine.test
+import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.core.common.domain.DomainError
-import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -135,7 +135,6 @@ class SearchTabModelTest {
 
     @Test
     fun `showRegionHint should be false when results are not empty`() = runTest(testDispatcher) {
-        CountryManager.clear() // Ensure clean state
         CountryManager.setCountry("BR")
         fakeRepository.mockResults = listOf(
             createSearchResult("1", "Result 1", "Artist 1")

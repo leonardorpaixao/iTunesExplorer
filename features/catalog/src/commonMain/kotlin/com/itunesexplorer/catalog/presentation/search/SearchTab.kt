@@ -11,12 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.LoadingIndicator
 import com.itunesexplorer.design.components.MediaCard
-import com.itunesexplorer.network.models.MediaType
 import org.kodein.di.compose.rememberInstance
 
 @Composable

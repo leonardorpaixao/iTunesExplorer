@@ -1,9 +1,9 @@
 package com.itunesexplorer.catalog.domain.repository
 
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.network.models.MediaType
 
 /**
  * Repository interface for searching iTunes Store content.

@@ -1,15 +1,15 @@
 package com.itunesexplorer.catalog.data.mapper
 
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.data.api.ITunesItem
+import com.itunesexplorer.catalog.data.models.RssFeedEntry
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.Money
-import com.itunesexplorer.catalog.data.models.RssFeedEntry
-import com.itunesexplorer.network.models.ITunesItem
 
 /**
  * Maps RssFeedEntry and ITunesItem to Album domain model.
  */
-object AlbumMapper {
+internal object AlbumMapper {
     /**
      * Convert an RssFeedEntry (from RSS feed) to an Album.
      *

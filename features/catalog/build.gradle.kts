@@ -40,7 +40,6 @@ kotlin {
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
                 implementation(project(":core:common"))
-                implementation(project(":core:network"))
                 implementation(project(":core:settings"))
                 implementation(project(":core:currency"))
                 implementation(project(":core:error"))
@@ -48,8 +47,19 @@ kotlin {
                 implementation(libs.lyricist)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.client.core)
+                implementation(libs.ktor.client.content.negotiation)
+                implementation(libs.ktor.client.logging)
+                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.coil.compose)
             }
+        }
+
+        androidMain.dependencies {
+            implementation(libs.ktor.client.okhttp)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
 
         val commonTest by getting {

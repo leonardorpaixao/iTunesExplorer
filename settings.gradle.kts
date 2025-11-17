@@ -32,7 +32,6 @@ include(":composeApp")
 include(":shared")
 
 // Core modules
-include(":core:network")
 include(":core:error")
 include(":core:common")
 include(":core:settings")
