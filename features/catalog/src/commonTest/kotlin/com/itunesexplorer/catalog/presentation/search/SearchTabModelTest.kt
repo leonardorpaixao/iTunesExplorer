@@ -135,6 +135,7 @@ class SearchTabModelTest {
 
     @Test
     fun `showRegionHint should be false when results are not empty`() = runTest(testDispatcher) {
+        CountryManager.clear() // Ensure clean state
         CountryManager.setCountry("BR")
         fakeRepository.mockResults = listOf(
             createSearchResult("1", "Result 1", "Artist 1")
