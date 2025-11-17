@@ -1,7 +1,17 @@
 package com.itunesexplorer.catalog.presentation.albums
 
-import app.cash.turbine.test
-import com.itunesexplorer.catalog.shared.data.api.CatalogApi
+import com.itunesexplorer.catalog.data.api.CatalogApi
+import com.itunesexplorer.catalog.data.models.ITunesRssResponse
+import com.itunesexplorer.catalog.data.models.RssArtist
+import com.itunesexplorer.catalog.data.models.RssCategory
+import com.itunesexplorer.catalog.data.models.RssFeed
+import com.itunesexplorer.catalog.data.models.RssFeedEntry
+import com.itunesexplorer.catalog.data.models.RssId
+import com.itunesexplorer.catalog.data.models.RssImage
+import com.itunesexplorer.catalog.data.models.RssLabel
+import com.itunesexplorer.catalog.data.models.RssLink
+import com.itunesexplorer.catalog.data.models.RssPrice
+import com.itunesexplorer.catalog.data.models.RssReleaseDate
 import com.itunesexplorer.catalog.shared.data.models.*
 import com.itunesexplorer.network.api.ITunesApi
 import com.itunesexplorer.network.models.ITunesItem
@@ -19,7 +29,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AlbumsTabModelTest {

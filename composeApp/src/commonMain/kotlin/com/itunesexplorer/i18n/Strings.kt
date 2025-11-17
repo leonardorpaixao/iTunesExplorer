@@ -1,13 +1,13 @@
 package com.itunesexplorer.i18n
 
 import cafe.adriel.lyricist.LyricistStrings
-import com.itunesexplorer.catalog.i18n.CatalogStrings
-import com.itunesexplorer.catalog.i18n.DeCatalogStrings
-import com.itunesexplorer.catalog.i18n.EnCatalogStrings
-import com.itunesexplorer.catalog.i18n.EsCatalogStrings
-import com.itunesexplorer.catalog.i18n.FrCatalogStrings
-import com.itunesexplorer.catalog.i18n.PtBrCatalogStrings
-import com.itunesexplorer.catalog.i18n.PtPtCatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.DeCatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.EnCatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.EsCatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.FrCatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.PtBrCatalogStrings
+import com.itunesexplorer.catalog.presentation.i18n.PtPtCatalogStrings
 import com.itunesexplorer.home.i18n.DeHomeStrings
 import com.itunesexplorer.home.i18n.EnHomeStrings
 import com.itunesexplorer.home.i18n.EsHomeStrings
