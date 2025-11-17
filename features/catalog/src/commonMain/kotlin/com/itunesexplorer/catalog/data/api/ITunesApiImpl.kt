@@ -4,6 +4,17 @@ import com.itunesexplorer.catalog.data.models.ITunesRssResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import kotlinx.serialization.json.Json
+
+/**
+ * Platform-specific factory function to create ITunesApi implementation.
+ * iOS uses a custom implementation that manually parses JSON to avoid Content-Length issues.
+ */
+internal expect fun createITunesApiImpl(
+    httpClient: HttpClient,
+    baseUrl: String,
+    json: Json
+): ITunesApi
 
 internal class ITunesApiImpl(
     private val httpClient: HttpClient,

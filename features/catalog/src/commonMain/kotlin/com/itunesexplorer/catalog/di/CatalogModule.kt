@@ -11,18 +11,13 @@ import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCaseImpl
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCaseImpl
 import com.itunesexplorer.catalog.data.api.ITunesApi
-import com.itunesexplorer.catalog.data.api.ITunesApiImpl
+import com.itunesexplorer.catalog.data.api.createITunesApiImpl
 import com.itunesexplorer.catalog.presentation.albums.AlbumsTabModel
 import com.itunesexplorer.catalog.presentation.search.SearchTabModel
 import com.itunesexplorer.catalog.presentation.details.DetailsScreenModel
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
 import io.ktor.client.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
@@ -33,9 +28,15 @@ private const val BASE_URL = "https://itunes.apple.com/"
 
 val catalogModule = DI.Module("catalogModule") {
     bindSingleton { createJson() }
-    bindSingleton { createHttpClient(instance()) }
+    bindSingleton { createPlatformHttpClient(instance()) }
 
-    bindSingleton<ITunesApi> { createITunesApi(instance()) }
+    bindSingleton<ITunesApi> {
+        createITunesApiImpl(
+            httpClient = instance(),
+            baseUrl = BASE_URL,
+            json = instance()
+        )
+    }
 
     bindSingleton<SearchRepository> {
         SearchRepositoryImpl(
@@ -86,28 +87,4 @@ private fun createJson(): Json = Json {
     isLenient = true
     ignoreUnknownKeys = true
     coerceInputValues = true
-}
-
-private fun createHttpClient(json: Json): HttpClient {
-    return HttpClient {
-        install(ContentNegotiation) {
-            json(json, contentType = ContentType.Application.Json)
-            json(json, contentType = ContentType.Text.JavaScript)
-        }
-
-        install(Logging) {
-            logger = Logger.DEFAULT
-            level = LogLevel.HEADERS
-        }
-
-        install(HttpTimeout) {
-            requestTimeoutMillis = 30_000
-            connectTimeoutMillis = 30_000
-            socketTimeoutMillis = 30_000
-        }
-    }
-}
-
-private fun createITunesApi(client: HttpClient): ITunesApi {
-    return ITunesApiImpl(client, BASE_URL)
 }
