@@ -1,4 +1,4 @@
-package com.itunesexplorer.catalog.i18n
+package com.itunesexplorer.catalog.presentation.i18n
 
 import cafe.adriel.lyricist.LyricistStrings
 import com.itunesexplorer.i18n.Locales

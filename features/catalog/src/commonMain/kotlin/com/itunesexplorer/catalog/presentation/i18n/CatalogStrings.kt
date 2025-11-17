@@ -1,4 +1,4 @@
-package com.itunesexplorer.catalog.i18n
+package com.itunesexplorer.catalog.presentation.i18n
 
 import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.network.models.MusicGenre
