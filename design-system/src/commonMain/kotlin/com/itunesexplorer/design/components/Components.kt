@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,7 +17,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.itunesexplorer.design.icons.rememberSearchIcon
 
 @Composable
 fun MediaCard(
@@ -151,7 +152,7 @@ fun SearchBar(
         trailingIcon = {
             IconButton(onClick = performSearch) {
                 Icon(
-                    imageVector = rememberSearchIcon(),
+                    imageVector = Icons.Filled.Search,
                     contentDescription = searchIconContentDescription
                 )
             }
