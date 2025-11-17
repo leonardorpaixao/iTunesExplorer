@@ -1,7 +1,8 @@
 package com.itunesexplorer.catalog.data.mapper
 
+import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.Album
-import com.itunesexplorer.catalog.shared.data.models.RssFeedEntry
+import com.itunesexplorer.catalog.data.models.RssFeedEntry
 import com.itunesexplorer.currency.domain.CurrencyFormatter
 import com.itunesexplorer.network.models.ITunesItem
 
@@ -25,7 +26,7 @@ object AlbumMapper {
         return Album(
             id = entry.id.attributes.imId,
             name = entry.imName.label,
-            artistName = entry.imArtist?.label ?: "Unknown Artist",
+            artistName = entry.imArtist?.label ?: CatalogConstants.UNKNOWN_ARTIST,
             imageUrl = imageUrl,
             viewUrl = entry.link.attributes.href,
             price = price,
@@ -61,12 +62,12 @@ object AlbumMapper {
         return Album(
             id = collectionId.toString(),
             name = collectionName,
-            artistName = item.artistName ?: "Unknown Artist",
+            artistName = item.artistName ?: CatalogConstants.UNKNOWN_ARTIST,
             imageUrl = imageUrl,
-            viewUrl = item.collectionViewUrl ?: "",
+            viewUrl = item.collectionViewUrl ?: CatalogConstants.EMPTY_URL,
             price = price,
             releaseDate = item.releaseDate,
-            genre = item.primaryGenreName ?: "Music"
+            genre = item.primaryGenreName ?: CatalogConstants.DEFAULT_GENRE
         )
     }
 

@@ -1,5 +1,6 @@
 package com.itunesexplorer.catalog.data.mapper
 
+import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.currency.domain.CurrencyFormatter
 import com.itunesexplorer.network.models.ITunesItem
@@ -20,10 +21,10 @@ object SearchResultMapper {
         val id = item.trackId?.toString()
             ?: item.collectionId?.toString()
             ?: item.artistId?.toString()
-            ?: "unknown"
+            ?: CatalogConstants.UNKNOWN_ID
 
         // Determine the name based on item type
-        val name = item.trackName ?: item.collectionName ?: item.artistName ?: "Unknown"
+        val name = item.trackName ?: item.collectionName ?: item.artistName ?: CatalogConstants.UNKNOWN_NAME
 
         // Get the best available image URL (prefer higher resolution)
         val imageUrl = item.artworkUrl100 ?: item.artworkUrl60 ?: item.artworkUrl30
@@ -51,7 +52,7 @@ object SearchResultMapper {
 
         return SearchResult(
             id = id,
-            type = item.kind ?: item.wrapperType ?: "unknown",
+            type = item.kind ?: item.wrapperType ?: CatalogConstants.UNKNOWN_ID,
             name = name,
             artistName = item.artistName,
             collectionName = item.collectionName,
