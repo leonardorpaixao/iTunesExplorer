@@ -1,5 +1,6 @@
 package com.itunesexplorer.catalog.data.api
 
+import com.itunesexplorer.catalog.data.models.ITunesRssResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -12,8 +13,6 @@ internal class ITunesApiImpl(
     override suspend fun search(
         term: String,
         media: String?,
-        entity: String?,
-        attribute: String?,
         limit: Int,
         lang: String,
         country: String?
@@ -21,8 +20,6 @@ internal class ITunesApiImpl(
         return httpClient.get("${baseUrl}search") {
             parameter("term", term)
             media?.let { parameter("media", it) }
-            entity?.let { parameter("entity", it) }
-            attribute?.let { parameter("attribute", it) }
             parameter("limit", limit)
             parameter("lang", lang)
             country?.let { parameter("country", it) }
@@ -63,5 +60,9 @@ internal class ITunesApiImpl(
             parameter("limit", limit)
             parameter("sort", sort)
         }.body()
+    }
+
+    override suspend fun topAlbums(limit: Int, country: String): ITunesRssResponse {
+        return httpClient.get("${baseUrl}${country}/rss/topalbums/limit=${limit}/json").body()
     }
 }

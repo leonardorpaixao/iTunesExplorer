@@ -51,7 +51,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = mainItem,
             relatedItems = relatedItems,
-            storeUrl = "https://example.com/album"
         )
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
@@ -71,7 +70,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Album", "Artist"),
             relatedItems = emptyList(),
-            storeUrl = null
         )
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
@@ -127,7 +125,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Original", "Artist"),
             relatedItems = emptyList(),
-            storeUrl = null
         )
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
@@ -137,7 +134,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Updated", "Artist"),
             relatedItems = listOf(createSearchResult("124", "New Track", "Artist")),
-            storeUrl = null
         )
 
         viewModel.onAction(DetailsIntent.Retry)
@@ -163,7 +159,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Album", "Artist"),
             relatedItems = emptyList(),
-            storeUrl = null
         )
 
         viewModel.onAction(DetailsIntent.Retry)
@@ -180,7 +175,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Album", "Artist", viewUrl = testUrl),
             relatedItems = emptyList(),
-            storeUrl = testUrl
         )
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
@@ -224,7 +218,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Single Track", "Artist"),
             relatedItems = emptyList(),
-            storeUrl = null
         )
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
@@ -245,7 +238,6 @@ class DetailsScreenModelTest {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("100", "Album", "Artist"),
             relatedItems = relatedItems,
-            storeUrl = null
         )
 
         viewModel = DetailsScreenModel(fakeRepository, "100")

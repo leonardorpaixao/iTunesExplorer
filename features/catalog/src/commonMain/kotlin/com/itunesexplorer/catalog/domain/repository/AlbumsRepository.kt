@@ -17,7 +17,7 @@ interface AlbumsRepository {
      * @param limit Maximum number of albums to fetch
      * @return DomainResult containing list of albums or a domain error
      */
-    suspend fun getTopAlbums(limit: Int = CatalogConstants.DEFAULT_ALBUMS_LIMIT): DomainResult<List<Album>>
+    suspend fun getTopAlbums(limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT): DomainResult<List<Album>>
 
     /**
      * Get albums filtered by music genre.
@@ -29,6 +29,6 @@ interface AlbumsRepository {
      */
     suspend fun getAlbumsByGenre(
         genre: MusicGenre,
-        limit: Int = CatalogConstants.DEFAULT_ALBUMS_LIMIT
+        limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT
     ): DomainResult<List<Album>>
 }

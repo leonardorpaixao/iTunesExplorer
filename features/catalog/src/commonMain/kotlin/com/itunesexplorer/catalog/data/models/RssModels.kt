@@ -3,7 +3,6 @@ package com.itunesexplorer.catalog.data.models
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// RSS Feed Models for Top Albums
 @Serializable
 data class ITunesRssResponse(
     val feed: RssFeed

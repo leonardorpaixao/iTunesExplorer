@@ -1,5 +1,8 @@
 package com.itunesexplorer.catalog.data.api
 
+import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.domain.model.Money
+import com.itunesexplorer.catalog.domain.model.SearchResult
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -44,4 +47,44 @@ internal data class ITunesItem(
     val contentAdvisoryRating: String? = null,
     val shortDescription: String? = null,
     val longDescription: String? = null
-)
+) {
+    fun toDomain(): SearchResult {
+        val id = trackId?.toString()
+            ?: collectionId?.toString()
+            ?: artistId?.toString()
+            ?: CatalogConstants.UNKNOWN_ID
+
+        val name = trackName ?: collectionName ?: artistName ?: CatalogConstants.UNKNOWN_NAME
+
+        val imageUrl = artworkUrl100 ?: artworkUrl60 ?: artworkUrl30
+
+        val viewUrl = trackViewUrl ?: collectionViewUrl ?: artistViewUrl
+
+        val price = when {
+            trackPrice != null && currency != null -> {
+                Money.fromOptional(trackPrice, currency)
+            }
+            collectionPrice != null && currency != null -> {
+                Money.fromOptional(collectionPrice, currency)
+            }
+            else -> null
+        }
+
+        val description = longDescription ?: shortDescription
+
+        return SearchResult(
+            id = id,
+            type = kind ?: wrapperType ?: CatalogConstants.UNKNOWN_ID,
+            name = name,
+            artistName = artistName,
+            collectionName = collectionName,
+            imageUrl = imageUrl,
+            viewUrl = viewUrl,
+            previewUrl = previewUrl,
+            price = price,
+            releaseDate = releaseDate,
+            genre = primaryGenreName,
+            description = description
+        )
+    }
+}

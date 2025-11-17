@@ -17,10 +17,8 @@ internal object AlbumMapper {
      * @return Album domain model
      */
     fun fromRss(entry: RssFeedEntry): Album {
-        // Get the highest resolution image (last in the list)
         val imageUrl = entry.imImage.lastOrNull()?.label
 
-        // Create Money value object from price if available
         val price = entry.imPrice?.let { priceData ->
             val amount = priceData.attributes.amount.toDoubleOrNull()
             val currency = priceData.attributes.currency
@@ -50,10 +48,8 @@ internal object AlbumMapper {
         val collectionId = item.collectionId ?: return null
         val collectionName = item.collectionName ?: return null
 
-        // Get the best available image URL
         val imageUrl = item.artworkUrl100 ?: item.artworkUrl60 ?: item.artworkUrl30
 
-        // Create Money value object if price is available
         val price = Money.fromOptional(item.collectionPrice, item.currency)
 
         return Album(

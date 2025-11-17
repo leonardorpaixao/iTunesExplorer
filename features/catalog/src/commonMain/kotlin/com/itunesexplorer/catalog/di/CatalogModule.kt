@@ -6,8 +6,6 @@ import com.itunesexplorer.catalog.data.repository.SearchRepositoryImpl
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
-import com.itunesexplorer.catalog.data.api.CatalogApi
-import com.itunesexplorer.catalog.data.api.CatalogApiImpl
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.api.ITunesApiImpl
 import com.itunesexplorer.catalog.presentation.albums.AlbumsTabModel
@@ -30,15 +28,11 @@ import org.kodein.di.instance
 private const val BASE_URL = "https://itunes.apple.com/"
 
 val catalogModule = DI.Module("catalogModule") {
-    // Network layer
     bindSingleton { createJson() }
     bindSingleton { createHttpClient(instance()) }
 
-    // Data layer - APIs
     bindSingleton<ITunesApi> { createITunesApi(instance()) }
-    bindSingleton<CatalogApi> { CatalogApiImpl(instance()) }
 
-    // Data layer - Repositories
     bindSingleton<SearchRepository> {
         SearchRepositoryImpl(
             api = instance(),
@@ -49,7 +43,6 @@ val catalogModule = DI.Module("catalogModule") {
 
     bindSingleton<AlbumsRepository> {
         AlbumsRepositoryImpl(
-            catalogApi = instance(),
             iTunesApi = instance(),
             countryManager = CountryManager,
             languageManager = LanguageManager
@@ -60,7 +53,6 @@ val catalogModule = DI.Module("catalogModule") {
         DetailsRepositoryImpl(api = instance())
     }
 
-    // Presentation layer
     bindSingleton { AlbumsTabModel(instance(), CountryManager) }
     bindSingleton { SearchTabModel(instance(), CountryManager) }
     bindFactory<String, DetailsScreenModel> { itemId ->

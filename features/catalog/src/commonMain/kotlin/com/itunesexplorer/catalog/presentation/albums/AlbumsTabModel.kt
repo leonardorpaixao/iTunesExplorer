@@ -42,7 +42,6 @@ class AlbumsTabModel(
     init {
         onAction(AlbumsIntent.LoadRecommendations)
 
-        // Observe country changes and reload albums
         screenModelScope.launch {
             countryManager.currentCountry
                 .drop(1)
@@ -82,7 +81,7 @@ class AlbumsTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            albumsRepository.getTopAlbums(limit = CatalogConstants.DEFAULT_ALBUMS_LIMIT).fold(
+            albumsRepository.getTopAlbums(limit = CatalogConstants.REQUEST_ITEMS_LIMIT).fold(
                 onSuccess = { albums ->
                     mutableState.update {
                         it.copy(
@@ -109,7 +108,7 @@ class AlbumsTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            albumsRepository.getAlbumsByGenre(genre, limit = CatalogConstants.DEFAULT_ALBUMS_LIMIT).fold(
+            albumsRepository.getAlbumsByGenre(genre, limit = CatalogConstants.REQUEST_ITEMS_LIMIT).fold(
                 onSuccess = { albums ->
                     mutableState.update {
                         it.copy(

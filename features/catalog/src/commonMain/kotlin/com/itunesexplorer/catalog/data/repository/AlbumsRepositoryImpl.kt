@@ -1,7 +1,6 @@
 package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.catalog.data.CatalogConstants
-import com.itunesexplorer.catalog.data.api.CatalogApi
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.mapper.AlbumMapper
 import com.itunesexplorer.core.error.runCatchingDomain
@@ -17,7 +16,6 @@ import com.itunesexplorer.settings.language.LanguageManager
  * Coordinates between RSS feed API (for top albums) and Search API (for genre filtering).
  */
 internal class AlbumsRepositoryImpl(
-    private val catalogApi: CatalogApi,
     private val iTunesApi: ITunesApi,
     private val countryManager: CountryManager,
     private val languageManager: LanguageManager
@@ -27,8 +25,7 @@ internal class AlbumsRepositoryImpl(
         return runCatchingDomain {
             val country = countryManager.getCurrentCountryCode() ?: CatalogConstants.DEFAULT_COUNTRY_CODE
 
-            // Use RSS feed for top albums
-            val response = catalogApi.topAlbums(
+            val response = iTunesApi.topAlbums(
                 limit = limit,
                 country = country
             )
@@ -45,8 +42,6 @@ internal class AlbumsRepositoryImpl(
             val country = countryManager.getCurrentCountryCode()
             val lang = languageManager.getITunesLanguageCode()
 
-            // Use Search API for genre-specific results
-            // Note: RSS feed doesn't support genre filtering
             val response = iTunesApi.searchByGenre(
                 genre = genre.searchTerm,
                 limit = limit,

@@ -66,7 +66,7 @@ class SearchTabModel(
             searchRepository.search(
                 query = query,
                 mediaType = state.value.selectedMediaType,
-                limit = CatalogConstants.DEFAULT_SEARCH_LIMIT
+                limit = CatalogConstants.REQUEST_ITEMS_LIMIT
             ).fold(
                 onSuccess = { items ->
                     val hasCountrySelected = countryManager.getCurrentCountryCode()?.isNotEmpty() == true

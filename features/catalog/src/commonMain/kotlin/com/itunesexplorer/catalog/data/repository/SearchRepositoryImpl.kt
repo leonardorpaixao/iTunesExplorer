@@ -2,7 +2,6 @@ package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.data.api.ITunesApi
-import com.itunesexplorer.catalog.data.mapper.SearchResultMapper
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
@@ -37,7 +36,9 @@ internal class SearchRepositoryImpl(
                 country = country
             )
 
-            SearchResultMapper.toDomainList(response.results)
+            response.results.map { value ->
+                value.toDomain()
+            }
         }
     }
 }

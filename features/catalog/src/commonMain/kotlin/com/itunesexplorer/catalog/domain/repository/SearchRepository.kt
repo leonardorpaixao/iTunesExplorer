@@ -21,6 +21,6 @@ interface SearchRepository {
     suspend fun search(
         query: String,
         mediaType: MediaType,
-        limit: Int = CatalogConstants.DEFAULT_SEARCH_LIMIT
+        limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT
     ): DomainResult<List<SearchResult>>
 }
