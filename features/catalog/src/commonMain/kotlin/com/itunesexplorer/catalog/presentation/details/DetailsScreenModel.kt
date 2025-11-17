@@ -1,18 +1,19 @@
 package com.itunesexplorer.catalog.presentation.details
 
+import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.ITunesItem
+import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class DetailsViewState(
-    val item: ITunesItem? = null,
-    val relatedItems: List<ITunesItem> = emptyList(),
+    val item: SearchResult? = null,
+    val relatedItems: List<SearchResult> = emptyList(),
     val isLoading: Boolean = false,
     val error: String? = null
 ) : ViewState
@@ -29,7 +30,7 @@ sealed class DetailsEffect : ViewEffect {
 }
 
 class DetailsScreenModel(
-    private val iTunesApi: ITunesApi,
+    private val detailsRepository: DetailsRepository,
     private val itemId: String
 ) : MviViewModel<DetailsViewState, DetailsIntent, DetailsEffect>(
     initialState = DetailsViewState()
@@ -51,39 +52,32 @@ class DetailsScreenModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                val response = iTunesApi.details(id = itemId, limit = 10)
-
-                val mainItem = response.results.firstOrNull()
-                val related = if (response.results.size > 1) {
-                    response.results.drop(1)
-                } else {
-                    emptyList()
+            detailsRepository.getItemDetails(itemId).fold(
+                onSuccess = { itemDetails ->
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            item = itemDetails.mainItem,
+                            relatedItems = itemDetails.relatedItems
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    val errorMessage = error.toMessage()
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = errorMessage
+                        )
+                    }
+                    sendEffect(DetailsEffect.ShowError(errorMessage))
                 }
-
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        item = mainItem,
-                        relatedItems = related
-                    )
-                }
-            } catch (e: Exception) {
-                val errorMessage = e.message ?: "An error occurred"
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = errorMessage
-                    )
-                }
-                sendEffect(DetailsEffect.ShowError(errorMessage))
-            }
+            )
         }
     }
 
     private fun openInStore() {
-        val url = state.value.item?.trackViewUrl
-            ?: state.value.item?.collectionViewUrl
+        val url = state.value.item?.viewUrl
 
         if (url != null) {
             sendEffect(DetailsEffect.OpenUrl(url))

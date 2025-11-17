@@ -1,14 +1,14 @@
 package com.itunesexplorer.catalog.presentation.albums
 
+import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.itunesexplorer.catalog.shared.data.api.CatalogApi
-import com.itunesexplorer.catalog.shared.data.models.*
-import com.itunesexplorer.currency.domain.CurrencyFormatter
-import com.itunesexplorer.network.api.ITunesApi
+import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.network.models.MusicGenre
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.flow.drop
@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class AlbumsViewState(
-    val recommendations: List<RssFeedEntry> = emptyList(),
+    val recommendations: List<Album> = emptyList(),
     val selectedGenre: MusicGenre = MusicGenre.ALL,
     val isLoading: Boolean = false,
     val error: String? = null
@@ -33,8 +33,8 @@ sealed class AlbumsEffect : ViewEffect {
 }
 
 class AlbumsTabModel(
-    private val catalogApi: CatalogApi,
-    private val iTunesApi: ITunesApi
+    private val albumsRepository: AlbumsRepository,
+    private val countryManager: CountryManager
 ) : MviViewModel<AlbumsViewState, AlbumsIntent, AlbumsEffect>(
     initialState = AlbumsViewState()
 ) {
@@ -44,7 +44,7 @@ class AlbumsTabModel(
 
         // Observe country changes and reload albums
         screenModelScope.launch {
-            CountryManager.currentCountry
+            countryManager.currentCountry
                 .drop(1)
                 .collect { country ->
                     if (country != null) {
@@ -82,28 +82,26 @@ class AlbumsTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                val country = CountryManager.getCurrentCountryCode() ?: "us"
-                val response = catalogApi.topAlbums(
-                    limit = 30,
-                    country = country.lowercase()
-                )
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        recommendations = response.feed.entry
-                    )
+            albumsRepository.getTopAlbums(limit = CatalogConstants.DEFAULT_ALBUMS_LIMIT).fold(
+                onSuccess = { albums ->
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            recommendations = albums
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    val errorMessage = error.toMessage()
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = errorMessage
+                        )
+                    }
+                    sendEffect(AlbumsEffect.ShowError(errorMessage))
                 }
-            } catch (e: Exception) {
-                val errorMessage = e.message ?: "An error occurred"
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = errorMessage
-                    )
-                }
-                sendEffect(AlbumsEffect.ShowError(errorMessage))
-            }
+            )
         }
     }
 
@@ -111,81 +109,26 @@ class AlbumsTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                val country = CountryManager.getCurrentCountryCode()
-                val lang = com.itunesexplorer.settings.language.LanguageManager.getITunesLanguageCode()
-                val response = iTunesApi.searchByGenre(
-                    genre = genre.searchTerm,
-                    limit = 30,
-                    lang = lang,
-                    country = country
-                )
-
-                val entries = response.results.mapNotNull { item ->
-                    val collectionId = item.collectionId
-                    val collectionName = item.collectionName
-                    val price = item.collectionPrice?.let { priceValue ->
-                        val currencyCode = item.currency ?: "USD"
-                        RssPrice(
-                            label = CurrencyFormatter.format(priceValue, currencyCode),
-                            attributes = RssPrice.RssPriceAttributes(
-                                amount = priceValue.toString(),
-                                currency = currencyCode
-                            )
+            albumsRepository.getAlbumsByGenre(genre, limit = CatalogConstants.DEFAULT_ALBUMS_LIMIT).fold(
+                onSuccess = { albums ->
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            recommendations = albums
                         )
                     }
-
-                    if (collectionId != null && collectionName != null) {
-                        RssFeedEntry(
-                            id = RssId(
-                                label = collectionId.toString(),
-                                attributes = RssId.RssIdAttributes(
-                                    imId = collectionId.toString()
-                                )
-                            ),
-                            imName = RssLabel(collectionName),
-                            imImage = listOfNotNull(
-                                item.artworkUrl60?.let { RssImage(it, RssImage.RssImageAttributes("60")) },
-                                item.artworkUrl100?.let { RssImage(it, RssImage.RssImageAttributes("100")) }
-                            ),
-                            imArtist = item.artistName?.let { RssArtist(it) },
-                            category = RssCategory(
-                                attributes = RssCategory.RssCategoryAttributes(
-                                    label = item.primaryGenreName ?: "Music"
-                                )
-                            ),
-                            imReleaseDate = item.releaseDate?.let {
-                                RssReleaseDate(
-                                    attributes = RssReleaseDate.RssReleaseDateAttributes(it)
-                                )
-                            },
-                            link = RssLink(
-                                attributes = RssLink.RssLinkAttributes(
-                                    href = item.collectionViewUrl ?: ""
-                                )
-                            ),
-                            imPrice = price,
-                            title = RssLabel(collectionName)
+                },
+                onFailure = { error ->
+                    val errorMessage = error.toMessage()
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = errorMessage
                         )
-                    } else null
+                    }
+                    sendEffect(AlbumsEffect.ShowError(errorMessage))
                 }
-
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        recommendations = entries
-                    )
-                }
-            } catch (e: Exception) {
-                val errorMessage = e.message ?: "An error occurred"
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = errorMessage
-                    )
-                }
-                sendEffect(AlbumsEffect.ShowError(errorMessage))
-            }
+            )
         }
     }
 }

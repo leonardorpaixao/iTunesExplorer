@@ -1,5 +1,7 @@
 package com.itunesexplorer.catalog.presentation.search
 
+import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
@@ -64,7 +66,7 @@ class SearchTabModel(
             searchRepository.search(
                 query = query,
                 mediaType = state.value.selectedMediaType,
-                limit = 50
+                limit = CatalogConstants.DEFAULT_SEARCH_LIMIT
             ).fold(
                 onSuccess = { items ->
                     val hasCountrySelected = countryManager.getCurrentCountryCode()?.isNotEmpty() == true
@@ -79,7 +81,7 @@ class SearchTabModel(
                     }
                 },
                 onFailure = { error ->
-                    val errorMessage = error.getUserMessage()
+                    val errorMessage = error.toMessage()
                     mutableState.update {
                         it.copy(
                             isLoading = false,
