@@ -1,9 +1,9 @@
 package com.itunesexplorer.catalog.presentation.albums
 
-import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.MusicGenre
-import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
+import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
+import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
@@ -33,7 +33,8 @@ sealed class AlbumsEffect : ViewEffect {
 }
 
 class AlbumsTabModel(
-    private val albumsRepository: AlbumsRepository,
+    private val getTopAlbumsUseCase: GetTopAlbumsUseCase,
+    private val getAlbumsByGenreUseCase: GetAlbumsByGenreUseCase,
     private val countryManager: CountryManager
 ) : MviViewModel<AlbumsViewState, AlbumsIntent, AlbumsEffect>(
     initialState = AlbumsViewState()
@@ -81,7 +82,7 @@ class AlbumsTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            albumsRepository.getTopAlbums(limit = CatalogConstants.REQUEST_ITEMS_LIMIT).fold(
+            getTopAlbumsUseCase().fold(
                 onSuccess = { albums ->
                     mutableState.update {
                         it.copy(
@@ -108,7 +109,7 @@ class AlbumsTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            albumsRepository.getAlbumsByGenre(genre, limit = CatalogConstants.REQUEST_ITEMS_LIMIT).fold(
+            getAlbumsByGenreUseCase(genre).fold(
                 onSuccess = { albums ->
                     mutableState.update {
                         it.copy(

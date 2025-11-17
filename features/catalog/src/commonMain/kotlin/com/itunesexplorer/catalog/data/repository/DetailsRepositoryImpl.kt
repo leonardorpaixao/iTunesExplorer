@@ -18,7 +18,7 @@ internal class DetailsRepositoryImpl(
             val response = api.details(id = itemId)
 
             val allItems = response.results.map {
-                it.toDomain()
+                it.toSearchResult()
             }
 
             val mainItem = allItems.firstOrNull()

@@ -37,7 +37,7 @@ internal class SearchRepositoryImpl(
             )
 
             response.results.map { value ->
-                value.toDomain()
+                value.toSearchResult()
             }
         }
     }

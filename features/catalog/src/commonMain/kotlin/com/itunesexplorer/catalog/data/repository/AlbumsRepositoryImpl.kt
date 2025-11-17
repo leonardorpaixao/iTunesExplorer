@@ -1,55 +1,39 @@
 package com.itunesexplorer.catalog.data.repository
 
-import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.data.api.ITunesApi
-import com.itunesexplorer.catalog.data.mapper.AlbumMapper
-import com.itunesexplorer.core.error.runCatchingDomain
-import com.itunesexplorer.catalog.domain.model.Album
-import com.itunesexplorer.catalog.domain.model.MusicGenre
+import com.itunesexplorer.catalog.data.api.ITunesSearchResponse
+import com.itunesexplorer.catalog.data.models.ITunesRssResponse
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.core.common.domain.DomainResult
-import com.itunesexplorer.settings.country.CountryManager
-import com.itunesexplorer.settings.language.LanguageManager
+import com.itunesexplorer.core.error.runCatchingDomain
 
 /**
  * Implementation of AlbumsRepository.
- * Coordinates between RSS feed API (for top albums) and Search API (for genre filtering).
+ * Provides direct access to iTunes API responses without transformation.
  */
 internal class AlbumsRepositoryImpl(
-    private val iTunesApi: ITunesApi,
-    private val countryManager: CountryManager,
-    private val languageManager: LanguageManager
+    private val iTunesApi: ITunesApi
 ) : AlbumsRepository {
 
-    override suspend fun getTopAlbums(limit: Int): DomainResult<List<Album>> {
+    override suspend fun getTopAlbumsRss(limit: Int, country: String): DomainResult<ITunesRssResponse> {
         return runCatchingDomain {
-            val country = countryManager.getCurrentCountryCode() ?: CatalogConstants.DEFAULT_COUNTRY_CODE
-
-            val response = iTunesApi.topAlbums(
-                limit = limit,
-                country = country
-            )
-
-            AlbumMapper.fromRssList(response.feed.entry)
+            iTunesApi.topAlbums(limit = limit, country = country)
         }
     }
 
-    override suspend fun getAlbumsByGenre(
-        genre: MusicGenre,
-        limit: Int
-    ): DomainResult<List<Album>> {
+    override suspend fun searchAlbumsByGenre(
+        genre: String,
+        limit: Int,
+        lang: String,
+        country: String?
+    ): DomainResult<ITunesSearchResponse> {
         return runCatchingDomain {
-            val country = countryManager.getCurrentCountryCode()
-            val lang = languageManager.getITunesLanguageCode()
-
-            val response = iTunesApi.searchByGenre(
-                genre = genre.searchTerm,
+            iTunesApi.searchByGenre(
+                genre = genre,
                 limit = limit,
                 lang = lang,
                 country = country
             )
-
-            AlbumMapper.fromITunesItemList(response.results)
         }
     }
 }

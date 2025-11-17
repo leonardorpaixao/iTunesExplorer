@@ -1,34 +1,36 @@
 package com.itunesexplorer.catalog.domain.repository
 
-import com.itunesexplorer.catalog.data.CatalogConstants
-import com.itunesexplorer.catalog.domain.model.Album
-import com.itunesexplorer.catalog.domain.model.MusicGenre
+import com.itunesexplorer.catalog.data.api.ITunesSearchResponse
+import com.itunesexplorer.catalog.data.models.ITunesRssResponse
 import com.itunesexplorer.core.common.domain.DomainResult
 
 /**
- * Repository interface for fetching album data from iTunes Store.
- * Handles both RSS feeds and search API, abstracting the data source selection.
+ * Repository interface for accessing raw iTunes API data.
+ * Returns unprocessed API responses for use cases to transform.
  */
 interface AlbumsRepository {
     /**
-     * Get top albums for the user's current country.
-     * Automatically uses RSS feed when available, falling back to search API.
+     * Fetch top albums RSS feed for a specific country.
      *
      * @param limit Maximum number of albums to fetch
-     * @return DomainResult containing list of albums or a domain error
+     * @param country Country code (e.g., "us", "br")
+     * @return DomainResult containing raw RSS response or a domain error
      */
-    suspend fun getTopAlbums(limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT): DomainResult<List<Album>>
+    suspend fun getTopAlbumsRss(limit: Int, country: String): DomainResult<ITunesRssResponse>
 
     /**
-     * Get albums filtered by music genre.
-     * Uses search API with genre-specific search terms.
+     * Search for albums by genre using the iTunes Search API.
      *
-     * @param genre The music genre to filter by
-     * @param limit Maximum number of albums to fetch
-     * @return DomainResult containing list of albums or a domain error
+     * @param genre Genre search term
+     * @param limit Maximum number of results
+     * @param lang Language code (e.g., "en_us")
+     * @param country Country code (optional)
+     * @return DomainResult containing raw search response or a domain error
      */
-    suspend fun getAlbumsByGenre(
-        genre: MusicGenre,
-        limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT
-    ): DomainResult<List<Album>>
+    suspend fun searchAlbumsByGenre(
+        genre: String,
+        limit: Int,
+        lang: String,
+        country: String?
+    ): DomainResult<ITunesSearchResponse>
 }

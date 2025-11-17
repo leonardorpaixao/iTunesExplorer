@@ -6,6 +6,8 @@ import com.itunesexplorer.catalog.data.repository.SearchRepositoryImpl
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
+import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
+import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.api.ITunesApiImpl
 import com.itunesexplorer.catalog.presentation.albums.AlbumsTabModel
@@ -42,18 +44,35 @@ val catalogModule = DI.Module("catalogModule") {
     }
 
     bindSingleton<AlbumsRepository> {
-        AlbumsRepositoryImpl(
-            iTunesApi = instance(),
-            countryManager = CountryManager,
-            languageManager = LanguageManager
-        )
+        AlbumsRepositoryImpl(iTunesApi = instance())
     }
 
     bindSingleton<DetailsRepository> {
         DetailsRepositoryImpl(api = instance())
     }
 
-    bindSingleton { AlbumsTabModel(instance(), CountryManager) }
+    bindSingleton {
+        GetTopAlbumsUseCase(
+            albumsRepository = instance(),
+            countryManager = CountryManager
+        )
+    }
+
+    bindSingleton {
+        GetAlbumsByGenreUseCase(
+            albumsRepository = instance(),
+            countryManager = CountryManager,
+            languageManager = LanguageManager
+        )
+    }
+
+    bindSingleton {
+        AlbumsTabModel(
+            getTopAlbumsUseCase = instance(),
+            getAlbumsByGenreUseCase = instance(),
+            countryManager = CountryManager
+        )
+    }
     bindSingleton { SearchTabModel(instance(), CountryManager) }
     bindFactory<String, DetailsScreenModel> { itemId ->
         DetailsScreenModel(instance(), itemId)

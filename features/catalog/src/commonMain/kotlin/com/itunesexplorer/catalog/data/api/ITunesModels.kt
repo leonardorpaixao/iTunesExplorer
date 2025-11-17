@@ -6,13 +6,13 @@ import com.itunesexplorer.catalog.domain.model.SearchResult
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal data class ITunesSearchResponse(
+data class ITunesSearchResponse(
     val resultCount: Int,
     val results: List<ITunesItem>
 )
 
 @Serializable
-internal data class ITunesItem(
+data class ITunesItem(
     val wrapperType: String? = null,
     val kind: String? = null,
     val artistId: Long? = null,
@@ -48,7 +48,7 @@ internal data class ITunesItem(
     val shortDescription: String? = null,
     val longDescription: String? = null
 ) {
-    fun toDomain(): SearchResult {
+    fun toSearchResult(): SearchResult {
         val id = trackId?.toString()
             ?: collectionId?.toString()
             ?: artistId?.toString()
