@@ -5,15 +5,16 @@ import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.ITunesItem
+import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.network.models.MediaType
+import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SearchViewState(
     val isLoading: Boolean = false,
-    val items: List<ITunesItem> = emptyList(),
+    val items: List<SearchResult> = emptyList(),
     val error: String? = null,
     val selectedMediaType: MediaType = MediaType.ALL,
     val searchQuery: String = "",
@@ -32,7 +33,8 @@ sealed class SearchEffect : ViewEffect {
 }
 
 class SearchTabModel(
-    private val iTunesApi: ITunesApi
+    private val searchRepository: SearchRepository,
+    private val countryManager: CountryManager
 ) : MviViewModel<SearchViewState, SearchIntent, SearchEffect>(
     initialState = SearchViewState()
 ) {
@@ -59,42 +61,34 @@ class SearchTabModel(
         screenModelScope.launch {
             mutableState.update { it.copy(isLoading = true, error = null) }
 
-            try {
-                val mediaType = when (state.value.selectedMediaType) {
-                    MediaType.ALL -> null
-                    else -> state.value.selectedMediaType.value
-                }
+            searchRepository.search(
+                query = query,
+                mediaType = state.value.selectedMediaType,
+                limit = 50
+            ).fold(
+                onSuccess = { items ->
+                    val hasCountrySelected = countryManager.getCurrentCountryCode()?.isNotEmpty() == true
+                    val showHint = items.isEmpty() && hasCountrySelected
 
-                val country = com.itunesexplorer.settings.country.CountryManager.getCurrentCountryCode()
-                val lang = com.itunesexplorer.settings.language.LanguageManager.getITunesLanguageCode()
-                val response = iTunesApi.search(
-                    term = query,
-                    media = mediaType,
-                    limit = 50,
-                    lang = lang,
-                    country = country
-                )
-
-                val hasCountrySelected = country?.isNotEmpty() == true
-                val showHint = response.results.isEmpty() && hasCountrySelected
-
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        items = response.results,
-                        showRegionHint = showHint
-                    )
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            items = items,
+                            showRegionHint = showHint
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    val errorMessage = error.getUserMessage()
+                    mutableState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = errorMessage
+                        )
+                    }
+                    sendEffect(SearchEffect.ShowError(errorMessage))
                 }
-            } catch (e: Exception) {
-                val errorMessage = e.message ?: "An error occurred"
-                mutableState.update {
-                    it.copy(
-                        isLoading = false,
-                        error = errorMessage
-                    )
-                }
-                sendEffect(SearchEffect.ShowError(errorMessage))
-            }
+            )
         }
     }
 

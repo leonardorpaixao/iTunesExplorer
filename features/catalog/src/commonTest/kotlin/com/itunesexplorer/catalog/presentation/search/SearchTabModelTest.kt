@@ -1,9 +1,9 @@
 package com.itunesexplorer.catalog.presentation.search
 
 import app.cash.turbine.test
-import com.itunesexplorer.network.api.ITunesApi
-import com.itunesexplorer.network.models.ITunesItem
-import com.itunesexplorer.network.models.ITunesSearchResponse
+import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.domain.repository.SearchRepository
+import com.itunesexplorer.core.common.domain.DomainError
 import com.itunesexplorer.network.models.MediaType
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
@@ -24,25 +24,25 @@ import kotlin.test.assertTrue
 class SearchTabModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var fakeITunesApi: FakeITunesApi
+    private lateinit var fakeRepository: FakeSearchRepository
     private lateinit var viewModel: SearchTabModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        fakeITunesApi = FakeITunesApi()
-        CountryManager.clear() // Clear country before each test
+        fakeRepository = FakeSearchRepository()
+        CountryManager.clear()
     }
 
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
-        CountryManager.clear() // Clean up after each test
+        CountryManager.clear()
     }
 
     @Test
     fun `initial state should have empty search query and ALL media type selected`() = runTest(testDispatcher) {
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -55,7 +55,7 @@ class SearchTabModelTest {
 
     @Test
     fun `onAction UpdateSearchQuery should update query in state`() = runTest(testDispatcher) {
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test query"))
@@ -66,12 +66,12 @@ class SearchTabModelTest {
 
     @Test
     fun `onAction Search with valid query should load results`() = runTest(testDispatcher) {
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
-        fakeITunesApi.mockResults = listOf(
-            createITunesItem(1L, "Result 1", "Artist 1"),
-            createITunesItem(2L, "Result 2", "Artist 2")
+        fakeRepository.mockResults = listOf(
+            createSearchResult("1", "Result 1", "Artist 1"),
+            createSearchResult("2", "Result 2", "Artist 2")
         )
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
@@ -81,13 +81,13 @@ class SearchTabModelTest {
         val state = viewModel.state.value
         assertFalse(state.isLoading)
         assertEquals(2, state.items.size)
-        assertEquals("Result 1", state.items[0].trackName)
+        assertEquals("Result 1", state.items[0].name)
         assertFalse(state.showRegionHint)
     }
 
     @Test
     fun `onAction Search with empty query should not trigger search`() = runTest(testDispatcher) {
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.Search)
@@ -100,10 +100,10 @@ class SearchTabModelTest {
 
     @Test
     fun `showRegionHint should be true when results empty and country selected`() = runTest(testDispatcher) {
-        CountryManager.setCountry("BR") // Set country
-        fakeITunesApi.mockResults = emptyList()
+        CountryManager.setCountry("BR")
+        fakeRepository.mockResults = emptyList()
 
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("hulk"))
@@ -117,10 +117,10 @@ class SearchTabModelTest {
 
     @Test
     fun `showRegionHint should be false when results empty but no country selected`() = runTest(testDispatcher) {
-        CountryManager.clear() // No country selected
-        fakeITunesApi.mockResults = emptyList()
+        CountryManager.clear()
+        fakeRepository.mockResults = emptyList()
 
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
@@ -135,11 +135,11 @@ class SearchTabModelTest {
     @Test
     fun `showRegionHint should be false when results are not empty`() = runTest(testDispatcher) {
         CountryManager.setCountry("BR")
-        fakeITunesApi.mockResults = listOf(
-            createITunesItem(1L, "Result 1", "Artist 1")
+        fakeRepository.mockResults = listOf(
+            createSearchResult("1", "Result 1", "Artist 1")
         )
 
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
@@ -153,7 +153,7 @@ class SearchTabModelTest {
 
     @Test
     fun `onAction SelectMediaType should update selected media type`() = runTest(testDispatcher) {
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.SelectMediaType(MediaType.MUSIC))
@@ -164,11 +164,11 @@ class SearchTabModelTest {
 
     @Test
     fun `onAction SelectMediaType should trigger search if query is not blank`() = runTest(testDispatcher) {
-        fakeITunesApi.mockResults = listOf(
-            createITunesItem(1L, "Music Result", "Artist")
+        fakeRepository.mockResults = listOf(
+            createSearchResult("1", "Music Result", "Artist")
         )
 
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
@@ -182,9 +182,9 @@ class SearchTabModelTest {
 
     @Test
     fun `onAction Search with error should set error state`() = runTest(testDispatcher) {
-        fakeITunesApi.shouldFail = true
+        fakeRepository.shouldFail = true
 
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
@@ -199,11 +199,11 @@ class SearchTabModelTest {
 
     @Test
     fun `onAction Retry should retry the search`() = runTest(testDispatcher) {
-        fakeITunesApi.mockResults = listOf(
-            createITunesItem(1L, "Retry Result", "Artist")
+        fakeRepository.mockResults = listOf(
+            createSearchResult("1", "Retry Result", "Artist")
         )
 
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(SearchIntent.UpdateSearchQuery("test"))
@@ -212,17 +212,17 @@ class SearchTabModelTest {
 
         val state = viewModel.state.value
         assertEquals(1, state.items.size)
-        assertEquals("Retry Result", state.items[0].trackName)
+        assertEquals("Retry Result", state.items[0].name)
     }
 
     @Test
     fun `showRegionHint should be recalculated on each search`() = runTest(testDispatcher) {
-        viewModel = SearchTabModel(fakeITunesApi)
+        viewModel = SearchTabModel(fakeRepository, CountryManager)
         advanceUntilIdle()
 
         // First search - no results, country selected
         CountryManager.setCountry("BR")
-        fakeITunesApi.mockResults = emptyList()
+        fakeRepository.mockResults = emptyList()
         viewModel.onAction(SearchIntent.UpdateSearchQuery("hulk"))
         viewModel.onAction(SearchIntent.Search)
         advanceUntilIdle()
@@ -231,7 +231,7 @@ class SearchTabModelTest {
         assertTrue(state.showRegionHint, "First search should show hint")
 
         // Second search - has results, country still selected
-        fakeITunesApi.mockResults = listOf(createITunesItem(1L, "Found", "Artist"))
+        fakeRepository.mockResults = listOf(createSearchResult("1", "Found", "Artist"))
         viewModel.onAction(SearchIntent.UpdateSearchQuery("avengers"))
         viewModel.onAction(SearchIntent.Search)
         advanceUntilIdle()
@@ -241,7 +241,7 @@ class SearchTabModelTest {
 
         // Third search - no results again, but no country
         CountryManager.clear()
-        fakeITunesApi.mockResults = emptyList()
+        fakeRepository.mockResults = emptyList()
         viewModel.onAction(SearchIntent.UpdateSearchQuery("xyz"))
         viewModel.onAction(SearchIntent.Search)
         advanceUntilIdle()
@@ -250,80 +250,41 @@ class SearchTabModelTest {
         assertFalse(state.showRegionHint, "Third search should NOT show hint (no country)")
     }
 
-    private fun createITunesItem(
-        id: Long,
+    private fun createSearchResult(
+        id: String,
         name: String,
-        artist: String,
-        genre: String = "Music"
-    ): ITunesItem {
-        return ITunesItem(
-            trackId = id,
-            collectionId = id,
-            trackName = name,
-            collectionName = name,
+        artist: String
+    ): SearchResult {
+        return SearchResult(
+            id = id,
+            type = "song",
+            name = name,
             artistName = artist,
-            artworkUrl100 = "https://example.com/artwork.jpg",
-            trackPrice = 9.99,
-            collectionPrice = 9.99,
-            primaryGenreName = genre,
+            collectionName = null,
+            imageUrl = "https://example.com/artwork.jpg",
+            viewUrl = "https://example.com/item",
+            previewUrl = null,
+            price = "$9.99",
             releaseDate = "2024-01-01",
-            trackCount = 10,
-            kind = "song",
-            shortDescription = "Short description",
-            longDescription = "Long description"
+            genre = "Music",
+            description = null
         )
     }
 }
 
-class FakeITunesApi : ITunesApi {
+class FakeSearchRepository : SearchRepository {
     var shouldFail = false
-    var mockResults: List<ITunesItem> = emptyList()
+    var mockResults: List<SearchResult> = emptyList()
 
     override suspend fun search(
-        term: String,
-        media: String?,
-        entity: String?,
-        attribute: String?,
-        limit: Int,
-        lang: String,
-        country: String?
-    ): ITunesSearchResponse {
-        if (shouldFail) throw Exception("Search failed")
-
-        return ITunesSearchResponse(
-            resultCount = mockResults.size,
-            results = mockResults
-        )
-    }
-
-    override suspend fun searchByGenre(
-        genre: String,
-        limit: Int,
-        lang: String,
-        country: String?
-    ): ITunesSearchResponse {
-        if (shouldFail) throw Exception("Search by genre failed")
-
-        return ITunesSearchResponse(
-            resultCount = mockResults.size,
-            results = mockResults
-        )
-    }
-
-    override suspend fun details(
-        id: String?,
-        amgArtistId: String?,
-        upc: String?,
-        isbn: String?,
-        entity: String?,
-        limit: Int,
-        sort: String
-    ): ITunesSearchResponse {
-        if (shouldFail) throw Exception("Details failed")
-
-        return ITunesSearchResponse(
-            resultCount = mockResults.size,
-            results = mockResults
-        )
+        query: String,
+        mediaType: MediaType,
+        limit: Int
+    ): com.itunesexplorer.core.common.domain.DomainResult<List<SearchResult>> {
+        return if (shouldFail) {
+            com.itunesexplorer.core.common.domain.DomainResult.failure(DomainError.NetworkError("Search failed"))
+        } else {
+            com.itunesexplorer.core.common.domain.DomainResult.success(mockResults)
+        }
     }
 }

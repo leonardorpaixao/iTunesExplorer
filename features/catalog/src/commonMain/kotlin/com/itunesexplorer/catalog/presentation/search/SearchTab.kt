@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
-import com.itunesexplorer.common.extensions.toFormattedPrice
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.LoadingIndicator
 import com.itunesexplorer.design.components.MediaCard
@@ -118,16 +117,12 @@ fun SearchTabContent(
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     items(state.items) { item ->
-                        val itemId = item.trackId?.toString()
-                            ?: item.collectionId?.toString()
-                            ?: ""
                         MediaCard(
-                            title = item.trackName ?: item.collectionName ?: "Unknown",
+                            title = item.name,
                             subtitle = item.artistName ?: "Unknown Artist",
-                            imageUrl = item.artworkUrl100,
-                            price = item.trackPrice?.toFormattedPrice(item.currency ?: "USD")
-                                ?: item.collectionPrice?.toFormattedPrice(item.currency ?: "USD"),
-                            onClick = { onItemClick(itemId) }
+                            imageUrl = item.imageUrl,
+                            price = item.price,
+                            onClick = { onItemClick(item.id) }
                         )
                     }
                 }

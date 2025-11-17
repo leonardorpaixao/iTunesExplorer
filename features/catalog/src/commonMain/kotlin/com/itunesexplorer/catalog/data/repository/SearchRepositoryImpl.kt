@@ -1,0 +1,43 @@
+package com.itunesexplorer.catalog.data.repository
+
+import com.itunesexplorer.catalog.data.mapper.ErrorMapper
+import com.itunesexplorer.catalog.data.mapper.SearchResultMapper
+import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.domain.repository.SearchRepository
+import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.network.api.ITunesApi
+import com.itunesexplorer.network.models.MediaType
+import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.language.LanguageManager
+
+/**
+ * Implementation of SearchRepository using iTunes Search API.
+ * Handles country/language settings and data transformation.
+ */
+class SearchRepositoryImpl(
+    private val api: ITunesApi,
+    private val countryManager: CountryManager,
+    private val languageManager: LanguageManager
+) : SearchRepository {
+
+    override suspend fun search(
+        query: String,
+        mediaType: MediaType,
+        limit: Int
+    ): DomainResult<List<SearchResult>> {
+        return ErrorMapper.execute("Search for '$query'") {
+            val country = countryManager.getCurrentCountryCode()
+            val lang = languageManager.getITunesLanguageCode()
+
+            val response = api.search(
+                term = query,
+                media = if (mediaType == MediaType.ALL) null else mediaType.value,
+                limit = limit,
+                lang = lang,
+                country = country
+            )
+
+            SearchResultMapper.toDomainList(response.results)
+        }
+    }
+}
