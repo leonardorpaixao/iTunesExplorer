@@ -42,6 +42,7 @@ kotlin {
                 implementation(project(":core:common"))
                 implementation(project(":core:network"))
                 implementation(project(":core:settings"))
+                implementation(project(":core:currency"))
                 implementation(project(":design-system"))
                 implementation(libs.lyricist)
                 implementation(libs.kotlinx.serialization.json)

@@ -1,5 +1,6 @@
 package com.itunesexplorer.common.extensions
 
+import com.itunesexplorer.currency.domain.CurrencyFormatter
 import kotlinx.datetime.*
 
 fun String.toFormattedDate(): String {
@@ -25,11 +26,15 @@ fun Long.toFormattedDuration(): String {
     }
 }
 
-fun Double.toFormattedPrice(currency: String = "$"): String {
-    val rounded = (this * 100).toLong() / 100.0
-    val intPart = rounded.toLong()
-    val decimalPart = ((rounded - intPart) * 100).toInt()
-    return "$currency$intPart.${decimalPart.toString().padStart(2, '0')}"
+/**
+ * Format a price with currency code.
+ * Uses the CurrencyFormatter to properly format prices according to currency rules.
+ *
+ * @param currencyCode ISO 4217 currency code (e.g., "USD", "EUR", "JPY")
+ * @return Formatted price string with proper symbol and decimals
+ */
+fun Double.toFormattedPrice(currencyCode: String = "USD"): String {
+    return CurrencyFormatter.format(this, currencyCode)
 }
 
 fun String?.orEmpty(): String = this ?: ""

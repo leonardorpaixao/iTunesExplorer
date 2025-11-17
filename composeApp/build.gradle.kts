@@ -51,6 +51,7 @@ kotlin {
             implementation(projects.core.error)
             implementation(projects.core.common)
             implementation(projects.core.settings)
+            implementation(projects.core.currency)
             implementation(projects.designSystem)
             implementation(projects.features.home)
             implementation(projects.features.catalog)

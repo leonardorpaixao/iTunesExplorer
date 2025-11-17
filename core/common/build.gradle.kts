@@ -28,6 +28,7 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kodein.di)
             implementation(libs.voyager.screenModel)
+            implementation(project(":core:currency"))
         }
     }
 }

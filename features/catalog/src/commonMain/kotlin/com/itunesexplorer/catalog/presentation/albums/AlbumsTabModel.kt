@@ -7,8 +7,11 @@ import com.itunesexplorer.common.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.itunesexplorer.catalog.shared.data.api.CatalogApi
 import com.itunesexplorer.catalog.shared.data.models.*
+import com.itunesexplorer.currency.domain.CurrencyFormatter
 import com.itunesexplorer.network.api.ITunesApi
 import com.itunesexplorer.network.models.MusicGenre
+import com.itunesexplorer.settings.country.CountryManager
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -38,6 +41,17 @@ class AlbumsTabModel(
 
     init {
         onAction(AlbumsIntent.LoadRecommendations)
+
+        // Observe country changes and reload albums
+        screenModelScope.launch {
+            CountryManager.currentCountry
+                .drop(1)
+                .collect { country ->
+                    if (country != null) {
+                        onAction(AlbumsIntent.LoadRecommendations)
+                    }
+                }
+        }
     }
 
     override fun onAction(intent: AlbumsIntent) {
@@ -69,7 +83,7 @@ class AlbumsTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val country = com.itunesexplorer.settings.country.CountryManager.getCurrentCountryCode() ?: "us"
+                val country = CountryManager.getCurrentCountryCode() ?: "us"
                 val response = catalogApi.topAlbums(
                     limit = 30,
                     country = country.lowercase()
@@ -98,7 +112,7 @@ class AlbumsTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val country = com.itunesexplorer.settings.country.CountryManager.getCurrentCountryCode()
+                val country = CountryManager.getCurrentCountryCode()
                 val lang = com.itunesexplorer.settings.language.LanguageManager.getITunesLanguageCode()
                 val response = iTunesApi.searchByGenre(
                     genre = genre.searchTerm,
@@ -107,10 +121,19 @@ class AlbumsTabModel(
                     country = country
                 )
 
-                // Convert iTunes search results to RssFeedEntry format
                 val entries = response.results.mapNotNull { item ->
                     val collectionId = item.collectionId
                     val collectionName = item.collectionName
+                    val price = item.collectionPrice?.let { priceValue ->
+                        val currencyCode = item.currency ?: "USD"
+                        RssPrice(
+                            label = CurrencyFormatter.format(priceValue, currencyCode),
+                            attributes = RssPrice.RssPriceAttributes(
+                                amount = priceValue.toString(),
+                                currency = currencyCode
+                            )
+                        )
+                    }
 
                     if (collectionId != null && collectionName != null) {
                         RssFeedEntry(
@@ -141,15 +164,7 @@ class AlbumsTabModel(
                                     href = item.collectionViewUrl ?: ""
                                 )
                             ),
-                            imPrice = item.collectionPrice?.let {
-                                RssPrice(
-                                    label = "$$it",
-                                    attributes = RssPrice.RssPriceAttributes(
-                                        amount = it.toString(),
-                                        currency = item.currency ?: "USD"
-                                    )
-                                )
-                            },
+                            imPrice = price,
                             title = RssLabel(collectionName)
                         )
                     } else null

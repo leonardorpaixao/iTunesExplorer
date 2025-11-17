@@ -125,8 +125,8 @@ fun SearchTabContent(
                             title = item.trackName ?: item.collectionName ?: "Unknown",
                             subtitle = item.artistName ?: "Unknown Artist",
                             imageUrl = item.artworkUrl100,
-                            price = item.trackPrice?.toFormattedPrice()
-                                ?: item.collectionPrice?.toFormattedPrice(),
+                            price = item.trackPrice?.toFormattedPrice(item.currency ?: "USD")
+                                ?: item.collectionPrice?.toFormattedPrice(item.currency ?: "USD"),
                             onClick = { onItemClick(itemId) }
                         )
                     }

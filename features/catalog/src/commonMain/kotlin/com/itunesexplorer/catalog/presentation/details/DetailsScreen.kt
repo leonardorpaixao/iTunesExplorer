@@ -124,8 +124,8 @@ fun DetailsContent(
                                 title = relatedItem.trackName ?: relatedItem.collectionName ?: "Unknown",
                                 subtitle = relatedItem.artistName ?: "Unknown Artist",
                                 imageUrl = relatedItem.artworkUrl100,
-                                price = relatedItem.trackPrice?.toFormattedPrice()
-                                    ?: relatedItem.collectionPrice?.toFormattedPrice(),
+                                price = relatedItem.trackPrice?.toFormattedPrice(relatedItem.currency ?: "USD")
+                                    ?: relatedItem.collectionPrice?.toFormattedPrice(relatedItem.currency ?: "USD"),
                                 onClick = { }
                             )
                         }
@@ -191,8 +191,8 @@ fun ItemDetailsCard(
                 )
             }
 
-            val price = item.trackPrice?.toFormattedPrice()
-                ?: item.collectionPrice?.toFormattedPrice()
+            val price = item.trackPrice?.toFormattedPrice(item.currency ?: "USD")
+                ?: item.collectionPrice?.toFormattedPrice(item.currency ?: "USD")
             price?.let {
                 Text(
                     text = "${strings.price}: $it",
