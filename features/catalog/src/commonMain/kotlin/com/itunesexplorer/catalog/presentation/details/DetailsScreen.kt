@@ -20,6 +20,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import coil3.compose.AsyncImage
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.SearchResult
+import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.MediaCard
@@ -129,7 +130,7 @@ fun DetailsContent(
                                 title = relatedItem.name,
                                 subtitle = relatedItem.artistName ?: CatalogConstants.UNKNOWN_ARTIST,
                                 imageUrl = relatedItem.imageUrl,
-                                price = relatedItem.price,
+                                price = relatedItem.price?.format(),
                                 onClick = { }
                             )
                         }
@@ -195,9 +196,9 @@ fun ItemDetailsCard(
                 )
             }
 
-            item.price?.let {
+            item.price?.let { money ->
                 Text(
-                    text = "${strings.price}: $it",
+                    text = "${strings.price}: ${money.format()}",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.primary
                 )

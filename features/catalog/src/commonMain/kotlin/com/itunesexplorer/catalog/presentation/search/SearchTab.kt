@@ -10,6 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
+import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.presentation.format
+import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.LoadingIndicator
 import com.itunesexplorer.design.components.MediaCard
@@ -37,7 +40,7 @@ fun SearchTabContent(
     state: SearchViewState,
     onAction: (SearchIntent) -> Unit,
     onItemClick: (String) -> Unit,
-    strings: com.itunesexplorer.catalog.i18n.CatalogStrings
+    strings: CatalogStrings
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -119,9 +122,9 @@ fun SearchTabContent(
                     items(state.items) { item ->
                         MediaCard(
                             title = item.name,
-                            subtitle = item.artistName ?: "Unknown Artist",
+                            subtitle = item.artistName ?: CatalogConstants.UNKNOWN_ARTIST,
                             imageUrl = item.imageUrl,
-                            price = item.price,
+                            price = item.price?.format(),
                             onClick = { onItemClick(item.id) }
                         )
                     }

@@ -10,9 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
+import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.presentation.format
+import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.MediaCard
-import com.itunesexplorer.catalog.shared.data.models.RssFeedEntry
 import com.itunesexplorer.network.models.MusicGenre
 import org.kodein.di.compose.rememberInstance
 
@@ -37,7 +39,7 @@ fun AlbumsTabContent(
     state: AlbumsViewState,
     onAction: (AlbumsIntent) -> Unit,
     onItemClick: (String) -> Unit,
-    strings: com.itunesexplorer.catalog.i18n.CatalogStrings
+    strings: CatalogStrings
 ) {
     when {
         state.isLoading -> {
@@ -88,7 +90,7 @@ fun AlbumsTabContent(
                 items(state.recommendations) { album ->
                     RecommendationCard(
                         album = album,
-                        onClick = { onItemClick(album.id.attributes.imId) }
+                        onClick = { onItemClick(album.id) }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -99,18 +101,14 @@ fun AlbumsTabContent(
 
 @Composable
 fun RecommendationCard(
-    album: RssFeedEntry,
+    album: Album,
     onClick: () -> Unit
 ) {
-    val imageUrl = album.imImage.lastOrNull()?.label ?: ""
-    val artistName = album.imArtist?.label ?: "Unknown Artist"
-    val price = album.imPrice?.label
-
     MediaCard(
-        title = album.imName.label,
-        subtitle = "$artistName • ${album.category.attributes.label}",
-        imageUrl = imageUrl,
-        price = price,
+        title = album.name,
+        subtitle = "${album.artistName} • ${album.genre}",
+        imageUrl = album.imageUrl,
+        price = album.price?.format(),
         onClick = onClick
     )
 }
@@ -119,7 +117,7 @@ fun RecommendationCard(
 fun GenreChipsRow(
     selectedGenre: MusicGenre,
     onGenreSelected: (MusicGenre) -> Unit,
-    strings: com.itunesexplorer.catalog.i18n.CatalogStrings,
+    strings: CatalogStrings,
     modifier: Modifier = Modifier
 ) {
     val genres = listOf(
