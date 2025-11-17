@@ -2,8 +2,8 @@ package com.itunesexplorer.catalog.data.mapper
 
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.data.models.RssFeedEntry
-import com.itunesexplorer.currency.domain.CurrencyFormatter
 import com.itunesexplorer.network.models.ITunesItem
 
 /**
@@ -20,8 +20,12 @@ object AlbumMapper {
         // Get the highest resolution image (last in the list)
         val imageUrl = entry.imImage.lastOrNull()?.label
 
-        // Get price label if available
-        val price = entry.imPrice?.label
+        // Create Money value object from price if available
+        val price = entry.imPrice?.let { priceData ->
+            val amount = priceData.attributes.amount.toDoubleOrNull()
+            val currency = priceData.attributes.currency
+            Money.fromOptional(amount, currency)
+        }
 
         return Album(
             id = entry.id.attributes.imId,
@@ -49,15 +53,8 @@ object AlbumMapper {
         // Get the best available image URL
         val imageUrl = item.artworkUrl100 ?: item.artworkUrl60 ?: item.artworkUrl30
 
-        // Format price if available
-        val collectionPrice = item.collectionPrice
-        val currency = item.currency
-
-        val price = if (collectionPrice != null && currency != null) {
-            CurrencyFormatter.format(collectionPrice, currency)
-        } else {
-            null
-        }
+        // Create Money value object if price is available
+        val price = Money.fromOptional(item.collectionPrice, item.currency)
 
         return Album(
             id = collectionId.toString(),

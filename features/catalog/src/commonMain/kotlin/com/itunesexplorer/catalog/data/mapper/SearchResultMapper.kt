@@ -1,8 +1,8 @@
 package com.itunesexplorer.catalog.data.mapper
 
 import com.itunesexplorer.catalog.data.CatalogConstants
+import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
-import com.itunesexplorer.currency.domain.CurrencyFormatter
 import com.itunesexplorer.network.models.ITunesItem
 
 /**
@@ -32,17 +32,13 @@ object SearchResultMapper {
         // Get the view URL (prefer track, fallback to collection)
         val viewUrl = item.trackViewUrl ?: item.collectionViewUrl ?: item.artistViewUrl
 
-        // Format price if available
-        val trackPrice = item.trackPrice
-        val collectionPrice = item.collectionPrice
-        val currency = item.currency
-
+        // Create Money value object if price is available
         val price = when {
-            trackPrice != null && currency != null -> {
-                CurrencyFormatter.format(trackPrice, currency)
+            item.trackPrice != null && item.currency != null -> {
+                Money.fromOptional(item.trackPrice, item.currency)
             }
-            collectionPrice != null && currency != null -> {
-                CurrencyFormatter.format(collectionPrice, currency)
+            item.collectionPrice != null && item.currency != null -> {
+                Money.fromOptional(item.collectionPrice, item.currency)
             }
             else -> null
         }
