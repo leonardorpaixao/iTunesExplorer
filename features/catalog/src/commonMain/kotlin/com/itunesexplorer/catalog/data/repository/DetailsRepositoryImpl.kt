@@ -1,6 +1,6 @@
 package com.itunesexplorer.catalog.data.repository
 
-import com.itunesexplorer.catalog.data.mapper.ErrorMapper
+import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.data.mapper.SearchResultMapper
 import com.itunesexplorer.catalog.domain.model.ItemDetails
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
@@ -16,7 +16,7 @@ class DetailsRepositoryImpl(
 ) : DetailsRepository {
 
     override suspend fun getItemDetails(itemId: String): com.itunesexplorer.core.common.domain.DomainResult<ItemDetails> {
-        return ErrorMapper.execute("Fetch details for item $itemId") {
+        return runCatchingDomain {
             val response = api.details(id = itemId)
 
             // Convert all items to domain models
@@ -24,7 +24,7 @@ class DetailsRepositoryImpl(
 
             // First item is the main item (collection/album)
             val mainItem = allItems.firstOrNull()
-                ?: throw IllegalStateException("No items found for ID $itemId")
+                ?: throw IllegalStateException("No items found for ID: $itemId")
 
             // Remaining items are related items (e.g., tracks)
             val relatedItems = allItems.drop(1)

@@ -1,6 +1,6 @@
 package com.itunesexplorer.catalog.data.repository
 
-import com.itunesexplorer.catalog.data.mapper.ErrorMapper
+import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.data.mapper.SearchResultMapper
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
@@ -25,7 +25,7 @@ class SearchRepositoryImpl(
         mediaType: MediaType,
         limit: Int
     ): DomainResult<List<SearchResult>> {
-        return ErrorMapper.execute("Search for '$query'") {
+        return runCatchingDomain {
             val country = countryManager.getCurrentCountryCode()
             val lang = languageManager.getITunesLanguageCode()
 

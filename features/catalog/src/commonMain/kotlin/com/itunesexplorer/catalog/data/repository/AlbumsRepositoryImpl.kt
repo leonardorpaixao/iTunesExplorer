@@ -1,11 +1,12 @@
 package com.itunesexplorer.catalog.data.repository
 
+import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.data.mapper.AlbumMapper
-import com.itunesexplorer.catalog.data.mapper.ErrorMapper
+import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
-import com.itunesexplorer.catalog.shared.data.api.CatalogApi
-import com.itunesexplorer.core.common.domain.DomainError
+import com.itunesexplorer.catalog.data.api.CatalogApi
+import com.itunesexplorer.core.common.domain.DomainResult
 import com.itunesexplorer.network.api.ITunesApi
 import com.itunesexplorer.network.models.MusicGenre
 import com.itunesexplorer.settings.country.CountryManager
@@ -22,9 +23,9 @@ class AlbumsRepositoryImpl(
     private val languageManager: LanguageManager
 ) : AlbumsRepository {
 
-    override suspend fun getTopAlbums(limit: Int): com.itunesexplorer.core.common.domain.DomainResult<List<Album>> {
-        return ErrorMapper.execute("Fetch top albums") {
-            val country = countryManager.getCurrentCountryCode() ?: "us"
+    override suspend fun getTopAlbums(limit: Int): DomainResult<List<Album>> {
+        return runCatchingDomain {
+            val country = countryManager.getCurrentCountryCode() ?: CatalogConstants.DEFAULT_COUNTRY_CODE
 
             // Use RSS feed for top albums
             val response = catalogApi.topAlbums(
@@ -39,8 +40,8 @@ class AlbumsRepositoryImpl(
     override suspend fun getAlbumsByGenre(
         genre: MusicGenre,
         limit: Int
-    ): com.itunesexplorer.core.common.domain.DomainResult<List<Album>> {
-        return ErrorMapper.execute("Fetch albums for genre ${genre.genreName}") {
+    ): DomainResult<List<Album>> {
+        return runCatchingDomain {
             val country = countryManager.getCurrentCountryCode()
             val lang = languageManager.getITunesLanguageCode()
 

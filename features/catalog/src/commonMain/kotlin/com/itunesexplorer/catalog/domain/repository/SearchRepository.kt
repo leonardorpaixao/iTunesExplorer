@@ -1,5 +1,6 @@
 package com.itunesexplorer.catalog.domain.repository
 
+import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.core.common.domain.DomainResult
 import com.itunesexplorer.network.models.MediaType
@@ -14,12 +15,12 @@ interface SearchRepository {
      *
      * @param query The search term
      * @param mediaType The type of media to search for
-     * @param limit Maximum number of results (default: 50)
+     * @param limit Maximum number of results
      * @return DomainResult containing list of search results or a domain error
      */
     suspend fun search(
         query: String,
         mediaType: MediaType,
-        limit: Int = 50
+        limit: Int = CatalogConstants.DEFAULT_SEARCH_LIMIT
     ): DomainResult<List<SearchResult>>
 }
