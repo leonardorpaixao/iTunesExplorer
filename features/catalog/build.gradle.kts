@@ -28,6 +28,16 @@ kotlin {
     }
 
     sourceSets {
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain.get())
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+
         val commonMain by getting {
             dependencies {
                 implementation(compose.runtime)
@@ -43,6 +53,7 @@ kotlin {
                 implementation(projects.core.settings)
                 implementation(projects.core.currency)
                 implementation(projects.core.error)
+                implementation(projects.core.logger)
                 implementation(projects.designSystem)
                 implementation(libs.lyricist)
                 implementation(libs.kotlinx.serialization.json)

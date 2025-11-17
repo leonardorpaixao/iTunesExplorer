@@ -30,7 +30,8 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kodein.di)
             implementation(libs.voyager.screenModel)
-            implementation(project(":core:currency"))
+            implementation(projects.core.currency)
+            implementation(projects.core.logger)
         }
 
         val desktopMain by getting
