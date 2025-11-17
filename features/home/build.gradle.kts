@@ -39,10 +39,10 @@ kotlin {
                 implementation(libs.voyager.kodein)
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
-                implementation(project(":core:common"))
-                implementation(project(":design-system"))
-                implementation(project(":features:catalog"))
-                implementation(project(":features:preferences"))
+                implementation(projects.core.common)
+                implementation(projects.designSystem)
+                implementation(projects.features.catalog)
+                implementation(projects.features.preferences)
                 implementation(libs.lyricist)
             }
         }

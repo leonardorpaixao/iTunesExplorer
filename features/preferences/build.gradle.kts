@@ -39,9 +39,9 @@ kotlin {
                 implementation(libs.voyager.bottom.sheet.navigator)
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
-                implementation(project(":core:common"))
-                implementation(project(":core:settings"))
-                implementation(project(":design-system"))
+                implementation(projects.core.common)
+                implementation(projects.core.settings)
+                implementation(projects.designSystem)
                 implementation(libs.lyricist)
             }
         }
