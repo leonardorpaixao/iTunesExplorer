@@ -37,27 +37,33 @@ The project follows a modular architecture with clear separation of concerns:
 iTunesExplorer/
 ├── composeApp/          # Main application module
 ├── core/
-│   ├── network/         # Network layer and API
 │   ├── error/           # Error handling
-│   └── common/          # Common utilities
+│   ├── common/          # Common utilities and MVI base classes
+│   ├── settings/        # User settings and preferences
+│   └── currency/        # Currency formatting utilities
 ├── design-system/       # Reusable UI components
 └── features/
-    └── home/            # Home screen with search and browse
+    ├── home/            # Home screen with bottom navigation
+    ├── catalog/         # iTunes catalog browsing and search
+    └── preferences/     # User preferences and settings
 ```
 
 ### Core Modules (`core/`)
-- **`core:network`** - Network layer using Ktorfit (type-safe Ktor wrapper) for the iTunes Search API
-  - Platform-specific HTTP clients: OkHttp (Android), Darwin (iOS), CIO (Desktop/JVM)
-  - Ktorfit requires KSP for code generation
-  - Base URL: `https://itunes.apple.com/`
-  - Main endpoints: `/search` and `/lookup`
-
 - **`core:error`** - Centralized error handling
+  - `DomainError`: Sealed class for domain errors
+  - `runCatchingDomain`: Extension for error handling
 
 - **`core:common`** - Shared utilities, extensions, and MVI base classes
   - `MviViewModel<State, Intent, Effect>`: Base class for all ViewModels
   - `ViewState`, `ViewIntent`, `ViewEffect`: MVI marker interfaces
   - Effect channel for one-time side effects
+
+- **`core:settings`** - User settings management
+  - Country and language preferences
+  - Settings persistence
+
+- **`core:currency`** - Currency formatting utilities
+  - Locale-aware currency formatting
 
 ### Design System (`design-system/`)
 - Reusable UI components and theming
@@ -71,21 +77,39 @@ Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
   - **HomeScreenModel**: Manages tab selection (Álbuns, Pesquisa, Preferências)
     - State: `selectedTab`
     - Intent: `SelectTab`
-  - **AlbumsTabModel**: Loads and displays top album recommendations
-    - State: `recommendations`, `isLoading`, `error`
-    - Intent: `LoadRecommendations`, `Retry`
-    - Effect: `ShowError`
-  - **SearchTabModel**: Text search with MediaType filters
-    - State: `items`, `searchQuery`, `selectedMediaType`, `isLoading`, `error`
-    - Intent: `UpdateSearchQuery`, `Search`, `SelectMediaType`, `Retry`, `LoadTopContent`
-    - Effect: `ShowError`
-  - **PreferencesTabModel**: Placeholder for future settings
-  - All ViewModels extend `MviViewModel<State, Intent, Effect>`
-  - Each tab has its own ViewState, ViewIntent, and ViewEffect sealed classes
   - **UI Structure**:
     - TopAppBar with app name (clickable to return to Albums tab)
     - Bottom navigation with 3 tabs
     - Content area with tab-specific screens
+
+- **`features:catalog`** - iTunes catalog browsing and search
+  - **Network Layer** (internal):
+    - `ITunesApi`: API interface for iTunes Search API
+    - `ITunesApiImpl`: Ktor-based implementation
+    - Platform-specific HTTP clients: OkHttp (Android), Darwin (iOS)
+    - Base URL: `https://itunes.apple.com/`
+    - Main endpoints: `/search` and `/lookup`
+  - **Domain Layer**:
+    - `MediaType`: Enum for media types (music, podcast, etc.)
+    - `MusicGenre`: Enum for music genres
+    - Repository interfaces: `SearchRepository`, `AlbumsRepository`, `DetailsRepository`
+  - **Presentation Layer**:
+    - **AlbumsTabModel**: Displays top album recommendations
+      - State: `recommendations`, `isLoading`, `error`, `selectedGenre`
+      - Intent: `LoadRecommendations`, `SelectGenre`, `Retry`
+      - Effect: `ShowError`
+    - **SearchTabModel**: Text search with MediaType filters
+      - State: `items`, `searchQuery`, `selectedMediaType`, `isLoading`, `error`, `showRegionHint`
+      - Intent: `UpdateSearchQuery`, `Search`, `SelectMediaType`, `Retry`
+      - Effect: `ShowError`
+    - **DetailsScreenModel**: Item details view
+      - State: `item`, `relatedItems`, `isLoading`, `error`
+      - Intent: `Retry`
+      - Effect: `ShowError`
+
+- **`features:preferences`** - User preferences and settings
+  - Country and language selection
+  - Settings persistence
 
 ### Main App (`composeApp/`)
 - Platform-specific entry points (Android, iOS, Desktop)
@@ -98,8 +122,9 @@ Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
 ### Dependency Injection
 - **Kodein-DI** is used for DI across all platforms
 - DI setup in `composeApp/src/commonMain/kotlin/com/itunesexplorer/di/AppModule.kt`
-- Modules are imported: `networkModule`, `homeModule`
+- Modules are imported: `settingsModule`, `currencyModule`, `homeModule`
 - Each feature module provides its own Kodein module
+- `catalogModule` is imported by `homeModule` (network setup included)
 - Compose integration via `org.kodein.di.compose.withDI`
 
 ### Navigation
@@ -228,15 +253,27 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
    Button(onClick = { screenModel.onAction(MyIntent.DoAction) })
    ```
 
-### Modifying Network Layer
-1. Update API interface in `core:network/src/commonMain/.../ITunesApi.kt`
-2. Add/modify data models in `ITunesModels.kt`
-3. KSP will regenerate code on next build
+### Modifying iTunes API
+1. Update API interface in `features/catalog/src/commonMain/kotlin/com/itunesexplorer/catalog/data/api/ITunesApi.kt`
+2. Add/modify data models in `features/catalog/src/commonMain/kotlin/com/itunesexplorer/catalog/data/api/ITunesModels.kt`
+3. Update mappers in `features/catalog/src/commonMain/kotlin/com/itunesexplorer/catalog/data/mapper/` to handle new fields
+4. All API classes are marked `internal` - only domain models should be public
 
 ### iTunes Search API
 - Public API, no authentication required
 - Documentation: https://developer.apple.com/library/archive/documentation/AudioVideo/Conceptual/iTuneSearchAPI/index.html
 - Default parameters: limit=50, country=US, lang=en_us
+
+#### API Limitations
+**⚠️ Important**: The iTunes Search API has the following limitations:
+- **No pagination support**: The API does not provide `offset` or `page` parameters
+- **Maximum results**: 200 items per request (using `limit` parameter, range: 1-200)
+- **No cursor/token**: No mechanism to retrieve results beyond the first 200 items
+- **Workarounds**:
+  - Use more specific search terms to narrow results
+  - Adjust `limit` parameter (up to 200) to get more results per request
+  - Implement client-side filtering/sorting on received results
+  - Use different `media` or `entity` filters to segment searches
 
 ### Testing ViewModels (MVI Pattern)
 All ViewModels have comprehensive unit tests using:
