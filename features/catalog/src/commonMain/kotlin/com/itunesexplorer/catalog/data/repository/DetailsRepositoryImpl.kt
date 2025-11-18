@@ -2,6 +2,7 @@ package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.domain.model.ItemDetails
+import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.core.error.DomainResult
 import com.itunesexplorer.core.error.runCatchingDomain
@@ -19,7 +20,7 @@ internal class DetailsRepositoryImpl(
     private val languageManager: LanguageManager
 ) : DetailsRepository {
 
-    override suspend fun getItemDetails(itemId: String): DomainResult<ItemDetails> {
+    override suspend fun getItemDetails(itemId: String): DomainResult<SearchResult> {
         return runCatchingDomain {
             val country = countryManager.getCurrentCountryCode()
             val lang = languageManager.getITunesLanguageCode()
@@ -30,19 +31,10 @@ internal class DetailsRepositoryImpl(
                 country = country
             )
 
-            val allItems = response.results.map {
-                it.toSearchResult()
-            }
-
-            val mainItem = allItems.firstOrNull()
+            val details = response.results.firstOrNull()?.toSearchResult()
                 ?: throw IllegalStateException("No items found for ID: $itemId")
 
-            val relatedItems = allItems.drop(1)
-
-            ItemDetails(
-                mainItem = mainItem,
-                relatedItems = relatedItems,
-            )
+            details
         }
     }
 }

@@ -6,5 +6,4 @@ package com.itunesexplorer.catalog.domain.model
  */
 data class ItemDetails(
     val mainItem: SearchResult,
-    val relatedItems: List<SearchResult>,
 )

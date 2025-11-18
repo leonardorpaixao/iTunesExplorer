@@ -116,26 +116,6 @@ fun DetailsContent(
                     item {
                         ItemDetailsCard(item = state.item, onAction = onAction, strings = strings)
                     }
-
-                    if (state.relatedItems.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = strings.relatedItems,
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.padding(vertical = 8.dp)
-                            )
-                        }
-
-                        items(state.relatedItems) { relatedItem ->
-                            MediaCard(
-                                title = relatedItem.name,
-                                subtitle = relatedItem.artistName ?: CatalogConstants.UNKNOWN_ARTIST,
-                                imageUrl = relatedItem.imageUrl,
-                                price = relatedItem.price?.format(),
-                                onClick = { }
-                            )
-                        }
-                    }
                 }
 
                 Button(

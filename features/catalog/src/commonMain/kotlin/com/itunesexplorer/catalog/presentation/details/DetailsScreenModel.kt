@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 
 data class DetailsViewState(
     val item: SearchResult? = null,
-    val relatedItems: List<SearchResult> = emptyList(),
     val isLoading: Boolean = false,
     val error: DomainError? = null
 ) : ViewState
@@ -50,8 +49,7 @@ class DetailsScreenModel(
                     mutableState.update {
                         it.copy(
                             isLoading = false,
-                            item = itemDetails.mainItem,
-                            relatedItems = itemDetails.relatedItems
+                            item = itemDetails,
                         )
                     }
                 },

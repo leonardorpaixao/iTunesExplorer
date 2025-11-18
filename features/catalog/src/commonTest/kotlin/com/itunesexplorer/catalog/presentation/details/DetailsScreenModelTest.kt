@@ -1,7 +1,6 @@
 package com.itunesexplorer.catalog.presentation.details
 
 import app.cash.turbine.test
-import com.itunesexplorer.catalog.domain.model.ItemDetails
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
@@ -43,15 +42,8 @@ class DetailsScreenModelTest {
 
     @Test
     fun `initial state should load details automatically`() = runTest(testDispatcher) {
-        val mainItem = createSearchResult("123", "Test Album", "Test Artist")
-        val relatedItems = listOf(
-            createSearchResult("124", "Track 1", "Test Artist"),
-            createSearchResult("125", "Track 2", "Test Artist")
-        )
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = mainItem,
-            relatedItems = relatedItems,
-        )
+        val item = createSearchResult("123", "Test Album", "Test Artist")
+        fakeRepository.mockItem = item
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
         advanceUntilIdle()
@@ -61,16 +53,12 @@ class DetailsScreenModelTest {
         assertNull(state.error)
         assertNotNull(state.item)
         assertEquals("Test Album", state.item?.name)
-        assertEquals(2, state.relatedItems.size)
-        assertEquals("Track 1", state.relatedItems[0].name)
+        assertEquals("Test Artist", state.item?.artistName)
     }
 
     @Test
     fun `should show loading state while fetching details`() = runTest(testDispatcher) {
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("123", "Album", "Artist"),
-            relatedItems = emptyList(),
-        )
+        fakeRepository.mockItem = createSearchResult("123", "Album", "Artist")
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
 
@@ -100,31 +88,24 @@ class DetailsScreenModelTest {
         assertNotNull(state.error)
         assertTrue(state.error is DomainError.NetworkError)
         assertNull(state.item)
-        assertTrue(state.relatedItems.isEmpty())
     }
+
 
     @Test
     fun `onAction Retry should reload details`() = runTest(testDispatcher) {
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("123", "Original", "Artist"),
-            relatedItems = emptyList(),
-        )
+        fakeRepository.mockItem = createSearchResult("123", "Original", "Artist")
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
         advanceUntilIdle()
 
         // Change the mock data
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("123", "Updated", "Artist"),
-            relatedItems = listOf(createSearchResult("124", "New Track", "Artist")),
-        )
+        fakeRepository.mockItem = createSearchResult("123", "Updated", "Artist")
 
         viewModel.onAction(DetailsIntent.Retry)
         advanceUntilIdle()
 
         val state = viewModel.state.value
         assertEquals("Updated", state.item?.name)
-        assertEquals(1, state.relatedItems.size)
     }
 
     @Test
@@ -139,10 +120,7 @@ class DetailsScreenModelTest {
 
         // Fix the repository and retry
         fakeRepository.shouldFail = false
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("123", "Album", "Artist"),
-            relatedItems = emptyList(),
-        )
+        fakeRepository.mockItem = createSearchResult("123", "Album", "Artist")
 
         viewModel.onAction(DetailsIntent.Retry)
         advanceUntilIdle()
@@ -153,11 +131,8 @@ class DetailsScreenModelTest {
     }
 
     @Test
-    fun `should handle item with no related items`() = runTest(testDispatcher) {
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("123", "Single Track", "Artist"),
-            relatedItems = emptyList(),
-        )
+    fun `should load item details successfully`() = runTest(testDispatcher) {
+        fakeRepository.mockItem = createSearchResult("123", "Single Track", "Artist")
 
         viewModel = DetailsScreenModel(fakeRepository, "123")
         advanceUntilIdle()
@@ -165,27 +140,23 @@ class DetailsScreenModelTest {
         val state = viewModel.state.value
         assertNotNull(state.item)
         assertEquals("Single Track", state.item?.name)
-        assertTrue(state.relatedItems.isEmpty())
+        assertEquals("Artist", state.item?.artistName)
+        assertFalse(state.isLoading)
+        assertNull(state.error)
     }
 
     @Test
-    fun `should handle item with multiple related items`() = runTest(testDispatcher) {
-        val relatedItems = (1..10).map { i ->
-            createSearchResult("12$i", "Track $i", "Artist")
-        }
-
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("100", "Album", "Artist"),
-            relatedItems = relatedItems,
-        )
+    fun `should preserve item data across state updates`() = runTest(testDispatcher) {
+        val item = createSearchResult("100", "Album", "Artist")
+        fakeRepository.mockItem = item
 
         viewModel = DetailsScreenModel(fakeRepository, "100")
         advanceUntilIdle()
 
         val state = viewModel.state.value
-        assertEquals(10, state.relatedItems.size)
-        assertEquals("Track 1", state.relatedItems[0].name)
-        assertEquals("Track 10", state.relatedItems[9].name)
+        assertEquals("Album", state.item?.name)
+        assertEquals("Artist", state.item?.artistName)
+        assertEquals("100", state.item?.id)
     }
 
     private fun createSearchResult(
@@ -213,13 +184,13 @@ class DetailsScreenModelTest {
 
 class FakeDetailsRepository : DetailsRepository {
     var shouldFail = false
-    var mockItemDetails: ItemDetails? = null
+    var mockItem: SearchResult? = null
 
-    override suspend fun getItemDetails(itemId: String): DomainResult<ItemDetails> {
+    override suspend fun getItemDetails(itemId: String): DomainResult<SearchResult> {
         return if (shouldFail) {
             DomainResult.failure(DomainError.NetworkError("Failed to load item details"))
         } else {
-            mockItemDetails?.let { DomainResult.success(it) }
+            mockItem?.let { DomainResult.success(it) }
                 ?: DomainResult.failure(DomainError.NotFoundError("Item not found"))
         }
     }
