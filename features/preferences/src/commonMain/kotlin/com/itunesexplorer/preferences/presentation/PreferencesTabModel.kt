@@ -2,9 +2,10 @@ package com.itunesexplorer.preferences.presentation
 
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.ViewEffect
+import com.itunesexplorer.common.mvi.NoEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.i18n.Locales
 import com.itunesexplorer.preferences.domain.Language
 import com.itunesexplorer.settings.data.PreferencesRepository
@@ -20,7 +21,8 @@ data class PreferencesViewState(
     val showConfirmDialog: Boolean = false,
     val isLoading: Boolean = false,
     val availableCountries: List<com.itunesexplorer.preferences.domain.Country> = emptyList(),
-    val selectedCountry: String = "US"
+    val selectedCountry: String = "US",
+    val error: DomainError? = null
 ) : ViewState
 
 sealed class PreferencesIntent : ViewIntent {
@@ -31,13 +33,9 @@ sealed class PreferencesIntent : ViewIntent {
     data object LoadCountries : PreferencesIntent()
 }
 
-sealed class PreferencesEffect : ViewEffect {
-    data class ShowError(val message: String) : PreferencesEffect()
-}
-
 class PreferencesTabModel(
     private val preferencesRepository: PreferencesRepository
-) : MviViewModel<PreferencesViewState, PreferencesIntent, PreferencesEffect>(
+) : MviViewModel<PreferencesViewState, PreferencesIntent, NoEffect>(
     initialState = PreferencesViewState()
 ) {
 
@@ -67,7 +65,7 @@ class PreferencesTabModel(
 
     private fun loadLanguages() {
         screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true) }
+            mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
                 // Get saved language or use current from LanguageManager
@@ -92,8 +90,12 @@ class PreferencesTabModel(
                     )
                 }
             } catch (e: Exception) {
-                mutableState.update { it.copy(isLoading = false) }
-                sendEffect(PreferencesEffect.ShowError(e.message ?: "Failed to load languages"))
+                mutableState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = DomainError.UnknownError(e.message ?: "Failed to load languages")
+                    )
+                }
             }
         }
     }
@@ -125,17 +127,18 @@ class PreferencesTabModel(
                     it.copy(
                         selectedLanguage = pendingLanguage,
                         pendingLanguage = null,
-                        showConfirmDialog = false
+                        showConfirmDialog = false,
+                        error = null
                     )
                 }
             } catch (e: Exception) {
                 mutableState.update {
                     it.copy(
                         pendingLanguage = null,
-                        showConfirmDialog = false
+                        showConfirmDialog = false,
+                        error = DomainError.UnknownError(e.message ?: "Failed to change language")
                     )
                 }
-                sendEffect(PreferencesEffect.ShowError(e.message ?: "Failed to change language"))
             }
         }
     }
@@ -161,14 +164,19 @@ class PreferencesTabModel(
                 mutableState.update {
                     it.copy(
                         availableCountries = countries,
-                        selectedCountry = savedCountry ?: "" // Empty string for "None"
+                        selectedCountry = savedCountry ?: "", // Empty string for "None"
+                        error = null
                     )
                 }
 
                 // Initialize CountryManager if a country was saved
                 savedCountry?.let { CountryManager.initialize(it) }
             } catch (e: Exception) {
-                sendEffect(PreferencesEffect.ShowError(e.message ?: "Failed to load countries"))
+                mutableState.update {
+                    it.copy(
+                        error = DomainError.UnknownError(e.message ?: "Failed to load countries")
+                    )
+                }
             }
         }
     }
