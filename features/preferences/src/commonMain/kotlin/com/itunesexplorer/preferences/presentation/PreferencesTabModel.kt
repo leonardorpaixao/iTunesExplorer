@@ -71,12 +71,12 @@ class PreferencesTabModel(
                 val currentLanguage = savedLanguage ?: LanguageManager.getCurrentLanguageTag() ?: Locales.EN
 
                 val languages = listOf(
-                    Language(Locales.EN, "English"),
-                    Language(Locales.PT_BR, "Português (Brasil)"),
-                    Language(Locales.PT_PT, "Português (Portugal)"),
-                    Language(Locales.FR, "Français"),
-                    Language(Locales.ES, "Español"),
-                    Language(Locales.DE, "Deutsch")
+                    Language(Locales.EN, LANGUAGE_NAME_ENGLISH),
+                    Language(Locales.PT_BR, LANGUAGE_NAME_PORTUGUESE_BRAZIL),
+                    Language(Locales.PT_PT, LANGUAGE_NAME_PORTUGUESE_PORTUGAL),
+                    Language(Locales.FR, LANGUAGE_NAME_FRENCH),
+                    Language(Locales.ES, LANGUAGE_NAME_SPANISH),
+                    Language(Locales.DE, LANGUAGE_NAME_GERMAN)
                 )
 
                 mutableState.update {
@@ -90,7 +90,7 @@ class PreferencesTabModel(
                 mutableState.update {
                     it.copy(
                         isLoading = false,
-                        error = DomainError.UnknownError(e.message ?: "Failed to load languages")
+                        error = DomainError.UnknownError(e.message ?: ERROR_FAILED_TO_LOAD_LANGUAGES)
                     )
                 }
             }
@@ -131,7 +131,7 @@ class PreferencesTabModel(
                     it.copy(
                         pendingLanguage = null,
                         showConfirmDialog = false,
-                        error = DomainError.UnknownError(e.message ?: "Failed to change language")
+                        error = DomainError.UnknownError(e.message ?: ERROR_FAILED_TO_CHANGE_LANGUAGE)
                     )
                 }
             }
@@ -165,10 +165,23 @@ class PreferencesTabModel(
             } catch (e: Exception) {
                 mutableState.update {
                     it.copy(
-                        error = DomainError.UnknownError(e.message ?: "Failed to load countries")
+                        error = DomainError.UnknownError(e.message ?: ERROR_FAILED_TO_LOAD_COUNTRIES)
                     )
                 }
             }
         }
+    }
+
+    companion object {
+        private const val LANGUAGE_NAME_ENGLISH = "English"
+        private const val LANGUAGE_NAME_PORTUGUESE_BRAZIL = "Português (Brasil)"
+        private const val LANGUAGE_NAME_PORTUGUESE_PORTUGAL = "Português (Portugal)"
+        private const val LANGUAGE_NAME_FRENCH = "Français"
+        private const val LANGUAGE_NAME_SPANISH = "Español"
+        private const val LANGUAGE_NAME_GERMAN = "Deutsch"
+
+        private const val ERROR_FAILED_TO_LOAD_LANGUAGES = "Failed to load languages"
+        private const val ERROR_FAILED_TO_CHANGE_LANGUAGE = "Failed to change language"
+        private const val ERROR_FAILED_TO_LOAD_COUNTRIES = "Failed to load countries"
     }
 }
