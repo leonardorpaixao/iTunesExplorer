@@ -41,7 +41,8 @@ iTunesExplorer/
 │   ├── common/          # Common utilities and MVI base classes
 │   ├── settings/        # User settings and preferences
 │   ├── currency/        # Currency formatting utilities
-│   └── logger/          # Multiplatform logging
+│   ├── logger/          # Multiplatform logging
+│   └── network/         # HTTP client configuration
 ├── design-system/       # Reusable UI components
 └── features/
     ├── home/            # Home screen with bottom navigation
@@ -72,6 +73,16 @@ iTunesExplorer/
   - Platform implementations: Android (Logcat), iOS (NSLog), Desktop (colored console)
   - Integrated with MviViewModel for automatic Intent/State/Effect logging
 
+- **`core:network`** - HTTP client configuration
+  - `createJsonConfig()`: Configured JSON serializer (lenient, ignoreUnknownKeys, coerceInputValues)
+  - `createPlatformHttpClient()`: expect/actual for platform-specific HTTP clients
+  - Platform implementations:
+    - **Android**: OkHttp engine with automatic content encoding
+    - **iOS**: Darwin engine with Content-Length workaround (`Accept-Encoding: identity`)
+    - **Desktop**: CIO engine (pure Kotlin, async)
+  - Features: JSON content negotiation, configurable logging (based on Logger.logLevel), 30s timeouts
+  - `networkModule`: Kodein DI module binding Json and HttpClient singletons
+
 ### Design System (`design-system/`)
 - Reusable UI components and theming
 - Material3-based design system
@@ -90,10 +101,9 @@ Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
     - Content area with tab-specific screens
 
 - **`features:catalog`** - iTunes catalog browsing and search
-  - **Network Layer** (internal):
+  - **API Layer** (internal):
     - `ITunesApi`: API interface for iTunes Search API
-    - `ITunesApiImpl`: Ktor-based implementation
-    - Platform-specific HTTP clients: OkHttp (Android), Darwin (iOS)
+    - `ITunesApiImpl`: Ktor-based implementation using `core:network`
     - Base URL: `https://itunes.apple.com/`
     - Main endpoints: `/search` and `/lookup`
   - **Domain Layer**:
@@ -129,9 +139,12 @@ Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
 ### Dependency Injection
 - **Kodein-DI** is used for DI across all platforms
 - DI setup in `composeApp/src/commonMain/kotlin/com/itunesexplorer/di/AppModule.kt`
-- Modules are imported: `settingsModule`, `currencyModule`, `homeModule`
+- Modules are imported: `settingsModule`, `currencyModule`, `homeModule`, `loggerModule`
 - Each feature module provides its own Kodein module
-- `catalogModule` is imported by `homeModule` (network setup included)
+- Module hierarchy:
+  - `appDI` → `homeModule` → `catalogModule` → `networkModule`
+  - `networkModule` provides `Json` and `HttpClient` singletons
+  - `catalogModule` imports `networkModule` for HTTP client configuration
 - Compose integration via `org.kodein.di.compose.withDI`
 
 ### Navigation
@@ -141,11 +154,14 @@ Feature modules follow **MVI (Model-View-Intent)** pattern with Voyager:
 - Navigator initialized in `App.kt` with `HomeScreen` as the starting point
 
 ### Network Layer
-- **Ktorfit** provides type-safe API definitions
-- Interface-based API declarations with annotations (`@GET`, `@Query`)
-- Platform-specific Ktor clients configured in `networkModule`
-- JSON serialization with Kotlinx Serialization
-- Configuration: lenient parsing, ignore unknown keys, 30s timeout
+- **core:network** module provides centralized HTTP client configuration
+- Platform-specific Ktor clients: OkHttp (Android), Darwin (iOS), CIO (Desktop)
+- expect/actual pattern for platform-specific implementations
+- JSON serialization with Kotlinx Serialization (lenient parsing, ignore unknown keys)
+- Configurable logging based on `Logger.logLevel`
+- 30s timeouts for all requests (request/connect/socket)
+- `networkModule` binds `Json` and `HttpClient` as singletons in DI
+- Features can inject `HttpClient` for API calls (e.g., `ITunesApi` in catalog)
 
 ### State Management - MVI Pattern
 The project implements **MVI (Model-View-Intent)** for predictable, unidirectional data flow:
