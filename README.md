@@ -82,21 +82,58 @@ Through this project, I gained hands-on experience solving complex multiplatform
 - **Type-Safe Error Handling**: Domain-specific error types with proper propagation
 - **Internationalization**: Country/language support with localized formatting
 
-## 🛠️ Tech Stack
+## 🛠️ Technologies
 
-| Category | Technologies |
+### Core Technologies
+
+| Category | Technology | Version | Purpose |
+|----------|-----------|---------|---------|
+| **Language** | Kotlin | 2.1.10 | Primary development language |
+| **Framework** | Kotlin Multiplatform | 2.1.10 | Cross-platform code sharing |
+| **UI Framework** | Compose Multiplatform | 1.7.1 | Declarative UI across platforms |
+| **Build System** | Gradle | 8.10 | Build automation with version catalogs |
+
+### Architecture & Patterns
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| **Voyager** | 1.1.0-beta02 | Multiplatform navigation with screen models |
+| **Kodein-DI** | 7.21.2 | Dependency injection framework |
+| **Kotlinx Coroutines** | 1.9.0 | Asynchronous programming |
+
+### Networking & Data
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| **Ktor Client** | 3.0.2 | HTTP client with platform-specific engines |
+| **Ktor OkHttp** | 3.0.2 | Android HTTP engine (optimized) |
+| **Ktor Darwin** | 3.0.2 | iOS HTTP engine (native) |
+| **Ktor CIO** | 3.0.2 | Desktop HTTP engine (pure Kotlin) |
+| **Kotlinx Serialization** | 1.7.1 | JSON serialization/deserialization |
+
+### UI & Media
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| **Material3** | (via Compose) | Material Design 3 components |
+| **Coil** | 3.0.4 | Async image loading for all platforms |
+| **Lyricist** | 1.7.0 | Internationalization (i18n) support |
+
+### Testing
+
+| Library | Version | Purpose |
+|---------|---------|---------|
+| **Kotlin Test** | 2.1.10 | Multiplatform unit testing |
+| **Kotlinx Coroutines Test** | 1.9.0 | Coroutine testing utilities |
+| **Turbine** | 1.1.0 | Flow testing library |
+
+### Platform-Specific
+
+| Platform | Technologies |
 |----------|-------------|
-| **Language** | Kotlin 2.1.10 |
-| **Framework** | Kotlin Multiplatform (KMP) |
-| **UI** | Compose Multiplatform 1.7.1 |
-| **Navigation** | Voyager 1.1.0-beta02 |
-| **Dependency Injection** | Kodein-DI 7.21.2 |
-| **Networking** | Ktor 3.0.2 (OkHttp for Android, Darwin for iOS, CIO for Desktop) |
-| **Serialization** | Kotlinx Serialization 1.7.1 |
-| **Async** | Kotlinx Coroutines 1.9.0 |
-| **Image Loading** | Coil 3.0.4 |
-| **Testing** | Kotlin Test, Kotlinx Coroutines Test, Turbine 1.1.0 |
-| **Build System** | Gradle 8.10 with Version Catalogs |
+| **Android** | Activity Compose, Kodein Android extensions |
+| **iOS** | Darwin native APIs, NSLog logging |
+| **Desktop** | Java 11+, Swing integration |
 
 ## 🏗️ Architecture
 
@@ -144,6 +181,61 @@ iTunesExplorer/
 - **core/logger**: Structured logging with configurable levels
 - **features/catalog**: Complete iTunes integration (API, domain, presentation)
 - **design-system**: Platform-agnostic Compose components
+
+### Module Dependencies
+
+The following diagram shows the dependency graph between modules:
+
+```
+composeApp (main app)
+├── features:home
+│   └── features:catalog
+│       ├── core:network
+│       │   └── core:logger
+│       ├── core:error
+│       ├── core:common
+│       │   └── core:logger
+│       ├── design-system
+│       └── core:settings
+│           ├── core:common
+│           └── core:logger
+├── features:preferences
+│   ├── core:settings
+│   ├── core:common
+│   ├── design-system
+│   └── core:error
+├── core:currency
+│   └── core:common
+└── design-system
+
+Core Modules (foundational):
+┌─────────────┐
+│ core:logger │  ← No dependencies (foundation)
+└─────────────┘
+      ▲
+      │
+┌─────────────┐
+│ core:common │  ← Depends on logger
+└─────────────┘
+      ▲
+      ├─────────────────────────┐
+      │                         │
+┌─────────────┐         ┌──────────────┐
+│ core:error  │         │ core:network │
+└─────────────┘         └──────────────┘
+                               ▲
+                               │
+                        ┌──────────────┐
+                        │ core:settings│
+                        └──────────────┘
+```
+
+**Dependency Rules**:
+- Core modules are independent and reusable
+- Features depend on core modules, never the reverse
+- Features can depend on other features (home → catalog)
+- All modules with state management depend on `core:common` for MVI
+- Platform-specific code uses `expect/actual` declarations
 
 📚 **Detailed Documentation**: See [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md) for complete architecture guide
 
@@ -193,13 +285,63 @@ open iosApp/iosApp.xcodeproj
 
 ### Available Gradle Tasks
 
-| Task | Description |
-|------|-------------|
-| `runDesktop` | Runs the Desktop (JVM) application |
-| `runAndroid` | Installs and runs on Android device/emulator |
-| `buildIosSimulator` | Compiles iOS framework for simulator (arm64) |
-| `buildIosDevice` | Compiles iOS framework for physical device (arm64) |
-| `clean` | Cleans all build artifacts |
+#### Application Tasks
+```bash
+# Run Desktop application (fastest way to test)
+./gradlew :composeApp:runDesktop
+
+# Install and run on Android device/emulator
+./gradlew :composeApp:runAndroid
+```
+
+#### iOS Build Tasks
+```bash
+# Build for iOS Simulator (Apple Silicon Macs)
+./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+
+# Build for iOS Simulator (Intel Macs)
+./gradlew :composeApp:linkDebugFrameworkIosX64
+
+# Build for physical iOS device
+./gradlew :composeApp:linkDebugFrameworkIosArm64
+
+# Release builds
+./gradlew :composeApp:linkReleaseFrameworkIosSimulatorArm64
+./gradlew :composeApp:linkReleaseFrameworkIosArm64
+```
+
+#### Testing Tasks
+```bash
+# Run all tests across all modules
+./gradlew allTests
+
+# Run tests for specific target
+./gradlew testDebugUnitTest          # Android tests
+./gradlew desktopTest                # Desktop tests
+./gradlew iosSimulatorArm64Test      # iOS simulator tests
+
+# Run tests for specific module
+./gradlew :features:catalog:testDebugUnitTest
+./gradlew :features:home:testDebugUnitTest
+./gradlew :features:preferences:testDebugUnitTest
+./gradlew :core:currency:testDebugUnitTest
+./gradlew :core:settings:testDebugUnitTest
+```
+
+#### Build & Verification
+```bash
+# Clean all build artifacts
+./gradlew clean
+
+# Run all checks (tests + linting)
+./gradlew check
+
+# Build everything
+./gradlew build
+
+# Run Android lint
+./gradlew lint
+```
 
 ## 🧪 Testing
 
