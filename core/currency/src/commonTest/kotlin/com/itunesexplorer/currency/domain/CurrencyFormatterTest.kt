@@ -109,69 +109,6 @@ class CurrencyFormatterTest {
     }
 
     @Test
-    fun `formatWithCountry should use country's currency`() {
-        val result = CurrencyFormatter.formatWithCountry(12.99, "US")
-        assertEquals("$12.99", result)
-    }
-
-    @Test
-    fun `formatWithCountry should work for Brazil`() {
-        val result = CurrencyFormatter.formatWithCountry(50.00, "BR")
-        assertEquals("R$50.00", result)
-    }
-
-    @Test
-    fun `formatWithCountry should default to USD for unknown country`() {
-        val result = CurrencyFormatter.formatWithCountry(10.00, "XX")
-        assertEquals("$10.00", result)
-    }
-
-    @Test
-    fun `formatOrDefault should return formatted price when not null`() {
-        val result = CurrencyFormatter.formatOrDefault(12.99, "USD")
-        assertEquals("$12.99", result)
-    }
-
-    @Test
-    fun `formatOrDefault should return default when price is null`() {
-        val result = CurrencyFormatter.formatOrDefault(null, "USD", defaultValue = "—")
-        assertEquals("—", result)
-    }
-
-    @Test
-    fun `formatOrDefault should return default when currency is null`() {
-        val result = CurrencyFormatter.formatOrDefault(12.99, null, defaultValue = "N/A")
-        assertEquals("N/A", result)
-    }
-
-    @Test
-    fun `getSymbol should return correct symbol for currency`() {
-        assertEquals("$", CurrencyFormatter.getSymbol("USD"))
-        assertEquals("€", CurrencyFormatter.getSymbol("EUR"))
-        assertEquals("£", CurrencyFormatter.getSymbol("GBP"))
-        assertEquals("¥", CurrencyFormatter.getSymbol("JPY"))
-        assertEquals("₹", CurrencyFormatter.getSymbol("INR"))
-    }
-
-    @Test
-    fun `getSymbol should return code for unknown currency`() {
-        assertEquals("XYZ", CurrencyFormatter.getSymbol("XYZ"))
-    }
-
-    @Test
-    fun `getName should return correct name for currency`() {
-        assertEquals("US Dollar", CurrencyFormatter.getName("USD"))
-        assertEquals("Euro", CurrencyFormatter.getName("EUR"))
-        assertEquals("British Pound", CurrencyFormatter.getName("GBP"))
-        assertEquals("Japanese Yen", CurrencyFormatter.getName("JPY"))
-    }
-
-    @Test
-    fun `getName should return code for unknown currency`() {
-        assertEquals("XYZ", CurrencyFormatter.getName("XYZ"))
-    }
-
-    @Test
     fun `format should be case-insensitive for currency codes`() {
         val upper = CurrencyFormatter.format(12.99, "USD")
         val lower = CurrencyFormatter.format(12.99, "usd")

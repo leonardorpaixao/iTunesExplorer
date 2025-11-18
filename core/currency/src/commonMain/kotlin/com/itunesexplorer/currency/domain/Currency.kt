@@ -72,20 +72,20 @@ object SupportedCurrencies {
     val KZT = Currency("KZT", "₸", "Kazakhstani Tenge", 2)
 
     /**
-     * List of all supported currencies.
-     */
-    val all: List<Currency> = listOf(
-        USD, EUR, GBP, JPY, CNY,
-        CAD, BRL, MXN, ARS, CLP, COP, PEN,
-        AUD, NZD, INR, KRW, SGD, HKD, TWD, THB, MYR, IDR, PHP, VND,
-        CHF, SEK, NOK, DKK, PLN, CZK, HUF, RON, TRY, RUB,
-        AED, SAR, ILS, ZAR, EGP, NGN, KZT
-    )
-
-    /**
      * Map of currency codes to Currency objects for fast lookup.
      */
-    private val codeMap: Map<String, Currency> = all.associateBy { it.code }
+    private val codeMap: Map<String, Currency> = mapOf(
+        USD.code to USD, EUR.code to EUR, GBP.code to GBP, JPY.code to JPY, CNY.code to CNY,
+        CAD.code to CAD, BRL.code to BRL, MXN.code to MXN, ARS.code to ARS, CLP.code to CLP,
+        COP.code to COP, PEN.code to PEN,
+        AUD.code to AUD, NZD.code to NZD, INR.code to INR, KRW.code to KRW, SGD.code to SGD,
+        HKD.code to HKD, TWD.code to TWD, THB.code to THB, MYR.code to MYR, IDR.code to IDR,
+        PHP.code to PHP, VND.code to VND,
+        CHF.code to CHF, SEK.code to SEK, NOK.code to NOK, DKK.code to DKK, PLN.code to PLN,
+        CZK.code to CZK, HUF.code to HUF, RON.code to RON, TRY.code to TRY, RUB.code to RUB,
+        AED.code to AED, SAR.code to SAR, ILS.code to ILS, ZAR.code to ZAR, EGP.code to EGP,
+        NGN.code to NGN, KZT.code to KZT
+    )
 
     /**
      * Get a currency by its ISO 4217 code.
@@ -94,12 +94,4 @@ object SupportedCurrencies {
      * @return The corresponding Currency object, or null if not found
      */
     fun getByCode(code: String): Currency? = codeMap[code.uppercase()]
-
-    /**
-     * Check if a currency code is supported.
-     *
-     * @param code The 3-letter currency code
-     * @return true if the currency is supported, false otherwise
-     */
-    fun isSupported(code: String): Boolean = codeMap.containsKey(code.uppercase())
 }

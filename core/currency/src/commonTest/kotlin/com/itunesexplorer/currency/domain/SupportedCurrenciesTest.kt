@@ -2,10 +2,8 @@ package com.itunesexplorer.currency.domain
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 /**
  * Unit tests for SupportedCurrencies and Currency data class.
@@ -114,49 +112,6 @@ class SupportedCurrenciesTest {
         assertEquals(0, SupportedCurrencies.COP.decimals)
     }
 
-    // All Currencies List Tests
-    @Test
-    fun `all should contain all 41 currencies`() {
-        assertTrue(SupportedCurrencies.all.size >= 41)
-    }
-
-    @Test
-    fun `all should contain major currencies`() {
-        val codes = SupportedCurrencies.all.map { it.code }
-        assertTrue(codes.contains("USD"))
-        assertTrue(codes.contains("EUR"))
-        assertTrue(codes.contains("GBP"))
-        assertTrue(codes.contains("JPY"))
-        assertTrue(codes.contains("CNY"))
-    }
-
-    @Test
-    fun `all should contain Latin American currencies`() {
-        val codes = SupportedCurrencies.all.map { it.code }
-        assertTrue(codes.contains("BRL"))
-        assertTrue(codes.contains("MXN"))
-        assertTrue(codes.contains("ARS"))
-        assertTrue(codes.contains("CLP"))
-        assertTrue(codes.contains("COP"))
-    }
-
-    @Test
-    fun `all should contain Asian currencies`() {
-        val codes = SupportedCurrencies.all.map { it.code }
-        assertTrue(codes.contains("INR"))
-        assertTrue(codes.contains("KRW"))
-        assertTrue(codes.contains("SGD"))
-        assertTrue(codes.contains("THB"))
-        assertTrue(codes.contains("MYR"))
-    }
-
-    @Test
-    fun `all should not contain duplicates`() {
-        val codes = SupportedCurrencies.all.map { it.code }
-        val uniqueCodes = codes.distinct()
-        assertEquals(codes.size, uniqueCodes.size, "Currency list should not contain duplicates")
-    }
-
     // getByCode Tests
     @Test
     fun `getByCode should return USD for 'USD'`() {
@@ -197,29 +152,6 @@ class SupportedCurrenciesTest {
         assertNull(currency)
     }
 
-    // isSupported Tests
-    @Test
-    fun `isSupported should return true for USD`() {
-        assertTrue(SupportedCurrencies.isSupported("USD"))
-    }
-
-    @Test
-    fun `isSupported should return true for EUR`() {
-        assertTrue(SupportedCurrencies.isSupported("EUR"))
-    }
-
-    @Test
-    fun `isSupported should return false for unknown currency`() {
-        assertFalse(SupportedCurrencies.isSupported("XYZ"))
-    }
-
-    @Test
-    fun `isSupported should be case-insensitive`() {
-        assertTrue(SupportedCurrencies.isSupported("USD"))
-        assertTrue(SupportedCurrencies.isSupported("usd"))
-        assertTrue(SupportedCurrencies.isSupported("UsD"))
-    }
-
     // Symbol Tests
     @Test
     fun `USD should have dollar symbol`() {
@@ -249,37 +181,6 @@ class SupportedCurrenciesTest {
     @Test
     fun `KRW should have won symbol`() {
         assertEquals("₩", SupportedCurrencies.KRW.symbol)
-    }
-
-    // Complete Currency Coverage Tests
-    @Test
-    fun `all currencies should have non-empty codes`() {
-        SupportedCurrencies.all.forEach { currency ->
-            assertTrue(currency.code.isNotEmpty(), "Currency code should not be empty")
-            assertEquals(3, currency.code.length, "Currency code should be 3 characters: ${currency.code}")
-        }
-    }
-
-    @Test
-    fun `all currencies should have non-empty symbols`() {
-        SupportedCurrencies.all.forEach { currency ->
-            assertTrue(currency.symbol.isNotEmpty(), "Currency symbol should not be empty for ${currency.code}")
-        }
-    }
-
-    @Test
-    fun `all currencies should have non-empty names`() {
-        SupportedCurrencies.all.forEach { currency ->
-            assertTrue(currency.name.isNotEmpty(), "Currency name should not be empty for ${currency.code}")
-        }
-    }
-
-    @Test
-    fun `all currencies should have valid decimal values`() {
-        SupportedCurrencies.all.forEach { currency ->
-            assertTrue(currency.decimals >= 0, "Decimals should be >= 0 for ${currency.code}")
-            assertTrue(currency.decimals <= 4, "Decimals should be <= 4 for ${currency.code}")
-        }
     }
 
     // Specific Currency Tests

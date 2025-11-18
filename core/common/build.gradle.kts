@@ -30,7 +30,6 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kodein.di)
             implementation(libs.voyager.screenModel)
-            implementation(projects.core.currency)
             implementation(projects.core.logger)
         }
 

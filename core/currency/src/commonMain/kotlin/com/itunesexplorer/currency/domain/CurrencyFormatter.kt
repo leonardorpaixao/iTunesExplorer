@@ -38,46 +38,6 @@ object CurrencyFormatter {
     }
 
     /**
-     * Format a price with automatic currency detection from country code.
-     *
-     * @param price The price value
-     * @param countryCode ISO 3166-1 alpha-2 country code (e.g., "US", "BR")
-     * @param showSymbol Whether to include the currency symbol
-     * @param showCode Whether to include the currency code
-     * @return Formatted price string
-     */
-    fun formatWithCountry(
-        price: Double,
-        countryCode: String,
-        showSymbol: Boolean = true,
-        showCode: Boolean = false
-    ): String {
-        val currencyCode = CurrencyMapper.getCurrencyForCountry(countryCode) ?: "USD"
-        return format(price, currencyCode, showSymbol, showCode)
-    }
-
-    /**
-     * Format a nullable price, returning a default string if null.
-     *
-     * @param price The price value (nullable)
-     * @param currencyCode ISO 4217 currency code
-     * @param defaultValue String to return if price is null (default: "—")
-     * @param showSymbol Whether to include the currency symbol
-     * @param showCode Whether to include the currency code
-     * @return Formatted price string or default value
-     */
-    fun formatOrDefault(
-        price: Double?,
-        currencyCode: String?,
-        defaultValue: String = "—",
-        showSymbol: Boolean = true,
-        showCode: Boolean = false
-    ): String {
-        if (price == null || currencyCode == null) return defaultValue
-        return format(price, currencyCode, showSymbol, showCode)
-    }
-
-    /**
      * Round a price to the specified number of decimal places.
      */
     private fun roundToDecimals(value: Double, decimals: Int): Double {
@@ -180,25 +140,5 @@ object CurrencyFormatter {
     private fun formatFallback(price: Double, currencyCode: String, showCode: Boolean): String {
         val formatted = formatNumber(price, Currency(currencyCode, "", "", 2))
         return if (showCode) "$formatted $currencyCode" else formatted
-    }
-
-    /**
-     * Get just the symbol for a currency code.
-     *
-     * @param currencyCode ISO 4217 currency code
-     * @return Currency symbol, or the code itself if not found
-     */
-    fun getSymbol(currencyCode: String): String {
-        return SupportedCurrencies.getByCode(currencyCode)?.symbol ?: currencyCode
-    }
-
-    /**
-     * Get the full currency name.
-     *
-     * @param currencyCode ISO 4217 currency code
-     * @return Full currency name, or the code if not found
-     */
-    fun getName(currencyCode: String): String {
-        return SupportedCurrencies.getByCode(currencyCode)?.name ?: currencyCode
     }
 }
