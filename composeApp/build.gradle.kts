@@ -81,6 +81,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.coil.network.ktor)
         }
         iosMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)

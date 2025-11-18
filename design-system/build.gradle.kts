@@ -43,12 +43,6 @@ kotlin {
                 implementation(libs.compose.material.icons.extended)
             }
         }
-
-        val jvmMain by getting {
-            dependencies {
-                implementation(libs.compose.material.icons.extended)
-            }
-        }
     }
 }
 
