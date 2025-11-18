@@ -10,26 +10,39 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.MusicGenre
+import com.itunesexplorer.catalog.presentation.details.DetailsScreen
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.design.components.MediaCard
+import org.kodein.di.compose.localDI
 import org.kodein.di.compose.rememberInstance
 
 @Composable
-fun AlbumsTab(
-    onItemClick: (String) -> Unit = {}
-) {
+fun AlbumsTab() {
     val screenModel: AlbumsTabModel by rememberInstance()
     val state by screenModel.state.collectAsState()
     val strings = LocalCatalogStrings.current
+    val navigator = LocalNavigator.currentOrThrow
+    val di = localDI()
+
+    LaunchedEffect(Unit) {
+        screenModel.effect.collect { effect ->
+            when (effect) {
+                is AlbumsEffect.NavigateToDetails -> {
+                    navigator.push(DetailsScreen(effect.itemId, di))
+                }
+            }
+        }
+    }
 
     AlbumsTabContent(
         state = state,
         onAction = screenModel::dispatch,
-        onItemClick = onItemClick,
         strings = strings
     )
 }
@@ -38,7 +51,6 @@ fun AlbumsTab(
 fun AlbumsTabContent(
     state: AlbumsViewState,
     onAction: (AlbumsIntent) -> Unit,
-    onItemClick: (String) -> Unit,
     strings: CatalogStrings
 ) {
     when {
@@ -90,7 +102,7 @@ fun AlbumsTabContent(
                 items(state.recommendations) { album ->
                     RecommendationCard(
                         album = album,
-                        onClick = { onItemClick(album.id) }
+                        onClick = { onAction(AlbumsIntent.ItemClicked(album.id)) }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                 }

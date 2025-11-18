@@ -10,27 +10,40 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.MediaType
+import com.itunesexplorer.catalog.presentation.details.DetailsScreen
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.design.components.LoadingIndicator
 import com.itunesexplorer.design.components.MediaCard
+import org.kodein.di.compose.localDI
 import org.kodein.di.compose.rememberInstance
 
 @Composable
-fun SearchTab(
-    onItemClick: (String) -> Unit = {}
-) {
+fun SearchTab() {
     val screenModel: SearchTabModel by rememberInstance()
     val state by screenModel.state.collectAsState()
     val strings = LocalCatalogStrings.current
+    val navigator = LocalNavigator.currentOrThrow
+    val di = localDI()
+
+    LaunchedEffect(Unit) {
+        screenModel.effect.collect { effect ->
+            when (effect) {
+                is SearchEffect.NavigateToDetails -> {
+                    navigator.push(DetailsScreen(effect.itemId, di))
+                }
+            }
+        }
+    }
 
     SearchTabContent(
         state = state,
         onAction = screenModel::dispatch,
-        onItemClick = onItemClick,
         strings = strings
     )
 }
@@ -39,7 +52,6 @@ fun SearchTab(
 fun SearchTabContent(
     state: SearchViewState,
     onAction: (SearchIntent) -> Unit,
-    onItemClick: (String) -> Unit,
     strings: CatalogStrings
 ) {
     Column(
@@ -125,7 +137,7 @@ fun SearchTabContent(
                             subtitle = item.artistName ?: CatalogConstants.UNKNOWN_ARTIST,
                             imageUrl = item.imageUrl,
                             price = item.price?.format(),
-                            onClick = { onItemClick(item.id) }
+                            onClick = { onAction(SearchIntent.ItemClicked(item.id)) }
                         )
                     }
                 }

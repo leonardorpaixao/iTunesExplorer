@@ -5,14 +5,13 @@ import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.NoEffect
+import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.settings.country.CountryManager
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class AlbumsViewState(
@@ -25,14 +24,19 @@ data class AlbumsViewState(
 sealed class AlbumsIntent : ViewIntent {
     data object LoadRecommendations : AlbumsIntent()
     data class SelectGenre(val genre: MusicGenre) : AlbumsIntent()
+    data class ItemClicked(val itemId: String) : AlbumsIntent()
     data object Retry : AlbumsIntent()
+}
+
+sealed class AlbumsEffect : ViewEffect {
+    data class NavigateToDetails(val itemId: String) : AlbumsEffect()
 }
 
 class AlbumsTabModel(
     private val getTopAlbumsUseCase: GetTopAlbumsUseCase,
     private val getAlbumsByGenreUseCase: GetAlbumsByGenreUseCase,
     private val countryManager: CountryManager
-) : MviViewModel<AlbumsViewState, AlbumsIntent, NoEffect>(
+) : MviViewModel<AlbumsViewState, AlbumsIntent, AlbumsEffect>(
     initialState = AlbumsViewState()
 ) {
 
@@ -54,6 +58,7 @@ class AlbumsTabModel(
         when (intent) {
             is AlbumsIntent.LoadRecommendations -> loadRecommendations()
             is AlbumsIntent.SelectGenre -> selectGenre(intent.genre)
+            is AlbumsIntent.ItemClicked -> sendEffect(AlbumsEffect.NavigateToDetails(intent.itemId))
             is AlbumsIntent.Retry -> {
                 if (state.value.selectedGenre == MusicGenre.ALL) {
                     loadRecommendations()
@@ -65,7 +70,7 @@ class AlbumsTabModel(
     }
 
     private fun selectGenre(genre: MusicGenre) {
-        mutableState.update { it.copy(selectedGenre = genre) }
+        updateState { it.copy(selectedGenre = genre) }
 
         if (genre == MusicGenre.ALL) {
             loadRecommendations()
@@ -76,11 +81,11 @@ class AlbumsTabModel(
 
     private fun loadRecommendations() {
         screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isLoading = true, error = null) }
 
             getTopAlbumsUseCase().fold(
                 onSuccess = { albums ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             recommendations = albums
@@ -88,7 +93,7 @@ class AlbumsTabModel(
                     }
                 },
                 onFailure = { error ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             error = error
@@ -101,11 +106,11 @@ class AlbumsTabModel(
 
     private fun loadAlbumsByGenre(genre: MusicGenre) {
         screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isLoading = true, error = null) }
 
             getAlbumsByGenreUseCase(genre).fold(
                 onSuccess = { albums ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             recommendations = albums
@@ -113,7 +118,7 @@ class AlbumsTabModel(
                     }
                 },
                 onFailure = { error ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             error = error

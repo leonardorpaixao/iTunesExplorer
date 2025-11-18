@@ -5,13 +5,12 @@ import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.NoEffect
+import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.settings.country.CountryManager
 import cafe.adriel.voyager.core.model.screenModelScope
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SearchViewState(
@@ -27,13 +26,18 @@ sealed class SearchIntent : ViewIntent {
     data class UpdateSearchQuery(val query: String) : SearchIntent()
     data object Search : SearchIntent()
     data class SelectMediaType(val mediaType: MediaType) : SearchIntent()
+    data class ItemClicked(val itemId: String) : SearchIntent()
     data object Retry : SearchIntent()
+}
+
+sealed class SearchEffect : ViewEffect {
+    data class NavigateToDetails(val itemId: String) : SearchEffect()
 }
 
 class SearchTabModel(
     private val searchRepository: SearchRepository,
     private val countryManager: CountryManager
-) : MviViewModel<SearchViewState, SearchIntent, NoEffect>(
+) : MviViewModel<SearchViewState, SearchIntent, SearchEffect>(
     initialState = SearchViewState()
 ) {
 
@@ -42,12 +46,13 @@ class SearchTabModel(
             is SearchIntent.UpdateSearchQuery -> updateSearchQuery(intent.query)
             is SearchIntent.Search -> search()
             is SearchIntent.SelectMediaType -> selectMediaType(intent.mediaType)
+            is SearchIntent.ItemClicked -> sendEffect(SearchEffect.NavigateToDetails(intent.itemId))
             is SearchIntent.Retry -> retry()
         }
     }
 
     private fun updateSearchQuery(query: String) {
-        mutableState.update { it.copy(searchQuery = query) }
+        updateState { it.copy(searchQuery = query) }
     }
 
     private fun search() {
@@ -57,7 +62,7 @@ class SearchTabModel(
         }
 
         screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isLoading = true, error = null) }
 
             searchRepository.search(
                 query = query,
@@ -68,7 +73,7 @@ class SearchTabModel(
                     val hasCountrySelected = countryManager.getCurrentCountryCode()?.isNotEmpty() == true
                     val showHint = items.isEmpty() && hasCountrySelected
 
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             items = items,
@@ -77,7 +82,7 @@ class SearchTabModel(
                     }
                 },
                 onFailure = { error ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             error = error
@@ -89,7 +94,7 @@ class SearchTabModel(
     }
 
     private fun selectMediaType(mediaType: MediaType) {
-        mutableState.update { it.copy(selectedMediaType = mediaType) }
+        updateState { it.copy(selectedMediaType = mediaType) }
         if (state.value.searchQuery.isNotBlank()) {
             search()
         }
