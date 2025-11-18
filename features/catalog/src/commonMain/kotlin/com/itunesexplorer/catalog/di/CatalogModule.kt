@@ -49,7 +49,11 @@ val catalogModule = DI.Module("catalogModule") {
     }
 
     bindSingleton<DetailsRepository> {
-        DetailsRepositoryImpl(api = instance())
+        DetailsRepositoryImpl(
+            api = instance(),
+            countryManager = CountryManager,
+            languageManager = LanguageManager
+        )
     }
 
     bindSingleton<GetTopAlbumsUseCase> {

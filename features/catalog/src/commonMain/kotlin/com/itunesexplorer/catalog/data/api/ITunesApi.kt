@@ -26,7 +26,9 @@ internal interface ITunesApi {
         isbn: String? = null,
         entity: String? = null,
         limit: Int = 50,
-        sort: String = "recent"
+        sort: String = "recent",
+        lang: String = "en_us",
+        country: String? = null
     ): ITunesSearchResponse
 
     suspend fun topAlbums(

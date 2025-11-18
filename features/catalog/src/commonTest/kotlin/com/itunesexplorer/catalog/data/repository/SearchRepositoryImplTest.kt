@@ -186,7 +186,9 @@ internal class FakeITunesApi : ITunesApi {
         isbn: String?,
         entity: String?,
         limit: Int,
-        sort: String
+        sort: String,
+        lang: String,
+        country: String?
     ): ITunesSearchResponse {
         if (shouldFail) throw Exception("API error")
 

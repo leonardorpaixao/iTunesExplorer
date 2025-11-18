@@ -60,7 +60,9 @@ internal class ITunesApiImpl(
         isbn: String?,
         entity: String?,
         limit: Int,
-        sort: String
+        sort: String,
+        lang: String,
+        country: String?
     ): ITunesSearchResponse {
         return httpClient.get("${baseUrl}lookup") {
             id?.let { parameter("id", it) }
@@ -70,6 +72,8 @@ internal class ITunesApiImpl(
             entity?.let { parameter("entity", it) }
             parameter("limit", limit)
             parameter("sort", sort)
+            parameter("lang", lang)
+            country?.let { parameter("country", it) }
         }.body()
     }
 
