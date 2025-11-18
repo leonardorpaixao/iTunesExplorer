@@ -21,13 +21,9 @@ data class DetailsViewState(
 sealed class DetailsIntent : ViewIntent {
     data object LoadDetails : DetailsIntent()
     data object Retry : DetailsIntent()
-    data object OpenInStore : DetailsIntent()
 }
 
-sealed class DetailsEffect : ViewEffect {
-    data class ShowError(val error: DomainError) : DetailsEffect()
-    data class OpenUrl(val url: String) : DetailsEffect()
-}
+object DetailsEffect : ViewEffect {}
 
 class DetailsScreenModel(
     private val detailsRepository: DetailsRepository,
@@ -44,7 +40,6 @@ class DetailsScreenModel(
         when (intent) {
             is DetailsIntent.LoadDetails -> loadDetails()
             is DetailsIntent.Retry -> loadDetails()
-            is DetailsIntent.OpenInStore -> openInStore()
         }
     }
 
@@ -69,17 +64,8 @@ class DetailsScreenModel(
                             error = error
                         )
                     }
-                    sendEffect(DetailsEffect.ShowError(error))
                 }
             )
-        }
-    }
-
-    private fun openInStore() {
-        val url = state.value.item?.viewUrl
-
-        if (url != null) {
-            sendEffect(DetailsEffect.OpenUrl(url))
         }
     }
 }

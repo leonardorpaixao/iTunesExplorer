@@ -104,21 +104,6 @@ class DetailsScreenModelTest {
     }
 
     @Test
-    fun `should emit ShowError effect when loading fails`() = runTest(testDispatcher) {
-        fakeRepository.shouldFail = true
-
-        viewModel = DetailsScreenModel(fakeRepository, "123")
-
-        viewModel.effect.test {
-            advanceUntilIdle()
-
-            val effect = awaitItem()
-            assertTrue(effect is DetailsEffect.ShowError)
-            assertTrue((effect as DetailsEffect.ShowError).error is DomainError.NetworkError)
-        }
-    }
-
-    @Test
     fun `onAction Retry should reload details`() = runTest(testDispatcher) {
         fakeRepository.mockItemDetails = ItemDetails(
             mainItem = createSearchResult("123", "Original", "Artist"),
