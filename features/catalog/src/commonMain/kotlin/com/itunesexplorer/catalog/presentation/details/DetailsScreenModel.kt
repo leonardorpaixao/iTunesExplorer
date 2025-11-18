@@ -33,7 +33,7 @@ class DetailsScreenModel(
     private val detailsRepository: DetailsRepository,
     private val itemId: String
 ) : MviViewModel<DetailsViewState, DetailsIntent, DetailsEffect>(
-    initialState = DetailsViewState()
+    initialState = DetailsViewState(isLoading = true)
 ) {
 
     init {
