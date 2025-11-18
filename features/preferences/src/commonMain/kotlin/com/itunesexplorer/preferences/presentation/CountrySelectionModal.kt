@@ -25,7 +25,7 @@ import com.itunesexplorer.settings.data.PreferencesRepository
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.rememberInstance
 
-data class CountrySelectionScreen(
+data class CountrySelectionModal(
     val selectedCountry: String
 ) : Screen {
 

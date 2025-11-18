@@ -13,5 +13,6 @@ data class PreferencesStrings(
     val chooseCountry: String,
     val currentCountry: String,
     val countryName: (String) -> String,
-    val countryHelpText: String
+    val countryHelpText: String,
+    val error: String
 )

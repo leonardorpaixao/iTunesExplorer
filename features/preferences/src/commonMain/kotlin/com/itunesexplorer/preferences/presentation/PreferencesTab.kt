@@ -48,6 +48,49 @@ fun PreferencesTabContent(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
+        // Error Display
+        state.error?.let { error ->
+            val errorMessage = when (error) {
+                is com.itunesexplorer.core.error.DomainError.NetworkError -> error.message
+                is com.itunesexplorer.core.error.DomainError.ServerError -> error.message
+                is com.itunesexplorer.core.error.DomainError.NotFoundError -> error.message
+                is com.itunesexplorer.core.error.DomainError.ClientError -> error.message
+                is com.itunesexplorer.core.error.DomainError.DataError -> error.message
+                is com.itunesexplorer.core.error.DomainError.UnknownError -> error.message
+            }
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = strings.error,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = errorMessage,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onErrorContainer
+                        )
+                    }
+                }
+            }
+        }
+
         // Language Section
         Text(
             text = strings.language,
@@ -110,7 +153,7 @@ fun PreferencesTabContent(
                 .fillMaxWidth()
                 .clickable {
                     bottomSheetNavigator.show(
-                        CountrySelectionScreen(selectedCountry = state.selectedCountry)
+                        CountrySelectionModal(selectedCountry = state.selectedCountry)
                     )
                 },
             colors = CardDefaults.cardColors(
