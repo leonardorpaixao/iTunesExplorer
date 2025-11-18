@@ -5,7 +5,7 @@ import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.ViewEffect
+import com.itunesexplorer.common.mvi.NoEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
@@ -28,15 +28,11 @@ sealed class AlbumsIntent : ViewIntent {
     data object Retry : AlbumsIntent()
 }
 
-sealed class AlbumsEffect : ViewEffect {
-    data class ShowError(val error: DomainError) : AlbumsEffect()
-}
-
 class AlbumsTabModel(
     private val getTopAlbumsUseCase: GetTopAlbumsUseCase,
     private val getAlbumsByGenreUseCase: GetAlbumsByGenreUseCase,
     private val countryManager: CountryManager
-) : MviViewModel<AlbumsViewState, AlbumsIntent, AlbumsEffect>(
+) : MviViewModel<AlbumsViewState, AlbumsIntent, NoEffect>(
     initialState = AlbumsViewState()
 ) {
 
@@ -98,7 +94,6 @@ class AlbumsTabModel(
                             error = error
                         )
                     }
-                    sendEffect(AlbumsEffect.ShowError(error))
                 }
             )
         }
@@ -124,7 +119,6 @@ class AlbumsTabModel(
                             error = error
                         )
                     }
-                    sendEffect(AlbumsEffect.ShowError(error))
                 }
             )
         }

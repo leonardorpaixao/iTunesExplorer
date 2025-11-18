@@ -14,6 +14,17 @@ interface ViewIntent
 
 interface ViewEffect
 
+/**
+ * Represents the absence of effects in a ViewModel.
+ * Use this when your ViewModel doesn't need to emit one-time side effects.
+ *
+ * Example:
+ * ```
+ * class MyScreenModel : MviViewModel<MyViewState, MyIntent, NoEffect>(...)
+ * ```
+ */
+object NoEffect : ViewEffect
+
 abstract class MviViewModel<State : ViewState, Intent : ViewIntent, Effect : ViewEffect>(
     initialState: State,
     protected val logger: Logger? = null

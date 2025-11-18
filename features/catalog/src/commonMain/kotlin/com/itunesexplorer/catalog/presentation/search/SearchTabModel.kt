@@ -5,7 +5,7 @@ import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.ViewEffect
+import com.itunesexplorer.common.mvi.NoEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
@@ -30,14 +30,10 @@ sealed class SearchIntent : ViewIntent {
     data object Retry : SearchIntent()
 }
 
-sealed class SearchEffect : ViewEffect {
-    data class ShowError(val error: DomainError) : SearchEffect()
-}
-
 class SearchTabModel(
     private val searchRepository: SearchRepository,
     private val countryManager: CountryManager
-) : MviViewModel<SearchViewState, SearchIntent, SearchEffect>(
+) : MviViewModel<SearchViewState, SearchIntent, NoEffect>(
     initialState = SearchViewState()
 ) {
 
@@ -87,7 +83,6 @@ class SearchTabModel(
                             error = error
                         )
                     }
-                    sendEffect(SearchEffect.ShowError(error))
                 }
             )
         }

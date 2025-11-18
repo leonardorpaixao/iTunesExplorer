@@ -1,7 +1,7 @@
 package com.itunesexplorer.catalog.presentation.details
 
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.ViewEffect
+import com.itunesexplorer.common.mvi.NoEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -23,12 +23,10 @@ sealed class DetailsIntent : ViewIntent {
     data object Retry : DetailsIntent()
 }
 
-object DetailsEffect : ViewEffect {}
-
 class DetailsScreenModel(
     private val detailsRepository: DetailsRepository,
     private val itemId: String
-) : MviViewModel<DetailsViewState, DetailsIntent, DetailsEffect>(
+) : MviViewModel<DetailsViewState, DetailsIntent, NoEffect>(
     initialState = DetailsViewState(isLoading = true)
 ) {
 

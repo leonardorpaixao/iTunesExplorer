@@ -227,6 +227,42 @@ class MyScreenModel(api: Api) : MviViewModel<MyViewState, MyIntent, MyEffect>(
 - Clear separation of concerns
 - Side effects handled separately from state
 
+**NoEffect Pattern**:
+For ViewModels that don't need effects (one-time events like toasts/navigation), use `NoEffect`:
+
+```kotlin
+import com.itunesexplorer.common.mvi.NoEffect
+
+class MyScreenModel(
+    api: Api
+) : MviViewModel<MyViewState, MyIntent, NoEffect>(
+    initialState = MyViewState()
+) {
+    override fun onAction(intent: MyIntent) {
+        // Handle errors via state, not effects
+        screenModelScope.launch {
+            mutableState.update { it.copy(isLoading = true, error = null) }
+            api.fetchData().fold(
+                onSuccess = { data -> mutableState.update { it.copy(data = data, isLoading = false) } },
+                onFailure = { error -> mutableState.update { it.copy(error = error, isLoading = false) } }
+            )
+        }
+    }
+}
+```
+
+**When to use State vs Effects**:
+- **State** (`error: DomainError?`): Persistent UI elements (inline error messages, error screens)
+  - Survives configuration changes
+  - Displayed until explicitly cleared
+  - Example: Error message displayed in the UI
+- **Effects** (`sendEffect(ShowToast(...)))`): One-time events (toasts, navigation, dialogs)
+  - Consumed once by the UI
+  - Does not survive configuration changes
+  - Example: Toast notification, navigate to another screen
+
+**Current Usage**: All ViewModels in the project use `NoEffect` with state-based error handling.
+
 See full documentation in `docs/MVI_ARCHITECTURE.md`
 
 ## Important Technical Details
@@ -255,17 +291,20 @@ When adding new Ktorfit interfaces, ensure KSP is properly configured.
 
 ### Adding New Features (MVI Pattern)
 1. Create feature module in `features/`
-2. Define ViewState, ViewIntent, and ViewEffect for the feature:
+2. Define ViewState and ViewIntent for the feature:
    ```kotlin
-   data class MyViewState(...) : ViewState
+   data class MyViewState(
+       val data: List<Item> = emptyList(),
+       val isLoading: Boolean = false,
+       val error: DomainError? = null  // For persistent error display
+   ) : ViewState
    sealed class MyIntent : ViewIntent { ... }
-   sealed class MyEffect : ViewEffect { ... }
    ```
-3. Create ViewModel extending `MviViewModel`:
+3. Create ViewModel extending `MviViewModel` with `NoEffect` (default choice):
    ```kotlin
    class MyScreenModel(
        private val logger: Logger
-   ) : MviViewModel<MyViewState, MyIntent, MyEffect>(
+   ) : MviViewModel<MyViewState, MyIntent, NoEffect>(
        initialState = MyViewState(),
        logger = logger  // Optional: enables automatic logging
    ) {
