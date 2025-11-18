@@ -23,7 +23,7 @@ class PreferencesTabModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakePreferencesRepository: FakePreferencesRepository
-    private lateinit var viewModel: PreferencesTabModel
+    private lateinit var viewModel: PreferencesTabViewModel
 
     @BeforeTest
     fun setup() {
@@ -43,7 +43,7 @@ class PreferencesTabModelTest {
         advanceUntilIdle()
 
         // When
-        viewModel = PreferencesTabModel(fakePreferencesRepository)
+        viewModel = PreferencesTabViewModel(fakePreferencesRepository)
         advanceUntilIdle()
 
         // Then
@@ -60,7 +60,7 @@ class PreferencesTabModelTest {
         CountryManager.setCountry("INIT")
         advanceUntilIdle()
 
-        viewModel = PreferencesTabModel(fakePreferencesRepository)
+        viewModel = PreferencesTabViewModel(fakePreferencesRepository)
         advanceUntilIdle()
 
         // When
@@ -81,7 +81,7 @@ class PreferencesTabModelTest {
         CountryManager.setCountry("US")
         advanceUntilIdle()
 
-        viewModel = PreferencesTabModel(fakePreferencesRepository)
+        viewModel = PreferencesTabViewModel(fakePreferencesRepository)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -104,7 +104,7 @@ class PreferencesTabModelTest {
         CountryManager.setCountry("GB")
         advanceUntilIdle()
 
-        viewModel = PreferencesTabModel(fakePreferencesRepository)
+        viewModel = PreferencesTabViewModel(fakePreferencesRepository)
         advanceUntilIdle()
 
         viewModel.state.test {
@@ -133,7 +133,7 @@ class PreferencesTabModelTest {
         CountryManager.setCountry("INIT")
         advanceUntilIdle()
 
-        viewModel = PreferencesTabModel(fakePreferencesRepository)
+        viewModel = PreferencesTabViewModel(fakePreferencesRepository)
         advanceUntilIdle()
 
         // When & Then

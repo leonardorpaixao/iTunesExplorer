@@ -3,12 +3,13 @@ package com.itunesexplorer.preferences.presentation
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.itunesexplorer.common.extensions.orEmpty
 import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.NoEffect
+import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.i18n.Locales
 import com.itunesexplorer.preferences.domain.Language
+import com.itunesexplorer.preferences.domain.SupportedCountries
 import com.itunesexplorer.settings.data.PreferencesRepository
 import com.itunesexplorer.settings.language.LanguageManager
 import com.itunesexplorer.settings.country.CountryManager
@@ -18,8 +19,6 @@ import kotlinx.coroutines.launch
 data class PreferencesViewState(
     val availableLanguages: List<Language> = emptyList(),
     val selectedLanguage: String = Locales.EN,
-    val pendingLanguage: String? = null,
-    val showConfirmDialog: Boolean = false,
     val isLoading: Boolean = false,
     val availableCountries: List<com.itunesexplorer.preferences.domain.Country> = emptyList(),
     val selectedCountry: String = PATTERN_COUNTRY,
@@ -33,14 +32,19 @@ data class PreferencesViewState(
 sealed class PreferencesIntent : ViewIntent {
     data object LoadLanguages : PreferencesIntent()
     data class SelectLanguage(val languageCode: String) : PreferencesIntent()
-    data object ConfirmLanguageChange : PreferencesIntent()
-    data object DismissDialog : PreferencesIntent()
+    data class ConfirmLanguageChange(val languageCode: String) : PreferencesIntent()
+    data class OpenCountrySelectionModal(val selectedCountry: String) : PreferencesIntent()
     data object LoadCountries : PreferencesIntent()
 }
 
-class PreferencesTabModel(
+sealed class PreferencesEffect : ViewEffect {
+    data class ShowLanguageConfirmDialog(val languageCode: String) : PreferencesEffect()
+    data class OpenCountrySelectionModal(val selectedCountry: String) : PreferencesEffect()
+}
+
+class PreferencesTabViewModel(
     private val preferencesRepository: PreferencesRepository
-) : MviViewModel<PreferencesViewState, PreferencesIntent, NoEffect>(
+) : MviViewModel<PreferencesViewState, PreferencesIntent, PreferencesEffect>(
     initialState = PreferencesViewState()
 ) {
 
@@ -50,8 +54,8 @@ class PreferencesTabModel(
 
         screenModelScope.launch {
             CountryManager.currentCountry.collect { country ->
-                mutableState.update { state ->
-                    state.copy(selectedCountry = country ?: "")
+                updateState {
+                    it.copy(selectedCountry = country.orEmpty())
                 }
             }
         }
@@ -61,9 +65,13 @@ class PreferencesTabModel(
         when (intent) {
             is PreferencesIntent.LoadLanguages -> loadLanguages()
             is PreferencesIntent.SelectLanguage -> selectLanguage(intent.languageCode)
-            is PreferencesIntent.ConfirmLanguageChange -> confirmLanguageChange()
-            is PreferencesIntent.DismissDialog -> dismissDialog()
+            is PreferencesIntent.ConfirmLanguageChange -> confirmLanguageChange(intent.languageCode)
             is PreferencesIntent.LoadCountries -> loadCountries()
+            is PreferencesIntent.OpenCountrySelectionModal -> sendEffect(
+                PreferencesEffect.OpenCountrySelectionModal(
+                    intent.selectedCountry
+                )
+            )
         }
     }
 
@@ -85,16 +93,16 @@ class PreferencesTabModel(
                     Language(Locales.DE, LANGUAGE_NAME_GERMAN)
                 )
 
-                mutableState.update {
-                    it.copy(
+                updateState { state ->
+                    state.copy(
                         isLoading = false,
                         availableLanguages = languages,
                         selectedLanguage = currentLanguage
                     )
                 }
             } catch (e: Exception) {
-                mutableState.update {
-                    it.copy(
+                updateState { state ->
+                    state.copy(
                         isLoading = false,
                         error = DomainError.UnknownError(
                             e.message ?: ERROR_FAILED_TO_LOAD_LANGUAGES
@@ -110,35 +118,24 @@ class PreferencesTabModel(
             return
         }
 
-        mutableState.update {
-            it.copy(
-                pendingLanguage = languageCode,
-                showConfirmDialog = true
-            )
-        }
+        sendEffect(PreferencesEffect.ShowLanguageConfirmDialog(languageCode))
     }
 
-    private fun confirmLanguageChange() {
-        val pendingLanguage = state.value.pendingLanguage ?: return
-
+    private fun confirmLanguageChange(languageCode: String) {
         screenModelScope.launch {
             try {
-                preferencesRepository.setLanguage(pendingLanguage)
-                LanguageManager.setLanguage(pendingLanguage)
+                preferencesRepository.setLanguage(languageCode)
+                LanguageManager.setLanguage(languageCode)
 
                 mutableState.update {
                     it.copy(
-                        selectedLanguage = pendingLanguage,
-                        pendingLanguage = null,
-                        showConfirmDialog = false,
+                        selectedLanguage = languageCode,
                         error = null
                     )
                 }
             } catch (e: Exception) {
                 mutableState.update {
                     it.copy(
-                        pendingLanguage = null,
-                        showConfirmDialog = false,
                         error = DomainError.UnknownError(
                             e.message ?: ERROR_FAILED_TO_CHANGE_LANGUAGE
                         )
@@ -148,23 +145,14 @@ class PreferencesTabModel(
         }
     }
 
-    private fun dismissDialog() {
-        mutableState.update {
-            it.copy(
-                pendingLanguage = null,
-                showConfirmDialog = false
-            )
-        }
-    }
-
     private fun loadCountries() {
         screenModelScope.launch {
-            try {
-                val countries = com.itunesexplorer.preferences.domain.SupportedCountries.all
+            runCatching {
+                val countries = SupportedCountries.all
                 val savedCountry = preferencesRepository.getCountry()
 
-                mutableState.update {
-                    it.copy(
+                updateState { state ->
+                    state.copy(
                         availableCountries = countries,
                         selectedCountry = savedCountry.orEmpty(),
                         error = null
@@ -172,9 +160,9 @@ class PreferencesTabModel(
                 }
 
                 savedCountry?.let { CountryManager.initialize(it) }
-            } catch (e: Exception) {
-                mutableState.update {
-                    it.copy(
+            }.getOrElse { e ->
+                updateState { state ->
+                    state.copy(
                         error = DomainError.UnknownError(
                             e.message ?: ERROR_FAILED_TO_LOAD_COUNTRIES
                         )

@@ -27,7 +27,6 @@ val EnPreferencesStrings = PreferencesStrings(
     chooseCountry = "Choose Country",
     currentCountry = "Current Country",
     countryHelpText = "The selected country affects search results. Content availability varies by region.",
-    error = "Error",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "None"
@@ -93,7 +92,6 @@ val PtBrPreferencesStrings = PreferencesStrings(
     chooseCountry = "Escolher País",
     currentCountry = "País Atual",
     countryHelpText = "O país selecionado influencia diretamente os resultados da pesquisa. A disponibilidade de conteúdo varia por região.",
-    error = "Erro",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Nenhum"
@@ -159,7 +157,6 @@ val PtPtPreferencesStrings = PreferencesStrings(
     chooseCountry = "Escolher País",
     currentCountry = "País Actual",
     countryHelpText = "O país selecionado influencia directamente os resultados da pesquisa. A disponibilidade de conteúdo varia por região.",
-    error = "Erro",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Nenhum"
@@ -225,7 +222,6 @@ val FrPreferencesStrings = PreferencesStrings(
     chooseCountry = "Choisir le Pays",
     currentCountry = "Pays Actuel",
     countryHelpText = "Le pays sélectionné influence directement les résultats de recherche. La disponibilité du contenu varie selon les régions.",
-    error = "Erreur",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Aucun"
@@ -291,7 +287,6 @@ val EsPreferencesStrings = PreferencesStrings(
     chooseCountry = "Elegir País",
     currentCountry = "País Actual",
     countryHelpText = "El país seleccionado influye directamente en los resultados de búsqueda. La disponibilidad de contenido varía según la región.",
-    error = "Error",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Ninguno"
@@ -357,7 +352,6 @@ val DePreferencesStrings = PreferencesStrings(
     chooseCountry = "Land Wählen",
     currentCountry = "Aktuelles Land",
     countryHelpText = "Das ausgewählte Land beeinflusst direkt die Suchergebnisse. Die Verfügbarkeit von Inhalten variiert je nach Region.",
-    error = "Fehler",
     countryName = { code ->
         when (code.uppercase()) {
             "" -> "Keine"

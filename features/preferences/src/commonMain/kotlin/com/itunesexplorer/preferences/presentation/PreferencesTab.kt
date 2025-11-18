@@ -13,15 +13,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalPreferencesStrings
-import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
+import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.preferences.domain.Language
+import com.itunesexplorer.preferences.i18n.PreferencesStrings
 import org.kodein.di.compose.rememberInstance
 
 @Composable
 fun PreferencesTab() {
-    val screenModel: PreferencesTabModel by rememberInstance()
+    val screenModel: PreferencesTabViewModel by rememberInstance()
     val state by screenModel.state.collectAsState()
     val strings = LocalPreferencesStrings.current
+
+    PreferencesEffectHandler(
+        effectFlow = screenModel.effect,
+        onAction = screenModel::onAction,
+        strings = strings
+    )
 
     PreferencesTabContent(
         state = state,
@@ -34,9 +41,9 @@ fun PreferencesTab() {
 fun PreferencesTabContent(
     state: PreferencesViewState,
     onAction: (PreferencesIntent) -> Unit,
-    strings: com.itunesexplorer.preferences.i18n.PreferencesStrings
+    strings: PreferencesStrings
 ) {
-    val bottomSheetNavigator = LocalBottomSheetNavigator.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,50 +55,10 @@ fun PreferencesTabContent(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Error Display
         state.error?.let { error ->
-            val errorMessage = when (error) {
-                is com.itunesexplorer.core.error.DomainError.NetworkError -> error.message
-                is com.itunesexplorer.core.error.DomainError.ServerError -> error.message
-                is com.itunesexplorer.core.error.DomainError.NotFoundError -> error.message
-                is com.itunesexplorer.core.error.DomainError.ClientError -> error.message
-                is com.itunesexplorer.core.error.DomainError.DataError -> error.message
-                is com.itunesexplorer.core.error.DomainError.UnknownError -> error.message
-            }
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = strings.error,
-                            style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = errorMessage,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer
-                        )
-                    }
-                }
-            }
+            ErrorContent(error)
         }
 
-        // Language Section
         Text(
             text = strings.language,
             style = MaterialTheme.typography.titleMedium,
@@ -115,6 +82,7 @@ fun PreferencesTabContent(
                         CircularProgressIndicator()
                     }
                 }
+
                 else -> {
                     LazyColumn {
                         items(state.availableLanguages) { language ->
@@ -134,7 +102,6 @@ fun PreferencesTabContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Country Section
         Text(
             text = strings.country,
             style = MaterialTheme.typography.titleMedium,
@@ -152,9 +119,7 @@ fun PreferencesTabContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    bottomSheetNavigator.show(
-                        CountrySelectionModal(selectedCountry = state.selectedCountry)
-                    )
+                    onAction(PreferencesIntent.OpenCountrySelectionModal(state.selectedCountry))
                 },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
@@ -187,15 +152,6 @@ fun PreferencesTabContent(
                 )
             }
         }
-    }
-
-    // Confirmation Dialog for Language
-    if (state.showConfirmDialog) {
-        LanguageChangeDialog(
-            onConfirm = { onAction(PreferencesIntent.ConfirmLanguageChange) },
-            onDismiss = { onAction(PreferencesIntent.DismissDialog) },
-            strings = strings
-        )
     }
 }
 
@@ -233,7 +189,7 @@ fun LanguageItem(
 fun LanguageChangeDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
-    strings: com.itunesexplorer.preferences.i18n.PreferencesStrings
+    strings: PreferencesStrings
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
