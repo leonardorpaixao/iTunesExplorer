@@ -1,6 +1,7 @@
 package com.itunesexplorer.preferences.presentation
 
 import cafe.adriel.voyager.core.model.screenModelScope
+import com.itunesexplorer.common.extensions.orEmpty
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.NoEffect
 import com.itunesexplorer.common.mvi.ViewIntent
@@ -21,9 +22,13 @@ data class PreferencesViewState(
     val showConfirmDialog: Boolean = false,
     val isLoading: Boolean = false,
     val availableCountries: List<com.itunesexplorer.preferences.domain.Country> = emptyList(),
-    val selectedCountry: String = "US",
+    val selectedCountry: String = PATTERN_COUNTRY,
     val error: DomainError? = null
-) : ViewState
+) : ViewState {
+    companion object {
+        const val PATTERN_COUNTRY = "US"
+    }
+}
 
 sealed class PreferencesIntent : ViewIntent {
     data object LoadLanguages : PreferencesIntent()
@@ -68,7 +73,8 @@ class PreferencesTabModel(
 
             try {
                 val savedLanguage = preferencesRepository.getLanguage()
-                val currentLanguage = savedLanguage ?: LanguageManager.getCurrentLanguageTag() ?: Locales.EN
+                val currentLanguage =
+                    savedLanguage ?: LanguageManager.getCurrentLanguageTag() ?: Locales.EN
 
                 val languages = listOf(
                     Language(Locales.EN, LANGUAGE_NAME_ENGLISH),
@@ -90,7 +96,9 @@ class PreferencesTabModel(
                 mutableState.update {
                     it.copy(
                         isLoading = false,
-                        error = DomainError.UnknownError(e.message ?: ERROR_FAILED_TO_LOAD_LANGUAGES)
+                        error = DomainError.UnknownError(
+                            e.message ?: ERROR_FAILED_TO_LOAD_LANGUAGES
+                        )
                     )
                 }
             }
@@ -131,7 +139,9 @@ class PreferencesTabModel(
                     it.copy(
                         pendingLanguage = null,
                         showConfirmDialog = false,
-                        error = DomainError.UnknownError(e.message ?: ERROR_FAILED_TO_CHANGE_LANGUAGE)
+                        error = DomainError.UnknownError(
+                            e.message ?: ERROR_FAILED_TO_CHANGE_LANGUAGE
+                        )
                     )
                 }
             }
@@ -156,7 +166,7 @@ class PreferencesTabModel(
                 mutableState.update {
                     it.copy(
                         availableCountries = countries,
-                        selectedCountry = savedCountry ?: "", // Empty string for "None"
+                        selectedCountry = savedCountry.orEmpty(),
                         error = null
                     )
                 }
@@ -165,7 +175,9 @@ class PreferencesTabModel(
             } catch (e: Exception) {
                 mutableState.update {
                     it.copy(
-                        error = DomainError.UnknownError(e.message ?: ERROR_FAILED_TO_LOAD_COUNTRIES)
+                        error = DomainError.UnknownError(
+                            e.message ?: ERROR_FAILED_TO_LOAD_COUNTRIES
+                        )
                     )
                 }
             }
