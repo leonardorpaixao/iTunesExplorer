@@ -165,15 +165,21 @@ fun ItemDetailsCard(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item.imageUrl?.let { imageUrl ->
-                AsyncImage(
-                    model = imageUrl.replace(CatalogConstants.THUMBNAIL_SIZE, CatalogConstants.FULL_SIZE),
-                    contentDescription = item.name,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(8.dp)),
-                    contentScale = ContentScale.Crop
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = imageUrl.replace(CatalogConstants.THUMBNAIL_SIZE, CatalogConstants.FULL_SIZE),
+                        contentDescription = item.name,
+                        modifier = Modifier
+                            .widthIn(max = 400.dp)
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
 
             Text(
