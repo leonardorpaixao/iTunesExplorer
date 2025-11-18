@@ -54,23 +54,15 @@ kotlin {
                 implementation(projects.core.currency)
                 implementation(projects.core.error)
                 implementation(projects.core.logger)
+                implementation(projects.core.network)
                 implementation(projects.designSystem)
                 implementation(libs.lyricist)
-                implementation(libs.kotlinx.serialization.json)
-                implementation(libs.ktor.client.core)
-                implementation(libs.ktor.client.content.negotiation)
-                implementation(libs.ktor.client.logging)
-                implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.coil.compose)
+
+                // Ktor dependencies for using HttpClient
+                implementation(libs.ktor.client.core)
+                implementation(libs.kotlinx.serialization.json)
             }
-        }
-
-        androidMain.dependencies {
-            implementation(libs.ktor.client.okhttp)
-        }
-
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
         }
 
         val commonTest by getting {

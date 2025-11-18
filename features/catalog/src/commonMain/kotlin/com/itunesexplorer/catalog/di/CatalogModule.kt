@@ -15,10 +15,9 @@ import com.itunesexplorer.catalog.data.api.createITunesApiImpl
 import com.itunesexplorer.catalog.presentation.albums.AlbumsTabModel
 import com.itunesexplorer.catalog.presentation.search.SearchTabModel
 import com.itunesexplorer.catalog.presentation.details.DetailsScreenModel
+import com.itunesexplorer.core.network.di.networkModule
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
-import io.ktor.client.*
-import kotlinx.serialization.json.Json
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.bindFactory
@@ -27,8 +26,7 @@ import org.kodein.di.instance
 private const val BASE_URL = "https://itunes.apple.com/"
 
 val catalogModule = DI.Module("catalogModule") {
-    bindSingleton { createJson() }
-    bindSingleton { createPlatformHttpClient(instance()) }
+    importOnce(networkModule)
 
     bindSingleton<ITunesApi> {
         createITunesApiImpl(
@@ -80,11 +78,4 @@ val catalogModule = DI.Module("catalogModule") {
     bindFactory<String, DetailsScreenModel> { itemId ->
         DetailsScreenModel(instance(), itemId)
     }
-}
-
-private fun createJson(): Json = Json {
-    prettyPrint = true
-    isLenient = true
-    ignoreUnknownKeys = true
-    coerceInputValues = true
 }
