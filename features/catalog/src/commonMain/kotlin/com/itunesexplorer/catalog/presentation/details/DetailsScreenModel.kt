@@ -8,7 +8,6 @@ import cafe.adriel.voyager.core.model.screenModelScope
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.core.error.DomainError
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class DetailsViewState(
@@ -42,11 +41,11 @@ class DetailsScreenModel(
 
     private fun loadDetails() {
         screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isLoading = true, error = null) }
 
             detailsRepository.getItemDetails(itemId).fold(
                 onSuccess = { itemDetails ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             item = itemDetails,
@@ -54,7 +53,7 @@ class DetailsScreenModel(
                     }
                 },
                 onFailure = { error ->
-                    mutableState.update {
+                    updateState {
                         it.copy(
                             isLoading = false,
                             error = error

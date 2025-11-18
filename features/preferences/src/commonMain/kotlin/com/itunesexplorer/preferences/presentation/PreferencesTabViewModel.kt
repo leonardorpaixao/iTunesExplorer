@@ -13,7 +13,6 @@ import com.itunesexplorer.preferences.domain.SupportedCountries
 import com.itunesexplorer.settings.data.PreferencesRepository
 import com.itunesexplorer.settings.language.LanguageManager
 import com.itunesexplorer.settings.country.CountryManager
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class PreferencesViewState(
@@ -77,7 +76,7 @@ class PreferencesTabViewModel(
 
     private fun loadLanguages() {
         screenModelScope.launch {
-            mutableState.update { it.copy(isLoading = true, error = null) }
+            updateState { it.copy(isLoading = true, error = null) }
 
             try {
                 val savedLanguage = preferencesRepository.getLanguage()
@@ -127,14 +126,14 @@ class PreferencesTabViewModel(
                 preferencesRepository.setLanguage(languageCode)
                 LanguageManager.setLanguage(languageCode)
 
-                mutableState.update {
+                updateState {
                     it.copy(
                         selectedLanguage = languageCode,
                         error = null
                     )
                 }
             } catch (e: Exception) {
-                mutableState.update {
+                updateState {
                     it.copy(
                         error = DomainError.UnknownError(
                             e.message ?: ERROR_FAILED_TO_CHANGE_LANGUAGE

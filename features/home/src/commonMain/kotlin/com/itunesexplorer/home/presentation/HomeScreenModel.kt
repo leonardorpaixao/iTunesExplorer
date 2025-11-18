@@ -4,7 +4,6 @@ import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.NoEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
-import kotlinx.coroutines.flow.update
 
 enum class HomeTab {
     ALBUMS,
@@ -30,6 +29,6 @@ class HomeScreenModel : MviViewModel<HomeViewState, HomeIntent, NoEffect>(
     }
 
     private fun selectTab(tab: HomeTab) {
-        mutableState.update { it.copy(selectedTab = tab) }
+        updateState { it.copy(selectedTab = tab) }
     }
 }
