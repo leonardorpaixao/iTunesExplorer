@@ -1,9 +1,10 @@
 package com.itunesexplorer.catalog.data.repository
 
-import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.domain.model.ItemDetails
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
+import com.itunesexplorer.core.error.DomainResult
+import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
 
@@ -18,7 +19,7 @@ internal class DetailsRepositoryImpl(
     private val languageManager: LanguageManager
 ) : DetailsRepository {
 
-    override suspend fun getItemDetails(itemId: String): com.itunesexplorer.core.common.domain.DomainResult<ItemDetails> {
+    override suspend fun getItemDetails(itemId: String): DomainResult<ItemDetails> {
         return runCatchingDomain {
             val country = countryManager.getCurrentCountryCode()
             val lang = languageManager.getITunesLanguageCode()

@@ -3,7 +3,7 @@ package com.itunesexplorer.catalog.domain.usecase
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.MusicGenre
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainResult
 
 /**
  * Use case interface for fetching albums filtered by genre from the iTunes Search API.

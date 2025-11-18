@@ -31,8 +31,8 @@ dependencyResolutionManagement {
 include(":composeApp")
 
 // Core modules
-include(":core:error")
 include(":core:common")
+include(":core:error")
 include(":core:settings")
 include(":core:currency")
 include(":core:logger")

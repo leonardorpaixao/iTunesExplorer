@@ -4,7 +4,7 @@ import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.api.ITunesSearchResponse
 import com.itunesexplorer.catalog.data.models.ITunesRssResponse
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainResult
 import com.itunesexplorer.core.error.runCatchingDomain
 
 /**

@@ -5,7 +5,7 @@ import com.itunesexplorer.catalog.data.models.RssFeedEntry
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainResult
 import com.itunesexplorer.settings.country.CountryManager
 
 /**

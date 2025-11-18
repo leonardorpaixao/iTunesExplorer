@@ -1,6 +1,6 @@
 package com.itunesexplorer.catalog.domain.usecase
 
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainResult
 
 /**
  * Base interface for use cases that don't require input parameters.

@@ -11,15 +11,15 @@ kotlin {
             }
         }
     }
-    jvm()
+
+    jvm("desktop")
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
 
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.kotlinx.coroutines.core)
-            implementation(projects.core.common)
             implementation(projects.core.logger)
             implementation(libs.ktor.client.core)
             implementation(libs.kotlinx.serialization.json)
@@ -28,7 +28,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.itunesexplorer.error"
+    namespace = "com.itunesexplorer.core.error"
     compileSdk = 35
     defaultConfig {
         minSdk = 24

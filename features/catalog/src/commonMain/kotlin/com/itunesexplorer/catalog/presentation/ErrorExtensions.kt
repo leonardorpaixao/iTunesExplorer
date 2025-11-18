@@ -1,6 +1,6 @@
 package com.itunesexplorer.catalog.presentation
 
-import com.itunesexplorer.core.common.domain.DomainError
+import com.itunesexplorer.core.error.DomainError
 
 /**
  * Extension to extract error message from DomainError.

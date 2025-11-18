@@ -36,6 +36,7 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(libs.coil.compose)
+            implementation(projects.core.error)
         }
 
         val androidMain by getting {

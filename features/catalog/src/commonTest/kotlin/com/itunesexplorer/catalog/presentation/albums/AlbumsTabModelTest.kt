@@ -5,8 +5,8 @@ import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
-import com.itunesexplorer.core.common.domain.DomainError
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainError
+import com.itunesexplorer.core.error.DomainResult
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -107,7 +107,7 @@ class AlbumsTabModelTest {
         assertEquals(MusicGenre.ROCK, state.selectedGenre)
         assertFalse(state.isLoading)
         assertNotNull(state.error)
-        assertTrue(state.error!!.contains("Failed"))
+        assertTrue(state.error is DomainError.NetworkError)
     }
 
     @Test

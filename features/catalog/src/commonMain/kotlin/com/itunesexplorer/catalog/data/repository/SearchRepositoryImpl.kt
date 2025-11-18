@@ -1,11 +1,11 @@
 package com.itunesexplorer.catalog.data.repository
 
-import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainResult
+import com.itunesexplorer.core.error.runCatchingDomain
 import com.itunesexplorer.settings.country.CountryManager
 import com.itunesexplorer.settings.language.LanguageManager
 

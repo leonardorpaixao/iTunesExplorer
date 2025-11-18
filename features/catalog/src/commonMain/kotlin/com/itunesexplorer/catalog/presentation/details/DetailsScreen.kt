@@ -23,7 +23,7 @@ import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.formatReleaseDate
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
-import com.itunesexplorer.design.components.ErrorMessage
+import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.design.components.MediaCard
 import org.kodein.di.DI
 import org.kodein.di.DIAware
@@ -86,8 +86,8 @@ fun DetailsContent(
             }
         }
         state.error != null -> {
-            ErrorMessage(
-                message = state.error,
+            ErrorContent(
+                error = state.error,
                 onRetry = { onAction(DetailsIntent.Retry) },
                 retryText = strings.retry
             )

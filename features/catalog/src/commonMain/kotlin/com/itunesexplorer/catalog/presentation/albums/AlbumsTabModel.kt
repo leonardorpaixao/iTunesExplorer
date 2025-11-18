@@ -4,11 +4,11 @@ import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
-import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.settings.country.CountryManager
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.drop
@@ -19,7 +19,7 @@ data class AlbumsViewState(
     val recommendations: List<Album> = emptyList(),
     val selectedGenre: MusicGenre = MusicGenre.ALL,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: DomainError? = null
 ) : ViewState
 
 sealed class AlbumsIntent : ViewIntent {
@@ -29,7 +29,7 @@ sealed class AlbumsIntent : ViewIntent {
 }
 
 sealed class AlbumsEffect : ViewEffect {
-    data class ShowError(val message: String) : AlbumsEffect()
+    data class ShowError(val error: DomainError) : AlbumsEffect()
 }
 
 class AlbumsTabModel(
@@ -92,14 +92,13 @@ class AlbumsTabModel(
                     }
                 },
                 onFailure = { error ->
-                    val errorMessage = error.toMessage()
                     mutableState.update {
                         it.copy(
                             isLoading = false,
-                            error = errorMessage
+                            error = error
                         )
                     }
-                    sendEffect(AlbumsEffect.ShowError(errorMessage))
+                    sendEffect(AlbumsEffect.ShowError(error))
                 }
             )
         }
@@ -119,14 +118,13 @@ class AlbumsTabModel(
                     }
                 },
                 onFailure = { error ->
-                    val errorMessage = error.toMessage()
                     mutableState.update {
                         it.copy(
                             isLoading = false,
-                            error = errorMessage
+                            error = error
                         )
                     }
-                    sendEffect(AlbumsEffect.ShowError(errorMessage))
+                    sendEffect(AlbumsEffect.ShowError(error))
                 }
             )
         }

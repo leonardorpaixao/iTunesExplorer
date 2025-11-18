@@ -14,7 +14,7 @@ import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
-import com.itunesexplorer.design.components.ErrorMessage
+import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.design.components.LoadingIndicator
 import com.itunesexplorer.design.components.MediaCard
 import org.kodein.di.compose.rememberInstance
@@ -80,8 +80,8 @@ fun SearchTabContent(
                 LoadingIndicator()
             }
             state.error != null -> {
-                ErrorMessage(
-                    message = state.error,
+                ErrorContent(
+                    error = state.error,
                     onRetry = { onAction(SearchIntent.Retry) },
                     retryText = strings.retry
                 )

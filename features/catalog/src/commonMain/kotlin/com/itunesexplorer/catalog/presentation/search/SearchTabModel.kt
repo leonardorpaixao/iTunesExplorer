@@ -4,11 +4,11 @@ import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
-import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
 import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.settings.country.CountryManager
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.flow.update
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 data class SearchViewState(
     val isLoading: Boolean = false,
     val items: List<SearchResult> = emptyList(),
-    val error: String? = null,
+    val error: DomainError? = null,
     val selectedMediaType: MediaType = MediaType.ALL,
     val searchQuery: String = "",
     val showRegionHint: Boolean = false
@@ -31,7 +31,7 @@ sealed class SearchIntent : ViewIntent {
 }
 
 sealed class SearchEffect : ViewEffect {
-    data class ShowError(val message: String) : SearchEffect()
+    data class ShowError(val error: DomainError) : SearchEffect()
 }
 
 class SearchTabModel(
@@ -81,14 +81,13 @@ class SearchTabModel(
                     }
                 },
                 onFailure = { error ->
-                    val errorMessage = error.toMessage()
                     mutableState.update {
                         it.copy(
                             isLoading = false,
-                            error = errorMessage
+                            error = error
                         )
                     }
-                    sendEffect(SearchEffect.ShowError(errorMessage))
+                    sendEffect(SearchEffect.ShowError(error))
                 }
             )
         }

@@ -5,7 +5,8 @@ import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
-import com.itunesexplorer.core.common.domain.DomainError
+import com.itunesexplorer.core.error.DomainError
+import com.itunesexplorer.core.error.DomainResult
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -265,11 +266,11 @@ class FakeSearchRepository : SearchRepository {
         query: String,
         mediaType: MediaType,
         limit: Int
-    ): com.itunesexplorer.core.common.domain.DomainResult<List<SearchResult>> {
+    ): DomainResult<List<SearchResult>> {
         return if (shouldFail) {
-            com.itunesexplorer.core.common.domain.DomainResult.failure(DomainError.NetworkError("Search failed"))
+            DomainResult.failure(DomainError.NetworkError("Search failed"))
         } else {
-            com.itunesexplorer.core.common.domain.DomainResult.success(mockResults)
+            DomainResult.success(mockResults)
         }
     }
 }

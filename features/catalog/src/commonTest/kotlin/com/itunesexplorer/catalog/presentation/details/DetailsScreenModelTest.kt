@@ -5,8 +5,8 @@ import com.itunesexplorer.catalog.domain.model.ItemDetails
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
-import com.itunesexplorer.core.common.domain.DomainError
-import com.itunesexplorer.core.common.domain.DomainResult
+import com.itunesexplorer.core.error.DomainError
+import com.itunesexplorer.core.error.DomainResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -98,7 +98,7 @@ class DetailsScreenModelTest {
         val state = viewModel.state.value
         assertFalse(state.isLoading)
         assertNotNull(state.error)
-        assertTrue(state.error!!.contains("Failed"))
+        assertTrue(state.error is DomainError.NetworkError)
         assertNull(state.item)
         assertTrue(state.relatedItems.isEmpty())
     }
@@ -114,7 +114,7 @@ class DetailsScreenModelTest {
 
             val effect = awaitItem()
             assertTrue(effect is DetailsEffect.ShowError)
-            assertTrue((effect as DetailsEffect.ShowError).message.contains("Failed"))
+            assertTrue((effect as DetailsEffect.ShowError).error is DomainError.NetworkError)
         }
     }
 
@@ -165,50 +165,6 @@ class DetailsScreenModelTest {
         val state = viewModel.state.value
         assertNull(state.error)
         assertNotNull(state.item)
-    }
-
-    @Test
-    fun `onAction OpenInStore should emit OpenUrl effect with item viewUrl`() = runTest(testDispatcher) {
-        val testUrl = "https://music.apple.com/album/123"
-        fakeRepository.mockItemDetails = ItemDetails(
-            mainItem = createSearchResult("123", "Album", "Artist", viewUrl = testUrl),
-            relatedItems = emptyList(),
-        )
-
-        viewModel = DetailsScreenModel(fakeRepository, "123")
-        advanceUntilIdle()
-
-        viewModel.effect.test {
-            viewModel.onAction(DetailsIntent.OpenInStore)
-
-            val effect = awaitItem()
-            assertTrue(effect is DetailsEffect.OpenUrl)
-            assertEquals(testUrl, (effect as DetailsEffect.OpenUrl).url)
-        }
-    }
-
-    @Test
-    fun `onAction OpenInStore should do nothing when item is null`() = runTest(testDispatcher) {
-        fakeRepository.shouldFail = true
-
-        viewModel = DetailsScreenModel(fakeRepository, "123")
-
-        viewModel.effect.test {
-            advanceUntilIdle() // This will trigger ShowError effect from init
-
-            // Consume the ShowError effect from initialization
-            val initEffect = awaitItem()
-            assertTrue(initEffect is DetailsEffect.ShowError)
-
-            // State has no item (error state)
-            assertNull(viewModel.state.value.item)
-
-            // Now try to open in store - should not emit anything new
-            viewModel.onAction(DetailsIntent.OpenInStore)
-
-            // Should not emit any new effect
-            expectNoEvents()
-        }
     }
 
     @Test

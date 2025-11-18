@@ -1,6 +1,5 @@
 package com.itunesexplorer.catalog.presentation.details
 
-import com.itunesexplorer.catalog.presentation.toMessage
 import com.itunesexplorer.common.mvi.MviViewModel
 import com.itunesexplorer.common.mvi.ViewEffect
 import com.itunesexplorer.common.mvi.ViewIntent
@@ -8,6 +7,7 @@ import com.itunesexplorer.common.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
+import com.itunesexplorer.core.error.DomainError
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -15,7 +15,7 @@ data class DetailsViewState(
     val item: SearchResult? = null,
     val relatedItems: List<SearchResult> = emptyList(),
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: DomainError? = null
 ) : ViewState
 
 sealed class DetailsIntent : ViewIntent {
@@ -25,7 +25,7 @@ sealed class DetailsIntent : ViewIntent {
 }
 
 sealed class DetailsEffect : ViewEffect {
-    data class ShowError(val message: String) : DetailsEffect()
+    data class ShowError(val error: DomainError) : DetailsEffect()
     data class OpenUrl(val url: String) : DetailsEffect()
 }
 
@@ -63,14 +63,13 @@ class DetailsScreenModel(
                     }
                 },
                 onFailure = { error ->
-                    val errorMessage = error.toMessage()
                     mutableState.update {
                         it.copy(
                             isLoading = false,
-                            error = errorMessage
+                            error = error
                         )
                     }
-                    sendEffect(DetailsEffect.ShowError(errorMessage))
+                    sendEffect(DetailsEffect.ShowError(error))
                 }
             )
         }

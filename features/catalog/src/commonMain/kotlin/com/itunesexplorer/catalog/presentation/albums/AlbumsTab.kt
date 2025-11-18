@@ -14,7 +14,7 @@ import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
-import com.itunesexplorer.design.components.ErrorMessage
+import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.design.components.MediaCard
 import org.kodein.di.compose.rememberInstance
 
@@ -51,8 +51,8 @@ fun AlbumsTabContent(
             }
         }
         state.error != null -> {
-            ErrorMessage(
-                message = state.error,
+            ErrorContent(
+                error = state.error,
                 onRetry = { onAction(AlbumsIntent.Retry) },
                 retryText = strings.retry
             )

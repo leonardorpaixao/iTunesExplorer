@@ -1,4 +1,4 @@
-package com.itunesexplorer.core.common.domain
+package com.itunesexplorer.core.error
 
 /**
  * A type that represents either a successful result with a value of type [T],
