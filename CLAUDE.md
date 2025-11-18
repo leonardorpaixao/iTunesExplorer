@@ -52,8 +52,10 @@ iTunesExplorer/
 
 ### Core Modules (`core/`)
 - **`core:error`** - Centralized error handling
-  - `DomainError`: Sealed class for domain errors
-  - `runCatchingDomain`: Extension for error handling
+  - `DomainError`: Sealed class for domain errors (NetworkError, ServerError, NotFoundError, ClientError, DataError, UnknownError)
+  - `DomainResult<T>`: Wrapper type for success/failure results
+  - `runCatchingDomain()`: Extension function for error handling with automatic exception mapping
+  - `Exception.toDomainError()`: Extension function to map exceptions to DomainError types
 
 - **`core:common`** - Shared utilities, extensions, and MVI base classes
   - `MviViewModel<State, Intent, Effect>`: Base class for all ViewModels
@@ -80,7 +82,7 @@ iTunesExplorer/
     - **Android**: OkHttp engine with automatic content encoding
     - **iOS**: Darwin engine with Content-Length workaround (`Accept-Encoding: identity`)
     - **Desktop**: CIO engine (pure Kotlin, async)
-  - Features: JSON content negotiation, configurable logging (based on Logger.logLevel), 30s timeouts
+  - Features: JSON content negotiation, configurable logging (based on Logger.logLevel), 10s timeouts
   - `networkModule`: Kodein DI module binding Json and HttpClient singletons
 
 ### Design System (`design-system/`)

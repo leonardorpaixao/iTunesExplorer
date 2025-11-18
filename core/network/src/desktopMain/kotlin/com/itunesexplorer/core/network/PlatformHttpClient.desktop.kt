@@ -20,7 +20,7 @@ import io.ktor.client.plugins.logging.Logger as KtorLogger
  * - CIO (Coroutine I/O) engine - pure Kotlin multiplatform engine
  * - JSON content negotiation
  * - Configurable logging based on LogLevel
- * - Request timeout configuration (30s)
+ * - Request timeout configuration (10s)
  *
  * Note: CIO is a lightweight, asynchronous engine written in pure Kotlin,
  * making it suitable for JVM-based desktop applications.
@@ -47,9 +47,9 @@ actual fun createPlatformHttpClient(json: Json, logger: AppLogger): HttpClient {
         }
 
         install(HttpTimeout) {
-            requestTimeoutMillis = 30_000
-            connectTimeoutMillis = 30_000
-            socketTimeoutMillis = 30_000
+            requestTimeoutMillis = 10_000
+            connectTimeoutMillis = 10_000
+            socketTimeoutMillis = 10_000
         }
     }
 }

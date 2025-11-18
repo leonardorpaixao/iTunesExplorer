@@ -21,7 +21,7 @@ import io.ktor.client.plugins.logging.Logger as KtorLogger
  * - Content-Length workaround: Sets Accept-Encoding to "identity" to avoid validation issues
  * - JSON content negotiation
  * - Configurable logging based on LogLevel
- * - Request timeout configuration (30s)
+ * - Request timeout configuration (10s)
  *
  * Note: The DefaultRequest plugin clears headers and sets Accept-Encoding to "identity"
  * to work around Content-Length validation issues specific to the Darwin engine.
@@ -59,9 +59,9 @@ actual fun createPlatformHttpClient(json: Json, logger: AppLogger): HttpClient {
         }
 
         install(HttpTimeout) {
-            requestTimeoutMillis = 30_000
-            connectTimeoutMillis = 30_000
-            socketTimeoutMillis = 30_000
+            requestTimeoutMillis = 10_000
+            connectTimeoutMillis = 10_000
+            socketTimeoutMillis = 10_000
         }
     }
 }
