@@ -43,7 +43,6 @@ class PreferencesTabModel(
         onAction(PreferencesIntent.LoadLanguages)
         onAction(PreferencesIntent.LoadCountries)
 
-        // Observe country changes from CountryManager
         screenModelScope.launch {
             CountryManager.currentCountry.collect { country ->
                 mutableState.update { state ->
@@ -68,11 +67,9 @@ class PreferencesTabModel(
             mutableState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                // Get saved language or use current from LanguageManager
                 val savedLanguage = preferencesRepository.getLanguage()
                 val currentLanguage = savedLanguage ?: LanguageManager.getCurrentLanguageTag() ?: Locales.EN
 
-                // Define available languages with their native names
                 val languages = listOf(
                     Language(Locales.EN, "English"),
                     Language(Locales.PT_BR, "Português (Brasil)"),
@@ -101,12 +98,10 @@ class PreferencesTabModel(
     }
 
     private fun selectLanguage(languageCode: String) {
-        // If selecting the same language, do nothing
         if (languageCode == state.value.selectedLanguage) {
             return
         }
 
-        // Show confirmation dialog
         mutableState.update {
             it.copy(
                 pendingLanguage = languageCode,
@@ -155,10 +150,7 @@ class PreferencesTabModel(
     private fun loadCountries() {
         screenModelScope.launch {
             try {
-                // Get all available countries
                 val countries = com.itunesexplorer.preferences.domain.SupportedCountries.all
-
-                // Get saved country preference
                 val savedCountry = preferencesRepository.getCountry()
 
                 mutableState.update {
@@ -169,7 +161,6 @@ class PreferencesTabModel(
                     )
                 }
 
-                // Initialize CountryManager if a country was saved
                 savedCountry?.let { CountryManager.initialize(it) }
             } catch (e: Exception) {
                 mutableState.update {
