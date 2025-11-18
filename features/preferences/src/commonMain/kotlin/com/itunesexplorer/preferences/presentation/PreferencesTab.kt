@@ -26,13 +26,13 @@ fun PreferencesTab() {
 
     PreferencesEffectHandler(
         effectFlow = screenModel.effect,
-        onAction = screenModel::onAction,
+        onAction = screenModel::dispatch,
         strings = strings
     )
 
     PreferencesTabContent(
         state = state,
-        onAction = screenModel::onAction,
+        onAction = screenModel::dispatch,
         strings = strings
     )
 }

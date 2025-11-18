@@ -28,7 +28,7 @@ fun AlbumsTab(
 
     AlbumsTabContent(
         state = state,
-        onAction = screenModel::onAction,
+        onAction = screenModel::dispatch,
         onItemClick = onItemClick,
         strings = strings
     )

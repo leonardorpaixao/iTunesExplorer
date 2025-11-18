@@ -60,7 +60,7 @@ data class DetailsScreen(
             Box(modifier = Modifier.padding(paddingValues)) {
                 DetailsContent(
                     state = state,
-                    onAction = screenModel::onAction,
+                    onAction = screenModel::dispatch,
                     onBack = { navigator.pop() },
                     strings = strings
                 )

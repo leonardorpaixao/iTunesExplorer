@@ -29,7 +29,7 @@ fun SearchTab(
 
     SearchTabContent(
         state = state,
-        onAction = screenModel::onAction,
+        onAction = screenModel::dispatch,
         onItemClick = onItemClick,
         strings = strings
     )
