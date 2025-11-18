@@ -21,6 +21,7 @@ import coil3.compose.AsyncImage
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.presentation.format
+import com.itunesexplorer.catalog.presentation.formatReleaseDate
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorMessage
 import com.itunesexplorer.design.components.MediaCard
@@ -212,7 +213,7 @@ fun ItemDetailsCard(
 
             item.releaseDate?.let {
                 Text(
-                    text = "${strings.releaseDate}: ${it.substringBefore("T")}",
+                    text = "${strings.releaseDate}: ${it.formatReleaseDate(strings)}",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }

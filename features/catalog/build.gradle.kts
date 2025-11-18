@@ -64,6 +64,7 @@ kotlin {
                 // Ktor dependencies for using HttpClient
                 implementation(libs.ktor.client.core)
                 implementation(libs.kotlinx.serialization.json)
+                implementation(libs.kotlinx.datetime)
             }
         }
 

@@ -54,7 +54,19 @@ val EnCatalogStrings = CatalogStrings(
     trackCount = "Tracks",
     openInStore = "Open in iTunes Store",
     back = "Back",
-    changeRegionHint = "Changing your country in Preferences may show different results."
+    changeRegionHint = "Changing your country in Preferences may show different results.",
+    january = "January",
+    february = "February",
+    march = "March",
+    april = "April",
+    may = "May",
+    june = "June",
+    july = "July",
+    august = "August",
+    september = "September",
+    october = "October",
+    november = "November",
+    december = "December"
 )
 
 @LyricistStrings(languageTag = Locales.PT_BR, default = false)
@@ -106,7 +118,19 @@ val PtBrCatalogStrings = CatalogStrings(
     trackCount = "Faixas",
     openInStore = "Abrir na iTunes Store",
     back = "Voltar",
-    changeRegionHint = "Alterar o país nas Preferências pode mostrar resultados diferentes."
+    changeRegionHint = "Alterar o país nas Preferências pode mostrar resultados diferentes.",
+    january = "janeiro",
+    february = "fevereiro",
+    march = "março",
+    april = "abril",
+    may = "maio",
+    june = "junho",
+    july = "julho",
+    august = "agosto",
+    september = "setembro",
+    october = "outubro",
+    november = "novembro",
+    december = "dezembro"
 )
 
 @LyricistStrings(languageTag = Locales.PT_PT, default = false)
@@ -158,7 +182,19 @@ val PtPtCatalogStrings = CatalogStrings(
     trackCount = "Faixas",
     openInStore = "Abrir na iTunes Store",
     back = "Voltar",
-    changeRegionHint = "Alterar o país nas Preferências pode mostrar resultados diferentes."
+    changeRegionHint = "Alterar o país nas Preferências pode mostrar resultados diferentes.",
+    january = "janeiro",
+    february = "fevereiro",
+    march = "março",
+    april = "abril",
+    may = "maio",
+    june = "junho",
+    july = "julho",
+    august = "agosto",
+    september = "setembro",
+    october = "outubro",
+    november = "novembro",
+    december = "dezembro"
 )
 
 @LyricistStrings(languageTag = Locales.FR, default = false)
@@ -210,7 +246,19 @@ val FrCatalogStrings = CatalogStrings(
     trackCount = "Pistes",
     openInStore = "Ouvrir dans iTunes Store",
     back = "Retour",
-    changeRegionHint = "Changer de pays dans les Préférences peut afficher des résultats différents."
+    changeRegionHint = "Changer de pays dans les Préférences peut afficher des résultats différents.",
+    january = "janvier",
+    february = "février",
+    march = "mars",
+    april = "avril",
+    may = "mai",
+    june = "juin",
+    july = "juillet",
+    august = "août",
+    september = "septembre",
+    october = "octobre",
+    november = "novembre",
+    december = "décembre"
 )
 
 @LyricistStrings(languageTag = Locales.ES, default = false)
@@ -262,7 +310,19 @@ val EsCatalogStrings = CatalogStrings(
     trackCount = "Pistas",
     openInStore = "Abrir en iTunes Store",
     back = "Volver",
-    changeRegionHint = "Cambiar el país en Preferencias puede mostrar resultados diferentes."
+    changeRegionHint = "Cambiar el país en Preferencias puede mostrar resultados diferentes.",
+    january = "enero",
+    february = "febrero",
+    march = "marzo",
+    april = "abril",
+    may = "mayo",
+    june = "junio",
+    july = "julio",
+    august = "agosto",
+    september = "septiembre",
+    october = "octubre",
+    november = "noviembre",
+    december = "diciembre"
 )
 
 @LyricistStrings(languageTag = Locales.DE, default = false)
@@ -314,5 +374,17 @@ val DeCatalogStrings = CatalogStrings(
     trackCount = "Titel",
     openInStore = "Im iTunes Store öffnen",
     back = "Zurück",
-    changeRegionHint = "Das Ändern des Landes in den Einstellungen kann andere Ergebnisse anzeigen."
+    changeRegionHint = "Das Ändern des Landes in den Einstellungen kann andere Ergebnisse anzeigen.",
+    january = "Januar",
+    february = "Februar",
+    march = "März",
+    april = "April",
+    may = "Mai",
+    june = "Juni",
+    july = "Juli",
+    august = "August",
+    september = "September",
+    october = "Oktober",
+    november = "November",
+    december = "Dezember"
 )

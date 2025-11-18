@@ -23,5 +23,17 @@ data class CatalogStrings(
     val trackCount: String,
     val openInStore: String,
     val back: String,
-    val changeRegionHint: String
+    val changeRegionHint: String,
+    val january: String,
+    val february: String,
+    val march: String,
+    val april: String,
+    val may: String,
+    val june: String,
+    val july: String,
+    val august: String,
+    val september: String,
+    val october: String,
+    val november: String,
+    val december: String
 )
