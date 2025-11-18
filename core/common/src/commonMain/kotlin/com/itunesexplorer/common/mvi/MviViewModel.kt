@@ -60,4 +60,14 @@ abstract class MviViewModel<State : ViewState, Intent : ViewIntent, Effect : Vie
             effectChannel.send(effect)
         }
     }
+
+    /**
+     * Updates the state and logs the change.
+     */
+    protected fun updateState(block: (State) -> State) {
+        val oldState = state.value
+        mutableState.value = block(state.value)
+        val newState = state.value
+        logger?.debug(logTag, "State updated: $oldState -> $newState")
+    }
 }
