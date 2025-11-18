@@ -139,7 +139,7 @@ class PreferencesTabModelTest {
         // When & Then
         viewModel.state.test {
             val state = awaitItem()
-            assertEquals(33, state.availableCountries.size) // We have 33 countries
+            assertEquals(34, state.availableCountries.size) // We have 34 countries (including NONE)
             assertTrue(state.availableCountries.any { it.code == "US" })
             assertTrue(state.availableCountries.any { it.code == "BR" })
             assertTrue(state.availableCountries.any { it.code == "GB" })

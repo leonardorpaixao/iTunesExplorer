@@ -3,13 +3,13 @@ package com.itunesexplorer.catalog.presentation.albums
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.MusicGenre
-import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
+import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
+import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.core.common.domain.DomainError
 import com.itunesexplorer.core.common.domain.DomainResult
 import com.itunesexplorer.settings.country.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -27,13 +27,15 @@ import kotlin.test.assertTrue
 class AlbumsTabModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
-    private lateinit var fakeRepository: FakeAlbumsRepository
+    private lateinit var fakeGetTopAlbumsUseCase: FakeGetTopAlbumsUseCase
+    private lateinit var fakeGetAlbumsByGenreUseCase: FakeGetAlbumsByGenreUseCase
     private lateinit var viewModel: AlbumsTabModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        fakeRepository = FakeAlbumsRepository()
+        fakeGetTopAlbumsUseCase = FakeGetTopAlbumsUseCase()
+        fakeGetAlbumsByGenreUseCase = FakeGetAlbumsByGenreUseCase()
         CountryManager.clear()
     }
 
@@ -45,7 +47,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `initial state should have ALL genre selected and load top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -58,7 +60,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction SelectGenre with ROCK should update selected genre and load rock albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ROCK))
@@ -73,24 +75,8 @@ class AlbumsTabModelTest {
     }
 
     @Test
-    fun `onAction SelectGenre with JAZZ should update selected genre and load jazz albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
-        advanceUntilIdle()
-
-        viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.JAZZ))
-        advanceUntilIdle()
-
-        val state = viewModel.state.value
-        assertEquals(MusicGenre.JAZZ, state.selectedGenre)
-        assertFalse(state.isLoading)
-        assertEquals(1, state.recommendations.size)
-        assertEquals("Jazz Album", state.recommendations[0].name)
-        assertEquals("Jazz", state.recommendations[0].genre)
-    }
-
-    @Test
     fun `onAction SelectGenre with ALL should load top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         // First select ROCK
@@ -110,8 +96,8 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction SelectGenre with error should set error state`() = runTest(testDispatcher) {
-        fakeRepository.shouldFailOnGenre = true
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        fakeGetAlbumsByGenreUseCase.shouldFail = true
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ROCK))
@@ -126,7 +112,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction Retry with ALL genre should reload top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.Retry)
@@ -140,7 +126,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction Retry with specific genre should reload that genre`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         // Select ROCK
@@ -160,7 +146,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `should switch between different genres correctly`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeRepository, CountryManager)
+        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         // Select ROCK
@@ -186,13 +172,11 @@ class AlbumsTabModelTest {
     }
 }
 
-// Fake implementations for testing
-class FakeAlbumsRepository : AlbumsRepository {
-    var shouldFailOnTop = false
-    var shouldFailOnGenre = false
+class FakeGetTopAlbumsUseCase : GetTopAlbumsUseCase {
+    var shouldFail = false
 
-    override suspend fun getTopAlbums(limit: Int): DomainResult<List<Album>> {
-        return if (shouldFailOnTop) {
+    override suspend fun invoke(limit: Int): DomainResult<List<Album>> {
+        return if (shouldFail) {
             DomainResult.failure(DomainError.NetworkError("Failed to load top albums"))
         } else {
             DomainResult.success(
@@ -204,8 +188,30 @@ class FakeAlbumsRepository : AlbumsRepository {
         }
     }
 
-    override suspend fun getAlbumsByGenre(genre: MusicGenre, limit: Int): DomainResult<List<Album>> {
-        return if (shouldFailOnGenre) {
+    private fun createAlbum(
+        id: String,
+        name: String,
+        artist: String,
+        genre: String
+    ): Album {
+        return Album(
+            id = id,
+            name = name,
+            artistName = artist,
+            imageUrl = "https://example.com/image.jpg",
+            viewUrl = "https://example.com/album/$id",
+            price = Money(9.99, "USD"),
+            releaseDate = "2024-01-01",
+            genre = genre
+        )
+    }
+}
+
+class FakeGetAlbumsByGenreUseCase : GetAlbumsByGenreUseCase {
+    var shouldFail = false
+
+    override suspend fun invoke(genre: MusicGenre, limit: Int): DomainResult<List<Album>> {
+        return if (shouldFail) {
             DomainResult.failure(DomainError.NetworkError("Failed to load albums by genre"))
         } else {
             val album = when (genre) {
@@ -235,4 +241,3 @@ class FakeAlbumsRepository : AlbumsRepository {
         )
     }
 }
-

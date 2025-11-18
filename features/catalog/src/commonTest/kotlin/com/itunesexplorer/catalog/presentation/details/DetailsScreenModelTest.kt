@@ -75,15 +75,13 @@ class DetailsScreenModelTest {
         viewModel = DetailsScreenModel(fakeRepository, "123")
 
         viewModel.state.test {
-            // Initial state (before init block runs)
+            // Initial state already has isLoading = true (from initialState parameter)
             val initialState = awaitItem()
-
-            // After init block triggers loading
-            val loadingState = awaitItem()
-            assertTrue(loadingState.isLoading, "Should be loading")
+            assertTrue(initialState.isLoading, "Initial state should be loading")
 
             advanceUntilIdle()
 
+            // After data loads
             val loadedState = awaitItem()
             assertFalse(loadedState.isLoading, "Should not be loading after data loaded")
             assertNotNull(loadedState.item)
