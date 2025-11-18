@@ -31,8 +31,8 @@ internal fun String.formatReleaseDate(strings: CatalogStrings): String {
             else -> date.monthNumber.toString() // Fallback (should never happen)
         }
 
-        // Format as "DD de MMMM de YYYY"
-        "${date.dayOfMonth} de $monthName de ${date.year}"
+        // Format as "DD, MMMM, YYYY"
+        "${date.dayOfMonth}, $monthName, ${date.year}"
     } catch (e: Exception) {
         // Fallback to original format if parsing fails
         this.substringBefore("T")
