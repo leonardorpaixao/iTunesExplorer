@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.SearchResult
-import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.formatReleaseDate
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 

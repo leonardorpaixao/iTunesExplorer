@@ -11,7 +11,7 @@ internal fun DetailsEffectHandler(
 ) {
     val bottomSheetNavigator = LocalNavigator.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(effectFlow) {
         effectFlow.collect { effect ->
             when (effect) {
                 is DetailsEffect.Back -> {

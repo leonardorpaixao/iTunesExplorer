@@ -15,7 +15,6 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.presentation.details.DetailsScreen
-import com.itunesexplorer.catalog.presentation.format
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.design.components.MediaCard
