@@ -38,6 +38,7 @@ Through this project, I gained hands-on experience solving complex multiplatform
 
 ### Platform Comparison
 ![Platform Comparison Placeholder](docs/screenshots/platforms.png)
+![img.png](docs/comparison.png)
 *Side-by-side view of the same screen across all three platforms*
 
 **How to capture screenshots**:
@@ -125,55 +126,41 @@ Through this project, I gained hands-on experience solving complex multiplatform
 | **iOS** | Darwin native APIs, NSLog logging |
 | **Desktop** | Java 11+, Swing integration |
 
-## 🏗️ Architecture
-
-The project implements **MVI (Model-View-Intent)** pattern for predictable, unidirectional data flow:
+## 📂 Project Structure
 
 ```
-┌─────────┐      Intent      ┌───────────┐
-│  View   │ ──────────────> │ ViewModel │
-│         │                  │   (MVI)   │
-└─────────┘                  └───────────┘
-     ▲                             │
-     │          State              │
-     └─────────────────────────────┘
-```
-
-**Key Concepts**:
-- **ViewState**: Immutable data classes representing complete UI state
-- **ViewIntent**: Sealed classes representing user intentions
-- **ViewEffect**: One-time side effects (toasts, navigation)
-- **MviViewModel**: Base class with automatic logging and effect handling
-
-### Module Structure
-
-```
-iTunesExplorer/
-├── composeApp/          # Platform-specific entry points & DI setup
-├── foundation/          # MVI framework, extensions, i18n utilities
+.
+├── composeApp/
+│   ├── src/
+│   │   ├── commonMain/          # Shared app logic
+│   │   ├── androidMain/         # Android entry point
+│   │   ├── iosMain/             # iOS entry point
+│   │   └── desktopMain/         # Desktop entry point
+│   └── build.gradle.kts
+├── foundation/                  # MVI framework, extensions, i18n
+│   └── src/
+│       ├── commonMain/          # MviViewModel, extensions
+│       ├── androidMain/         # Android-specific utilities
+│       ├── iosMain/             # iOS-specific utilities
+│       └── desktopMain/         # Desktop-specific utilities
 ├── core/
-│   ├── error/           # DomainError sealed class & handling
-│   ├── logger/          # Multiplatform logging (Logcat/NSLog/Console)
-│   ├── network/         # HTTP client with platform-specific engines
-│   ├── settings/        # User preferences management
-│   └── currency/        # Locale-aware currency formatting
-├── design-system/       # Reusable Material3 components
-└── features/
-    ├── home/            # Bottom navigation & tab management
-    ├── catalog/         # iTunes API, albums, search, details
-    └── preferences/     # Settings UI
+│   ├── error/                   # Error definitions
+│   ├── logger/                  # Multiplatform logging
+│   ├── network/                 # HTTP client setup
+│   ├── settings/                # User preferences
+│   └── currency/                # Currency definitions
+├── design-system/               # UI components
+├── features/
+│   ├── home/                    # App Shell to hold tabs
+│   ├── catalog/                 # iTunes integration + tests
+│   └── preferences/             # Language and Country prefs + tests
+├── iosApp/                      # Xcode project
+├── docs/                        # Documentation
+├── gradle/                      # Gradle wrapper & catalogs
+└── README.md                    # This file
 ```
 
-**Module Responsibilities**:
-- **foundation**: MVI base classes (MviViewModel), shared extensions, i18n utilities
-- **core/error**: Centralized error handling with `runCatchingDomain`
-- **core/logger**: Structured logging with configurable levels
-- **core/network**: Platform-specific HTTP clients with automatic configuration
-- **core/settings**: User preferences persistence and management
-- **features/catalog**: Complete iTunes integration (API, domain, presentation)
-- **design-system**: Platform-agnostic Compose components
-
-### Module Dependencies
+### Modules Dependencies
 
 The following diagram shows the dependency graph between modules:
 
@@ -187,7 +174,29 @@ The following diagram shows the dependency graph between modules:
 - **Cross-feature**: Features can depend on other features (home → catalog)
 - **Platform-specific**: Uses `expect/actual` declarations where needed
 
-📚 **Detailed Documentation**: See [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md) for complete architecture guide
+## 🏗️ Feature Module Architecture
+
+The project implements **MVI (Model-View-Intent)** pattern for predictable, unidirectional data flow:
+
+```
+┌─────────┐      Intent      ┌───────────┐
+│  View   │ ──────────────>  │ ViewModel │
+│         │                  │   (MVI)   │
+└─────────┘                  └───────────┘
+     ▲                             │
+     │    State And Effects        │
+     └─────────────────────────────┘
+```
+
+**Key Concepts**:
+- **ViewState**: Immutable data classes representing complete UI state
+- **ViewIntent**: Sealed classes representing user intentions
+- **ViewEffect**: One-time side effects (toasts, navigation)
+- **MviViewModel**: Base class with automatic logging and effect handling
+
+An instance of the architecture used on a feature module:
+
+![catalog_graph.png](docs/catalog_graph.png)
 
 ## 🚀 Getting Started
 
@@ -367,48 +376,6 @@ open features/catalog/build/reports/tests/testDebugUnitTest/index.html
 - Comprehensive unit tests for business logic
 - Platform-specific implementations only where necessary
 
-## 📂 Project Structure
-
-```
-.
-├── composeApp/
-│   ├── src/
-│   │   ├── commonMain/          # Shared app logic
-│   │   ├── androidMain/         # Android entry point
-│   │   ├── iosMain/             # iOS entry point
-│   │   └── desktopMain/         # Desktop entry point
-│   └── build.gradle.kts
-├── foundation/                  # MVI framework, extensions, i18n
-│   └── src/
-│       ├── commonMain/          # MviViewModel, extensions
-│       ├── androidMain/         # Android-specific utilities
-│       ├── iosMain/             # iOS-specific utilities
-│       └── desktopMain/         # Desktop-specific utilities
-├── core/
-│   ├── error/                   # Error handling
-│   ├── logger/                  # Multiplatform logging
-│   ├── network/                 # HTTP client setup
-│   ├── settings/                # User preferences
-│   └── currency/                # Currency formatting
-├── design-system/               # UI components
-├── features/
-│   ├── home/                    # Home screen + tests
-│   ├── catalog/                 # iTunes integration + tests
-│   └── preferences/             # Settings + tests
-├── iosApp/                      # Xcode project
-├── docs/                        # Documentation
-│   ├── MVI_ARCHITECTURE.md      # Architecture deep dive
-│   └── TESTING.md               # Testing guide
-├── gradle/                      # Gradle wrapper & catalogs
-├── CLAUDE.md                    # AI assistant context
-└── README.md                    # This file
-```
-
-## 📚 Documentation
-
-- **[MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md)**: Deep dive into the MVI pattern implementation
-- **[TESTING.md](docs/TESTING.md)**: Comprehensive testing guide with examples
-- **[CLAUDE.md](CLAUDE.md)**: Project context for AI-assisted development
 
 ## 🌐 API Reference
 
@@ -418,15 +385,9 @@ This project uses Apple's public **[iTunes Search API](https://developer.apple.c
 - `/search`: Search iTunes Store content
 - `/lookup`: Fetch item details by ID
 
-**Default Parameters**: `limit=50`, `country=US`, `lang=en_us`
+**Default Parameters**: `limit=200`, `country=US`, `lang=en_us`
 
 **Note**: The API has a maximum limit of 200 results per request with no pagination support.
-
-## 🙏 Acknowledgments
-
-- **Apple iTunes Search API** for providing free access to store data
-- **JetBrains** for Kotlin Multiplatform and Compose Multiplatform
-- **Ktor**, **Voyager**, **Kodein**, and **Coil** teams for excellent libraries
 
 ---
 
