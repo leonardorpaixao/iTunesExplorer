@@ -93,28 +93,18 @@ Through this project, I gained hands-on experience solving complex multiplatform
 | **UI Framework** | Compose Multiplatform | 1.7.1 | Declarative UI across platforms |
 | **Build System** | Gradle | 8.10 | Build automation with version catalogs |
 
-### Architecture & Patterns
+### Libraries
 
 | Library | Version | Purpose |
 |---------|---------|---------|
 | **Voyager** | 1.1.0-beta02 | Multiplatform navigation with screen models |
 | **Kodein-DI** | 7.21.2 | Dependency injection framework |
 | **Kotlinx Coroutines** | 1.9.0 | Asynchronous programming |
-
-### Networking & Data
-
-| Library | Version | Purpose |
-|---------|---------|---------|
 | **Ktor Client** | 3.0.2 | HTTP client with platform-specific engines |
 | **Ktor OkHttp** | 3.0.2 | Android HTTP engine (optimized) |
 | **Ktor Darwin** | 3.0.2 | iOS HTTP engine (native) |
 | **Ktor CIO** | 3.0.2 | Desktop HTTP engine (pure Kotlin) |
 | **Kotlinx Serialization** | 1.7.1 | JSON serialization/deserialization |
-
-### UI & Media
-
-| Library | Version | Purpose |
-|---------|---------|---------|
 | **Material3** | (via Compose) | Material Design 3 components |
 | **Coil** | 3.0.4 | Async image loading for all platforms |
 | **Lyricist** | 1.7.0 | Internationalization (i18n) support |
@@ -160,13 +150,13 @@ The project implements **MVI (Model-View-Intent)** pattern for predictable, unid
 ```
 iTunesExplorer/
 ├── composeApp/          # Platform-specific entry points & DI setup
+├── foundation/          # MVI framework, extensions, i18n utilities
 ├── core/
-│   ├── common/          # MVI base classes, ViewState/Intent/Effect
 │   ├── error/           # DomainError sealed class & handling
-│   ├── settings/        # User preferences management
-│   ├── currency/        # Locale-aware currency formatting
 │   ├── logger/          # Multiplatform logging (Logcat/NSLog/Console)
-│   └── network/         # HTTP client with platform-specific engines
+│   ├── network/         # HTTP client with platform-specific engines
+│   ├── settings/        # User preferences management
+│   └── currency/        # Locale-aware currency formatting
 ├── design-system/       # Reusable Material3 components
 └── features/
     ├── home/            # Bottom navigation & tab management
@@ -175,10 +165,11 @@ iTunesExplorer/
 ```
 
 **Module Responsibilities**:
-- **core/common**: Shared utilities, MVI framework, extensions
+- **foundation**: MVI base classes (MviViewModel), shared extensions, i18n utilities
 - **core/error**: Centralized error handling with `runCatchingDomain`
-- **core/network**: Platform-specific HTTP clients with automatic configuration
 - **core/logger**: Structured logging with configurable levels
+- **core/network**: Platform-specific HTTP clients with automatic configuration
+- **core/settings**: User preferences persistence and management
 - **features/catalog**: Complete iTunes integration (API, domain, presentation)
 - **design-system**: Platform-agnostic Compose components
 
@@ -186,56 +177,15 @@ iTunesExplorer/
 
 The following diagram shows the dependency graph between modules:
 
-```
-composeApp (main app)
-├── features:home
-│   └── features:catalog
-│       ├── core:network
-│       │   └── core:logger
-│       ├── core:error
-│       ├── core:common
-│       │   └── core:logger
-│       ├── design-system
-│       └── core:settings
-│           ├── core:common
-│           └── core:logger
-├── features:preferences
-│   ├── core:settings
-│   ├── core:common
-│   ├── design-system
-│   └── core:error
-├── core:currency
-│   └── core:common
-└── design-system
-
-Core Modules (foundational):
-┌─────────────┐
-│ core:logger │  ← No dependencies (foundation)
-└─────────────┘
-      ▲
-      │
-┌─────────────┐
-│ core:common │  ← Depends on logger
-└─────────────┘
-      ▲
-      ├─────────────────────────┐
-      │                         │
-┌─────────────┐         ┌──────────────┐
-│ core:error  │         │ core:network │
-└─────────────┘         └──────────────┘
-                               ▲
-                               │
-                        ┌──────────────┐
-                        │ core:settings│
-                        └──────────────┘
-```
-
+![dependencies_graph.png](docs/dependencies_graph.png)
 **Dependency Rules**:
-- Core modules are independent and reusable
-- Features depend on core modules, never the reverse
-- Features can depend on other features (home → catalog)
-- All modules with state management depend on `core:common` for MVI
-- Platform-specific code uses `expect/actual` declarations
+- **Base layer**: `core:error`, `core:logger`, and `core:settings` have no dependencies on other modules
+- **Foundation layer**: Provides MVI framework and common utilities, depends only on base core modules (`core:error`, `core:logger`)
+- **Network layer**: `core:network` depends on `core:error` and `core:logger` for error handling and logging
+- **Currency layer**: `core:currency` is independent (no module dependencies)
+- **Features**: Depend on `foundation` and core modules as needed, never the reverse
+- **Cross-feature**: Features can depend on other features (home → catalog)
+- **Platform-specific**: Uses `expect/actual` declarations where needed
 
 📚 **Detailed Documentation**: See [docs/MVI_ARCHITECTURE.md](docs/MVI_ARCHITECTURE.md) for complete architecture guide
 
@@ -247,6 +197,7 @@ Core Modules (foundational):
 - **Android Studio** (latest stable version)
 - **Xcode 15+** (for iOS builds, macOS only)
 - **Gradle 8.10** (included via wrapper)
+```
 
 ### Quick Start
 
@@ -267,20 +218,12 @@ Core Modules (foundational):
 #### iOS
 ```bash
 # 1. Build Kotlin framework for simulator
-./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64
+./gradlew :composeApp:linkDebugFrameworkIosArm64
 
 # 2. Open Xcode project
 open iosApp/iosApp.xcodeproj
 
 # 3. Select iPhone simulator and press Run (Cmd+R)
-```
-
-**For iOS Device**:
-```bash
-# Build for physical device
-./gradlew :composeApp:linkDebugFrameworkIosArm64
-
-# Then run from Xcode with device selected
 ```
 
 ### Available Gradle Tasks
@@ -435,13 +378,18 @@ open features/catalog/build/reports/tests/testDebugUnitTest/index.html
 │   │   ├── iosMain/             # iOS entry point
 │   │   └── desktopMain/         # Desktop entry point
 │   └── build.gradle.kts
+├── foundation/                  # MVI framework, extensions, i18n
+│   └── src/
+│       ├── commonMain/          # MviViewModel, extensions
+│       ├── androidMain/         # Android-specific utilities
+│       ├── iosMain/             # iOS-specific utilities
+│       └── desktopMain/         # Desktop-specific utilities
 ├── core/
-│   ├── common/                  # MVI framework, shared utilities
 │   ├── error/                   # Error handling
-│   ├── settings/                # User preferences
-│   ├── currency/                # Currency formatting
 │   ├── logger/                  # Multiplatform logging
-│   └── network/                 # HTTP client setup
+│   ├── network/                 # HTTP client setup
+│   ├── settings/                # User preferences
+│   └── currency/                # Currency formatting
 ├── design-system/               # UI components
 ├── features/
 │   ├── home/                    # Home screen + tests
