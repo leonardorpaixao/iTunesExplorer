@@ -5,7 +5,7 @@
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.1.10-7F52FF?style=flat&logo=kotlin)
 ![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.7.1-4285F4?style=flat)
 ![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop-success)
-![Tests](https://img.shields.io/badge/Tests-172%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-87%20passing-brightgreen)
 
 **iTunes Explorer** is a fully-functional multiplatform application that allows users to browse and search the iTunes Store catalog across Android, iOS, and Desktop platforms. Built with Kotlin Multiplatform and Compose Multiplatform, it showcases **95%+ code sharing** across all three platforms while maintaining native performance and platform-specific optimizations.
 
@@ -77,7 +77,7 @@ Through this project, I gained hands-on experience solving complex multiplatform
 ### 🔧 Technical Features
 - **MVI Architecture**: Unidirectional data flow with predictable state management
 - **Dependency Injection**: Kodein-DI for clean, testable code
-- **Comprehensive Testing**: 172 unit tests across all layers with 100% pass rate
+- **Comprehensive Testing**: 87 unit tests across all layers with 100% pass rate
 - **Multiplatform Logging**: Platform-specific implementations (Logcat, NSLog, Console)
 - **Type-Safe Error Handling**: Domain-specific error types with proper propagation
 - **Internationalization**: Country/language support with localized formatting
@@ -360,14 +360,13 @@ The project has **comprehensive test coverage** with modern Kotlin testing tools
 - ✅ **DetailsScreenModel**: 10 tests (item loading, retry logic, navigation effects)
 - ✅ **PreferencesTabModel**: 5 tests (country selection, reactive updates)
 
-**Domain/Data Layer** - 134 tests:
+**Domain/Data Layer** - 49 tests:
 - ✅ **CountryManager**: 6 tests (country selection, persistence)
 - ✅ **LanguageManager**: 6 tests (language selection, persistence)
-- ✅ **CurrencyFormatter**: 31 tests (formatting, localization, edge cases)
-- ✅ **CurrencyMapper**: 51 tests (currency code mapping, validation)
-- ✅ **SupportedCurrencies**: 40 tests (currency data validation)
+- ✅ **CurrencyFormatter**: 21 tests (formatting, localization, edge cases, rounding)
+- ✅ **SupportedCurrencies**: 16 tests (data class validation, lookup, zero-decimal currencies)
 
-**Total**: **172 tests, 100% passing**
+**Total**: **87 tests, 100% passing**
 
 **Test Infrastructure:**
 - Fake implementations for use cases and repositories

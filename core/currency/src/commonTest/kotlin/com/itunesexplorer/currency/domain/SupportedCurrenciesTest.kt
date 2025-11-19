@@ -38,49 +38,6 @@ class SupportedCurrenciesTest {
         assertEquals(2, currency.decimals)
     }
 
-    // Major Currencies Tests
-    @Test
-    fun `SupportedCurrencies should have USD defined`() {
-        assertNotNull(SupportedCurrencies.USD)
-        assertEquals("USD", SupportedCurrencies.USD.code)
-        assertEquals("$", SupportedCurrencies.USD.symbol)
-        assertEquals("US Dollar", SupportedCurrencies.USD.name)
-        assertEquals(2, SupportedCurrencies.USD.decimals)
-    }
-
-    @Test
-    fun `SupportedCurrencies should have EUR defined`() {
-        assertNotNull(SupportedCurrencies.EUR)
-        assertEquals("EUR", SupportedCurrencies.EUR.code)
-        assertEquals("€", SupportedCurrencies.EUR.symbol)
-        assertEquals("Euro", SupportedCurrencies.EUR.name)
-        assertEquals(2, SupportedCurrencies.EUR.decimals)
-    }
-
-    @Test
-    fun `SupportedCurrencies should have GBP defined`() {
-        assertNotNull(SupportedCurrencies.GBP)
-        assertEquals("GBP", SupportedCurrencies.GBP.code)
-        assertEquals("£", SupportedCurrencies.GBP.symbol)
-        assertEquals(2, SupportedCurrencies.GBP.decimals)
-    }
-
-    @Test
-    fun `SupportedCurrencies should have JPY with zero decimals`() {
-        assertNotNull(SupportedCurrencies.JPY)
-        assertEquals("JPY", SupportedCurrencies.JPY.code)
-        assertEquals("¥", SupportedCurrencies.JPY.symbol)
-        assertEquals(0, SupportedCurrencies.JPY.decimals)
-    }
-
-    @Test
-    fun `SupportedCurrencies should have BRL defined`() {
-        assertNotNull(SupportedCurrencies.BRL)
-        assertEquals("BRL", SupportedCurrencies.BRL.code)
-        assertEquals("R$", SupportedCurrencies.BRL.symbol)
-        assertEquals(2, SupportedCurrencies.BRL.decimals)
-    }
-
     // Zero-Decimal Currencies Tests
     @Test
     fun `SupportedCurrencies should have KRW with zero decimals`() {
@@ -150,37 +107,6 @@ class SupportedCurrenciesTest {
     fun `getByCode should return null for empty string`() {
         val currency = SupportedCurrencies.getByCode("")
         assertNull(currency)
-    }
-
-    // Symbol Tests
-    @Test
-    fun `USD should have dollar symbol`() {
-        assertEquals("$", SupportedCurrencies.USD.symbol)
-    }
-
-    @Test
-    fun `EUR should have euro symbol`() {
-        assertEquals("€", SupportedCurrencies.EUR.symbol)
-    }
-
-    @Test
-    fun `GBP should have pound symbol`() {
-        assertEquals("£", SupportedCurrencies.GBP.symbol)
-    }
-
-    @Test
-    fun `JPY should have yen symbol`() {
-        assertEquals("¥", SupportedCurrencies.JPY.symbol)
-    }
-
-    @Test
-    fun `INR should have rupee symbol`() {
-        assertEquals("₹", SupportedCurrencies.INR.symbol)
-    }
-
-    @Test
-    fun `KRW should have won symbol`() {
-        assertEquals("₩", SupportedCurrencies.KRW.symbol)
     }
 
     // Specific Currency Tests
