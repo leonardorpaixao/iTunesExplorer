@@ -4,12 +4,12 @@ import com.itunesexplorer.catalog.data.CatalogConstants
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
-import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.ViewEffect
-import com.itunesexplorer.common.mvi.ViewIntent
-import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.foundation.mvi.MviViewModel
+import com.itunesexplorer.foundation.mvi.ViewEffect
+import com.itunesexplorer.foundation.mvi.ViewIntent
+import com.itunesexplorer.foundation.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
-import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.CountryManager
 import cafe.adriel.voyager.core.model.screenModelScope
 import kotlinx.coroutines.launch
 

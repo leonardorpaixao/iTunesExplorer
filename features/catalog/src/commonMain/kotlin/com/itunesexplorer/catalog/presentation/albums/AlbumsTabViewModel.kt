@@ -1,0 +1,131 @@
+package com.itunesexplorer.catalog.presentation.albums
+
+import com.itunesexplorer.catalog.domain.model.Album
+import com.itunesexplorer.catalog.domain.model.MusicGenre
+import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
+import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
+import com.itunesexplorer.foundation.mvi.MviViewModel
+import com.itunesexplorer.foundation.mvi.ViewEffect
+import com.itunesexplorer.foundation.mvi.ViewIntent
+import com.itunesexplorer.foundation.mvi.ViewState
+import com.itunesexplorer.core.error.DomainError
+import com.itunesexplorer.settings.CountryManager
+import cafe.adriel.voyager.core.model.screenModelScope
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
+
+internal data class AlbumsViewState(
+    val recommendations: List<Album> = emptyList(),
+    val selectedGenre: MusicGenre = MusicGenre.ALL,
+    val isLoading: Boolean = false,
+    val error: DomainError? = null
+) : ViewState
+
+internal sealed class AlbumsIntent : ViewIntent {
+    data object LoadRecommendations : AlbumsIntent()
+    data class SelectGenre(val genre: MusicGenre) : AlbumsIntent()
+    data class ItemClicked(val itemId: String) : AlbumsIntent()
+    data object Retry : AlbumsIntent()
+}
+
+internal sealed class AlbumsEffect : ViewEffect {
+    data class NavigateToDetails(val itemId: String) : AlbumsEffect()
+}
+
+internal class AlbumsTabViewModel(
+    private val getTopAlbumsUseCase: GetTopAlbumsUseCase,
+    private val getAlbumsByGenreUseCase: GetAlbumsByGenreUseCase,
+    private val countryManager: CountryManager
+) : MviViewModel<AlbumsViewState, AlbumsIntent, AlbumsEffect>(
+    initialState = AlbumsViewState()
+) {
+
+    init {
+        onAction(AlbumsIntent.LoadRecommendations)
+
+        screenModelScope.launch {
+            countryManager.currentCountry
+                .drop(1)
+                .collect { country ->
+                    if (country != null) {
+                        onAction(AlbumsIntent.LoadRecommendations)
+                    }
+                }
+        }
+    }
+
+    override fun onAction(intent: AlbumsIntent) {
+        when (intent) {
+            is AlbumsIntent.LoadRecommendations -> loadRecommendations()
+            is AlbumsIntent.SelectGenre -> selectGenre(intent.genre)
+            is AlbumsIntent.ItemClicked -> sendEffect(AlbumsEffect.NavigateToDetails(intent.itemId))
+            is AlbumsIntent.Retry -> {
+                if (state.value.selectedGenre == MusicGenre.ALL) {
+                    loadRecommendations()
+                } else {
+                    loadAlbumsByGenre(state.value.selectedGenre)
+                }
+            }
+        }
+    }
+
+    private fun selectGenre(genre: MusicGenre) {
+        updateState { it.copy(selectedGenre = genre) }
+
+        if (genre == MusicGenre.ALL) {
+            loadRecommendations()
+        } else {
+            loadAlbumsByGenre(genre)
+        }
+    }
+
+    private fun loadRecommendations() {
+        screenModelScope.launch {
+            updateState { it.copy(isLoading = true, error = null) }
+
+            getTopAlbumsUseCase().fold(
+                onSuccess = { albums ->
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            recommendations = albums
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            error = error
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    private fun loadAlbumsByGenre(genre: MusicGenre) {
+        screenModelScope.launch {
+            updateState { it.copy(isLoading = true, error = null) }
+
+            getAlbumsByGenreUseCase(genre).fold(
+                onSuccess = { albums ->
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            recommendations = albums
+                        )
+                    }
+                },
+                onFailure = { error ->
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            error = error
+                        )
+                    }
+                }
+            )
+        }
+    }
+}

@@ -3,7 +3,7 @@ package com.itunesexplorer.catalog.presentation.i18n
 import cafe.adriel.lyricist.LyricistStrings
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.MusicGenre
-import com.itunesexplorer.i18n.Locales
+import com.itunesexplorer.foundation.i18n.Locales
 
 @LyricistStrings(languageTag = Locales.EN, default = true)
 val EnCatalogStrings = CatalogStrings(

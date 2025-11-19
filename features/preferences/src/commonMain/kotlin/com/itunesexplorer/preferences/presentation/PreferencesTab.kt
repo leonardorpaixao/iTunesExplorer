@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalPreferencesStrings
 import com.itunesexplorer.design.components.ErrorContent
 import com.itunesexplorer.preferences.domain.Language
-import com.itunesexplorer.preferences.i18n.PreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.PreferencesStrings
 import org.kodein.di.compose.rememberInstance
 
 @Composable

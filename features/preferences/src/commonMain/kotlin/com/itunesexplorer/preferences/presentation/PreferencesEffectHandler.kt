@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
-import com.itunesexplorer.preferences.i18n.PreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.PreferencesStrings
 import kotlinx.coroutines.flow.Flow
 
 @Composable

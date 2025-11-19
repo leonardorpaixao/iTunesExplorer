@@ -1,9 +1,9 @@
 package com.itunesexplorer.home.presentation
 
-import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.NoEffect
-import com.itunesexplorer.common.mvi.ViewIntent
-import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.foundation.mvi.MviViewModel
+import com.itunesexplorer.foundation.mvi.NoEffect
+import com.itunesexplorer.foundation.mvi.ViewIntent
+import com.itunesexplorer.foundation.mvi.ViewState
 
 enum class HomeTab {
     ALBUMS,

@@ -30,8 +30,10 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 
+// Foundation
+include(":foundation")
+
 // Core modules
-include(":core:common")
 include(":core:error")
 include(":core:settings")
 include(":core:currency")

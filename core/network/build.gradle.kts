@@ -27,7 +27,6 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
-            implementation(projects.core.error)
             implementation(projects.core.logger)
         }
 

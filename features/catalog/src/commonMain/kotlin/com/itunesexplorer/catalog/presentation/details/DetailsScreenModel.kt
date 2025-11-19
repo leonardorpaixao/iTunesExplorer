@@ -1,30 +1,36 @@
 package com.itunesexplorer.catalog.presentation.details
 
-import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.NoEffect
-import com.itunesexplorer.common.mvi.ViewIntent
-import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.foundation.mvi.MviViewModel
+import com.itunesexplorer.foundation.mvi.NoEffect
+import com.itunesexplorer.foundation.mvi.ViewIntent
+import com.itunesexplorer.foundation.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.core.error.DomainError
+import com.itunesexplorer.foundation.mvi.ViewEffect
 import kotlinx.coroutines.launch
 
-data class DetailsViewState(
+internal data class DetailsViewState(
     val item: SearchResult? = null,
     val isLoading: Boolean = false,
     val error: DomainError? = null
 ) : ViewState
 
-sealed class DetailsIntent : ViewIntent {
+internal sealed class DetailsIntent : ViewIntent {
     data object LoadDetails : DetailsIntent()
     data object Retry : DetailsIntent()
+    data object Back: DetailsIntent()
 }
 
-class DetailsScreenModel(
+internal sealed class DetailsEffect: ViewEffect {
+    data object Back: DetailsEffect()
+}
+
+internal class DetailsScreenModel(
     private val detailsRepository: DetailsRepository,
     private val itemId: String
-) : MviViewModel<DetailsViewState, DetailsIntent, NoEffect>(
+) : MviViewModel<DetailsViewState, DetailsIntent, DetailsEffect>(
     initialState = DetailsViewState(isLoading = true)
 ) {
 
@@ -36,6 +42,7 @@ class DetailsScreenModel(
         when (intent) {
             is DetailsIntent.LoadDetails -> loadDetails()
             is DetailsIntent.Retry -> loadDetails()
+            is DetailsIntent.Back -> sendEffect(DetailsEffect.Back)
         }
     }
 

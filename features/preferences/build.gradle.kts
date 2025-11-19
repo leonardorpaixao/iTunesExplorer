@@ -41,7 +41,7 @@ kotlin {
                 implementation(libs.voyager.bottom.sheet.navigator)
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
-                implementation(projects.core.common)
+                implementation(projects.foundation)
                 implementation(projects.core.error)
                 implementation(projects.core.settings)
                 implementation(projects.designSystem)

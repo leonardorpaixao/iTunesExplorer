@@ -41,7 +41,7 @@ kotlin {
                 implementation(libs.voyager.kodein)
                 implementation(libs.kodein.di)
                 implementation(libs.kodein.di.framework.compose)
-                implementation(projects.core.common)
+                implementation(projects.foundation)
                 implementation(projects.designSystem)
                 implementation(projects.features.catalog)
                 implementation(projects.features.preferences)

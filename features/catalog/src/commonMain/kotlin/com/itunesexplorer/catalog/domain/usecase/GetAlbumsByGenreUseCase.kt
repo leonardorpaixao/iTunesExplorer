@@ -1,14 +1,14 @@
 package com.itunesexplorer.catalog.domain.usecase
 
 import com.itunesexplorer.catalog.data.CatalogConstants
-import com.itunesexplorer.catalog.data.api.ITunesItem
+import com.itunesexplorer.catalog.data.models.ITunesItem
 import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.MusicGenre
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.core.error.DomainResult
-import com.itunesexplorer.settings.country.CountryManager
-import com.itunesexplorer.settings.language.LanguageManager
+import com.itunesexplorer.settings.CountryManager
+import com.itunesexplorer.settings.LanguageManager
 
 interface GetAlbumsByGenreUseCase {
     suspend operator fun invoke(

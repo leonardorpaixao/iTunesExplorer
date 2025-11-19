@@ -1,7 +1,7 @@
 package com.itunesexplorer.settings.di
 
-import com.itunesexplorer.settings.data.PreferencesRepository
-import com.itunesexplorer.settings.data.PreferencesRepositoryImpl
+import com.itunesexplorer.settings.PreferencesRepository
+import com.itunesexplorer.settings.PreferencesRepositoryImpl
 import com.russhwolf.settings.Settings
 import org.kodein.di.DI
 import org.kodein.di.bind

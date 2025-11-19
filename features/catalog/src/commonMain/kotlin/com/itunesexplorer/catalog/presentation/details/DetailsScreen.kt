@@ -2,29 +2,20 @@ package com.itunesexplorer.catalog.presentation.details
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import coil3.compose.AsyncImage
-import com.itunesexplorer.catalog.data.CatalogConstants
-import com.itunesexplorer.catalog.domain.model.SearchResult
-import com.itunesexplorer.catalog.presentation.format
-import com.itunesexplorer.catalog.presentation.formatReleaseDate
+import com.itunesexplorer.catalog.presentation.details.components.ItemDetailsCard
 import com.itunesexplorer.catalog.presentation.i18n.CatalogStrings
 import com.itunesexplorer.design.components.ErrorContent
-import com.itunesexplorer.design.components.MediaCard
 import org.kodein.di.DI
 import org.kodein.di.DIAware
 import org.kodein.di.instance
@@ -41,6 +32,8 @@ data class DetailsScreen(
         val screenModel: DetailsScreenModel by instance(arg = itemId)
         val state by screenModel.state.collectAsState()
         val strings = LocalCatalogStrings.current
+
+        DetailsEffectHandler(screenModel.effect)
 
         Scaffold(
             topBar = {
@@ -61,7 +54,6 @@ data class DetailsScreen(
                 DetailsContent(
                     state = state,
                     onAction = screenModel::dispatch,
-                    onBack = { navigator.pop() },
                     strings = strings
                 )
             }
@@ -70,10 +62,9 @@ data class DetailsScreen(
 }
 
 @Composable
-fun DetailsContent(
+internal fun DetailsContent(
     state: DetailsViewState,
     onAction: (DetailsIntent) -> Unit,
-    onBack: () -> Unit,
     strings: CatalogStrings
 ) {
     when {
@@ -85,6 +76,7 @@ fun DetailsContent(
                 CircularProgressIndicator()
             }
         }
+
         state.error != null -> {
             ErrorContent(
                 error = state.error,
@@ -92,6 +84,7 @@ fun DetailsContent(
                 retryText = strings.retry
             )
         }
+
         state.item == null -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -104,6 +97,7 @@ fun DetailsContent(
                 )
             }
         }
+
         else -> {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -114,12 +108,12 @@ fun DetailsContent(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        ItemDetailsCard(item = state.item, onAction = onAction, strings = strings)
+                        ItemDetailsCard(item = state.item, strings = strings)
                     }
                 }
 
                 Button(
-                    onClick = onBack,
+                    onClick = { onAction(DetailsIntent.Back) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -131,80 +125,4 @@ fun DetailsContent(
     }
 }
 
-@Composable
-fun ItemDetailsCard(
-    item: SearchResult,
-    onAction: (DetailsIntent) -> Unit,
-    strings: CatalogStrings
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item.imageUrl?.let { imageUrl ->
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AsyncImage(
-                        model = imageUrl.replace(CatalogConstants.THUMBNAIL_SIZE, CatalogConstants.FULL_SIZE),
-                        contentDescription = item.name,
-                        modifier = Modifier
-                            .widthIn(max = 400.dp)
-                            .fillMaxWidth()
-                            .aspectRatio(1f)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            }
 
-            Text(
-                text = item.name,
-                style = MaterialTheme.typography.headlineSmall
-            )
-
-            item.artistName?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            item.genre?.let {
-                Text(
-                    text = "${strings.genre}: $it",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            item.price?.let { money ->
-                Text(
-                    text = "${strings.price}: ${money.format()}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            item.releaseDate?.let {
-                Text(
-                    text = "${strings.releaseDate}: ${it.formatReleaseDate(strings)}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            item.description?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
-            }
-        }
-    }
-}

@@ -24,7 +24,7 @@ import org.kodein.di.compose.rememberInstance
 
 @Composable
 fun AlbumsTab() {
-    val screenModel: AlbumsTabModel by rememberInstance()
+    val screenModel: AlbumsTabViewModel by rememberInstance()
     val state by screenModel.state.collectAsState()
     val strings = LocalCatalogStrings.current
     val navigator = LocalNavigator.currentOrThrow
@@ -48,7 +48,7 @@ fun AlbumsTab() {
 }
 
 @Composable
-fun AlbumsTabContent(
+internal fun AlbumsTabContent(
     state: AlbumsViewState,
     onAction: (AlbumsIntent) -> Unit,
     strings: CatalogStrings

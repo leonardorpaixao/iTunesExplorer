@@ -57,7 +57,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
 
-            implementation(projects.core.common)
+            implementation(projects.foundation)
             implementation(projects.core.settings)
             implementation(projects.core.currency)
             implementation(projects.core.logger)

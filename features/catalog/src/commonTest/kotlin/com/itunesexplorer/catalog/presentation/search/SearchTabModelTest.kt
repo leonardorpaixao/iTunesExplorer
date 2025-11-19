@@ -1,13 +1,12 @@
 package com.itunesexplorer.catalog.presentation.search
 
-import app.cash.turbine.test
 import com.itunesexplorer.catalog.domain.model.MediaType
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.SearchRepository
 import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.core.error.DomainResult
-import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

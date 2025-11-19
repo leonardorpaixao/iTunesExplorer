@@ -12,12 +12,12 @@ import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCaseImpl
 import com.itunesexplorer.catalog.data.api.ITunesApi
 import com.itunesexplorer.catalog.data.api.createITunesApiImpl
-import com.itunesexplorer.catalog.presentation.albums.AlbumsTabModel
+import com.itunesexplorer.catalog.presentation.albums.AlbumsTabViewModel
 import com.itunesexplorer.catalog.presentation.search.SearchTabModel
 import com.itunesexplorer.catalog.presentation.details.DetailsScreenModel
 import com.itunesexplorer.core.network.di.networkModule
-import com.itunesexplorer.settings.country.CountryManager
-import com.itunesexplorer.settings.language.LanguageManager
+import com.itunesexplorer.settings.CountryManager
+import com.itunesexplorer.settings.LanguageManager
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
 import org.kodein.di.bindFactory
@@ -45,7 +45,7 @@ val catalogModule = DI.Module("catalogModule") {
     }
 
     bindSingleton<AlbumsRepository> {
-        AlbumsRepositoryImpl(iTunesApi = instance())
+        AlbumsRepositoryImpl(api = instance())
     }
 
     bindSingleton<DetailsRepository> {
@@ -72,7 +72,7 @@ val catalogModule = DI.Module("catalogModule") {
     }
 
     bindSingleton {
-        AlbumsTabModel(
+        AlbumsTabViewModel(
             getTopAlbumsUseCase = instance(),
             getAlbumsByGenreUseCase = instance(),
             countryManager = CountryManager

@@ -1,6 +1,7 @@
 package com.itunesexplorer.home.presentation
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -82,7 +83,7 @@ class HomeScreen(override val di: DI) : Screen, DIAware {
                 )
             }
         ) { paddingValues ->
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 when (state.selectedTab) {

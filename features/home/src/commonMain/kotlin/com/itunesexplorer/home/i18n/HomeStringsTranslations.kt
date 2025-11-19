@@ -1,7 +1,7 @@
 package com.itunesexplorer.home.i18n
 
 import cafe.adriel.lyricist.LyricistStrings
-import com.itunesexplorer.i18n.Locales
+import com.itunesexplorer.foundation.i18n.Locales
 
 @LyricistStrings(languageTag = Locales.EN, default = true)
 val EnHomeStrings = HomeStrings(

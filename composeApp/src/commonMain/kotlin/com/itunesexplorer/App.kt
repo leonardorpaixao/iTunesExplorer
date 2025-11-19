@@ -21,12 +21,12 @@ import cafe.adriel.lyricist.LocalStrings
 import cafe.adriel.lyricist.ProvideStrings
 import cafe.adriel.lyricist.rememberStrings
 import com.itunesexplorer.i18n.ProvideFeatureStrings
-import com.itunesexplorer.i18n.getSystemLanguage
-import com.itunesexplorer.i18n.getSystemCountry
+import com.itunesexplorer.foundation.i18n.getSystemLanguage
+import com.itunesexplorer.foundation.i18n.getSystemCountry
 import com.itunesexplorer.home.presentation.HomeScreen
-import com.itunesexplorer.settings.data.PreferencesRepository
-import com.itunesexplorer.settings.language.LanguageManager
-import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.PreferencesRepository
+import com.itunesexplorer.settings.LanguageManager
+import com.itunesexplorer.settings.CountryManager
 import org.kodein.di.compose.withDI
 import org.kodein.di.compose.localDI
 import org.kodein.di.instance

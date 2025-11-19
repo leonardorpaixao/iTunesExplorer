@@ -1,6 +1,7 @@
 package com.itunesexplorer.catalog.data.api
 
 import com.itunesexplorer.catalog.data.models.ITunesRssResponse
+import com.itunesexplorer.catalog.data.models.ITunesSearchResponse
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*

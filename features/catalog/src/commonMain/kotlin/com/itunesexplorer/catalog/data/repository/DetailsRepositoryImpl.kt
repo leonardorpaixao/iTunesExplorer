@@ -1,19 +1,13 @@
 package com.itunesexplorer.catalog.data.repository
 
 import com.itunesexplorer.catalog.data.api.ITunesApi
-import com.itunesexplorer.catalog.domain.model.ItemDetails
 import com.itunesexplorer.catalog.domain.model.SearchResult
 import com.itunesexplorer.catalog.domain.repository.DetailsRepository
 import com.itunesexplorer.core.error.DomainResult
-import com.itunesexplorer.core.error.runCatchingDomain
-import com.itunesexplorer.settings.country.CountryManager
-import com.itunesexplorer.settings.language.LanguageManager
+import com.itunesexplorer.foundation.extensions.runCatchingDomain
+import com.itunesexplorer.settings.CountryManager
+import com.itunesexplorer.settings.LanguageManager
 
-/**
- * Implementation of DetailsRepository using iTunes Lookup API.
- * Fetches item details and separates main item from related items.
- * Handles country/language settings.
- */
 internal class DetailsRepositoryImpl(
     private val api: ITunesApi,
     private val countryManager: CountryManager,

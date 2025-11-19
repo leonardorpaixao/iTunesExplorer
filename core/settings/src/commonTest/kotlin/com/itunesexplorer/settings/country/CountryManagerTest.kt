@@ -1,5 +1,6 @@
 package com.itunesexplorer.settings.country
 
+import com.itunesexplorer.settings.CountryManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher

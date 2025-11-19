@@ -10,8 +10,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import app.cash.turbine.test
+import com.itunesexplorer.settings.LanguageManager
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class LanguageManagerTest {

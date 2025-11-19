@@ -6,12 +6,12 @@ import com.itunesexplorer.catalog.domain.model.Album
 import com.itunesexplorer.catalog.domain.model.Money
 import com.itunesexplorer.catalog.domain.repository.AlbumsRepository
 import com.itunesexplorer.core.error.DomainResult
-import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.CountryManager
 
-/**
- * Implementation of GetTopAlbumsUseCase.
- * Handles country configuration and transforms RSS data to domain models.
- */
+interface GetTopAlbumsUseCase {
+    suspend operator fun invoke(limit: Int = CatalogConstants.REQUEST_ITEMS_LIMIT): DomainResult<List<Album>>
+}
+
 internal class GetTopAlbumsUseCaseImpl(
     private val albumsRepository: AlbumsRepository,
     private val countryManager: CountryManager

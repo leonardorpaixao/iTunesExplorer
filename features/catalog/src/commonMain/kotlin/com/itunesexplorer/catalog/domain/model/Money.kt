@@ -1,5 +1,7 @@
 package com.itunesexplorer.catalog.domain.model
 
+import com.itunesexplorer.currency.domain.CurrencyFormatter
+
 /**
  * Value object representing monetary amount with currency.
  * Immutable and contains business rules for money representation.
@@ -12,11 +14,11 @@ data class Money(
         require(currencyCode.isNotBlank()) { "Currency code cannot be blank" }
     }
 
+    fun format(): String {
+        return CurrencyFormatter.format(amount, currencyCode)
+    }
+
     companion object {
-        /**
-         * Creates a Money instance from optional values.
-         * Returns null if either amount or currency is missing.
-         */
         fun fromOptional(amount: Double?, currencyCode: String?): Money? {
             return if (amount != null && currencyCode != null) {
                 Money(amount, currencyCode)

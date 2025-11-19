@@ -1,18 +1,18 @@
 package com.itunesexplorer.preferences.presentation
 
 import cafe.adriel.voyager.core.model.screenModelScope
-import com.itunesexplorer.common.extensions.orEmpty
-import com.itunesexplorer.common.mvi.MviViewModel
-import com.itunesexplorer.common.mvi.ViewEffect
-import com.itunesexplorer.common.mvi.ViewIntent
-import com.itunesexplorer.common.mvi.ViewState
+import com.itunesexplorer.foundation.extensions.orEmpty
+import com.itunesexplorer.foundation.mvi.MviViewModel
+import com.itunesexplorer.foundation.mvi.ViewEffect
+import com.itunesexplorer.foundation.mvi.ViewIntent
+import com.itunesexplorer.foundation.mvi.ViewState
 import com.itunesexplorer.core.error.DomainError
-import com.itunesexplorer.i18n.Locales
+import com.itunesexplorer.foundation.i18n.Locales
 import com.itunesexplorer.preferences.domain.Language
 import com.itunesexplorer.preferences.domain.SupportedCountries
-import com.itunesexplorer.settings.data.PreferencesRepository
-import com.itunesexplorer.settings.language.LanguageManager
-import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.PreferencesRepository
+import com.itunesexplorer.settings.LanguageManager
+import com.itunesexplorer.settings.CountryManager
 import kotlinx.coroutines.launch
 
 data class PreferencesViewState(

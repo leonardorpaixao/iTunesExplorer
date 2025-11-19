@@ -20,8 +20,8 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
 import com.itunesexplorer.preferences.domain.Country
 import com.itunesexplorer.preferences.domain.SupportedCountries
-import com.itunesexplorer.settings.country.CountryManager
-import com.itunesexplorer.settings.data.PreferencesRepository
+import com.itunesexplorer.settings.CountryManager
+import com.itunesexplorer.settings.PreferencesRepository
 import kotlinx.coroutines.launch
 import org.kodein.di.compose.rememberInstance
 

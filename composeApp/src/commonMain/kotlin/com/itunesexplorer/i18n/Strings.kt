@@ -8,6 +8,7 @@ import com.itunesexplorer.catalog.presentation.i18n.EsCatalogStrings
 import com.itunesexplorer.catalog.presentation.i18n.FrCatalogStrings
 import com.itunesexplorer.catalog.presentation.i18n.PtBrCatalogStrings
 import com.itunesexplorer.catalog.presentation.i18n.PtPtCatalogStrings
+import com.itunesexplorer.foundation.i18n.Locales
 import com.itunesexplorer.home.i18n.DeHomeStrings
 import com.itunesexplorer.home.i18n.EnHomeStrings
 import com.itunesexplorer.home.i18n.EsHomeStrings
@@ -15,13 +16,13 @@ import com.itunesexplorer.home.i18n.FrHomeStrings
 import com.itunesexplorer.home.i18n.HomeStrings
 import com.itunesexplorer.home.i18n.PtBrHomeStrings
 import com.itunesexplorer.home.i18n.PtPtHomeStrings
-import com.itunesexplorer.preferences.i18n.DePreferencesStrings
-import com.itunesexplorer.preferences.i18n.EnPreferencesStrings
-import com.itunesexplorer.preferences.i18n.EsPreferencesStrings
-import com.itunesexplorer.preferences.i18n.FrPreferencesStrings
-import com.itunesexplorer.preferences.i18n.PreferencesStrings
-import com.itunesexplorer.preferences.i18n.PtBrPreferencesStrings
-import com.itunesexplorer.preferences.i18n.PtPtPreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.DePreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.EnPreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.EsPreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.FrPreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.PreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.PtBrPreferencesStrings
+import com.itunesexplorer.preferences.presentation.i18n.PtPtPreferencesStrings
 
 data class AppStrings(
     val home: HomeStrings,

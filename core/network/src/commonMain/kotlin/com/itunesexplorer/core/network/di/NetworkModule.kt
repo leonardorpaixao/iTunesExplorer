@@ -20,7 +20,6 @@ import org.kodein.di.instance
  * - Logger: Required for configurable HTTP logging
  */
 val networkModule = DI.Module("networkModule") {
-    // JSON serializer configuration
     bindSingleton<Json> {
         createJsonConfig()
     }

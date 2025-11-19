@@ -7,7 +7,7 @@ import com.itunesexplorer.catalog.domain.usecase.GetAlbumsByGenreUseCase
 import com.itunesexplorer.catalog.domain.usecase.GetTopAlbumsUseCase
 import com.itunesexplorer.core.error.DomainError
 import com.itunesexplorer.core.error.DomainResult
-import com.itunesexplorer.settings.country.CountryManager
+import com.itunesexplorer.settings.CountryManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -29,7 +29,7 @@ class AlbumsTabModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var fakeGetTopAlbumsUseCase: FakeGetTopAlbumsUseCase
     private lateinit var fakeGetAlbumsByGenreUseCase: FakeGetAlbumsByGenreUseCase
-    private lateinit var viewModel: AlbumsTabModel
+    private lateinit var viewModel: AlbumsTabViewModel
 
     @BeforeTest
     fun setup() {
@@ -47,7 +47,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `initial state should have ALL genre selected and load top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         val state = viewModel.state.value
@@ -60,7 +60,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction SelectGenre with ROCK should update selected genre and load rock albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ROCK))
@@ -76,7 +76,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction SelectGenre with ALL should load top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         // First select ROCK
@@ -97,7 +97,7 @@ class AlbumsTabModelTest {
     @Test
     fun `onAction SelectGenre with error should set error state`() = runTest(testDispatcher) {
         fakeGetAlbumsByGenreUseCase.shouldFail = true
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.SelectGenre(MusicGenre.ROCK))
@@ -112,7 +112,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction Retry with ALL genre should reload top albums`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         viewModel.onAction(AlbumsIntent.Retry)
@@ -126,7 +126,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `onAction Retry with specific genre should reload that genre`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         // Select ROCK
@@ -146,7 +146,7 @@ class AlbumsTabModelTest {
 
     @Test
     fun `should switch between different genres correctly`() = runTest(testDispatcher) {
-        viewModel = AlbumsTabModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
+        viewModel = AlbumsTabViewModel(fakeGetTopAlbumsUseCase, fakeGetAlbumsByGenreUseCase, CountryManager)
         advanceUntilIdle()
 
         // Select ROCK

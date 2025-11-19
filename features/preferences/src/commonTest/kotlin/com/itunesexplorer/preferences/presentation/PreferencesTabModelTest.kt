@@ -2,8 +2,8 @@ package com.itunesexplorer.preferences.presentation
 
 import app.cash.turbine.test
 import com.itunesexplorer.preferences.domain.SupportedCountries
-import com.itunesexplorer.settings.country.CountryManager
-import com.itunesexplorer.settings.data.PreferencesRepository
+import com.itunesexplorer.settings.CountryManager
+import com.itunesexplorer.settings.PreferencesRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
