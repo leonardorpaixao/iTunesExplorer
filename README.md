@@ -25,27 +25,16 @@ Through this project, I gained hands-on experience solving complex multiplatform
 > **TODO**: Add screenshots below once captured
 
 ### Desktop (macOS)
-![Desktop Screenshot Placeholder](docs/screenshots/desktop.png)
-*Albums tab showing genre-filtered recommendations*
+![ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/925f155d-8ee4-4f7f-9d0d-23ea7befaa27)
+
 
 ### Android
-![Android Screenshot Placeholder](docs/screenshots/android.png)
-*Search functionality with MediaType filters*
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/668be244-c3b9-4b1c-84b8-82debaca3b1c)
+
 
 ### iOS
-![iOS Screenshot Placeholder](docs/screenshots/ios.png)
-*Album details screen with artwork and metadata*
+![GravacaodeTela2025-11-19as03 38 45-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/a2b75cb9-f67f-429b-990d-55bcd0da6656)
 
-### Platform Comparison
-![Platform Comparison Placeholder](docs/screenshots/platforms.png)
-![img.png](docs/comparison.png)
-*Side-by-side view of the same screen across all three platforms*
-
-**How to capture screenshots**:
-1. Run the app on each platform
-2. Navigate to key screens (Albums, Search, Details)
-3. Save to `docs/screenshots/` directory
-4. Update image paths above
 
 ## ✨ Features
 
@@ -109,22 +98,8 @@ Through this project, I gained hands-on experience solving complex multiplatform
 | **Material3** | (via Compose) | Material Design 3 components |
 | **Coil** | 3.0.4 | Async image loading for all platforms |
 | **Lyricist** | 1.7.0 | Internationalization (i18n) support |
-
-### Testing
-
-| Library | Version | Purpose |
-|---------|---------|---------|
-| **Kotlin Test** | 2.1.10 | Multiplatform unit testing |
-| **Kotlinx Coroutines Test** | 1.9.0 | Coroutine testing utilities |
 | **Turbine** | 1.1.0 | Flow testing library |
 
-### Platform-Specific
-
-| Platform | Technologies |
-|----------|-------------|
-| **Android** | Activity Compose, Kodein Android extensions |
-| **iOS** | Darwin native APIs, NSLog logging |
-| **Desktop** | Java 11+, Swing integration |
 
 ## 📂 Project Structure
 
@@ -338,43 +313,6 @@ The project has **comprehensive test coverage** with modern Kotlin testing tools
 # View HTML test report
 open features/catalog/build/reports/tests/testDebugUnitTest/index.html
 ```
-
-📚 **Detailed Testing Guide**: See [docs/TESTING.md](docs/TESTING.md) for test implementation patterns
-
-## 🎯 Technical Highlights
-
-### Challenges Solved
-
-**1. iOS HTTP Client Content-Length Issue**
-- **Problem**: Darwin engine doesn't automatically set `Content-Length` header, causing API failures
-- **Solution**: Implemented platform-specific workaround using `Accept-Encoding: identity` header
-
-**2. Gradle Configuration Cache Incompatibility**
-- **Problem**: Android Studio sync fails with iOS targets when configuration cache is enabled
-- **Solution**: Disabled configuration cache and C-interop commonization in `gradle.properties`
-
-**3. Multiplatform String Formatting**
-- **Problem**: `String.format()` not available in Kotlin common code
-- **Solution**: Used platform-agnostic operations (`padStart()`, string interpolation, expect/actual)
-
-### Architectural Decisions
-
-**MVI over MVVM**: Chose MVI for predictable state management and easier testing. All state changes are explicit and traceable.
-
-**Modular Architecture**: Separated features into independent modules to enable parallel development, better build times, and clear boundaries.
-
-**Platform-Specific HTTP Engines**: Used native engines (OkHttp, Darwin, CIO) for optimal performance on each platform rather than a one-size-fits-all approach.
-
-**Type-Safe Error Handling**: Implemented `DomainError` sealed class to avoid string-based error messages and enable exhaustive when statements.
-
-### Code Quality Practices
-
-- Immutable data classes for all state
-- Sealed classes for type-safe intent and error handling
-- Extension functions for reusability
-- Dependency injection for testability
-- Comprehensive unit tests for business logic
-- Platform-specific implementations only where necessary
 
 
 ## 🌐 API Reference
