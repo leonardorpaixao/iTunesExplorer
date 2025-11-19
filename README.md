@@ -1,40 +1,13 @@
 # iTunes Explorer
 
-> A production-ready Kotlin Multiplatform application demonstrating modern mobile architecture and cross-platform development expertise
+> A Kotlin Multiplatform application demonstrating modern mobile architecture and cross-platform development expertise
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-2.1.10-7F52FF?style=flat&logo=kotlin)
 ![Compose Multiplatform](https://img.shields.io/badge/Compose%20Multiplatform-1.7.1-4285F4?style=flat)
 ![Platforms](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20Desktop-success)
 ![Tests](https://img.shields.io/badge/Tests-87%20passing-brightgreen)
 
-**iTunes Explorer** is a fully-functional multiplatform application that allows users to browse and search the iTunes Store catalog across Android, iOS, and Desktop platforms. Built with Kotlin Multiplatform and Compose Multiplatform, it showcases **95%+ code sharing** across all three platforms while maintaining native performance and platform-specific optimizations.
-
-## 📖 About This Project
-
-I built iTunes Explorer to deepen my expertise in Kotlin Multiplatform and modern mobile architecture patterns. The project demonstrates:
-
-- **Production-ready architecture**: Full implementation of the MVI (Model-View-Intent) pattern with comprehensive unit testing
-- **Platform expertise**: Platform-specific HTTP client implementations addressing real-world challenges (iOS Content-Length workarounds, Android OkHttp optimization)
-- **Clean code principles**: Modular architecture with clear separation of concerns, dependency injection, and testable design
-- **Professional development practices**: Type-safe error handling, structured logging, internationalization support, and extensive documentation
-
-Through this project, I gained hands-on experience solving complex multiplatform challenges, from Gradle configuration issues to platform-specific networking quirks, while maintaining clean architecture principles.
-
-## 📸 Screenshots
-
-> **TODO**: Add screenshots below once captured
-
-### Desktop (macOS)
-![ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/925f155d-8ee4-4f7f-9d0d-23ea7befaa27)
-
-
-### Android
-![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/668be244-c3b9-4b1c-84b8-82debaca3b1c)
-
-
-### iOS
-![GravacaodeTela2025-11-19as03 38 45-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/a2b75cb9-f67f-429b-990d-55bcd0da6656)
-
+**iTunes Explorer** is a multiplatform application that allows users to browse and search the iTunes Store catalog across Android, iOS, and Desktop platforms.
 
 ## ✨ Features
 
@@ -71,6 +44,17 @@ Through this project, I gained hands-on experience solving complex multiplatform
 - **Multiplatform Logging**: Platform-specific implementations (Logcat, NSLog, Console)
 - **Type-Safe Error Handling**: Domain-specific error types with proper propagation
 - **Internationalization**: Country/language support with localized formatting
+
+## 📸 Screenshots
+
+### Desktop (macOS)
+![ezgif com-video-to-gif-converter (2)](https://github.com/user-attachments/assets/925f155d-8ee4-4f7f-9d0d-23ea7befaa27)
+
+### Android
+![ezgif com-video-to-gif-converter (1)](https://github.com/user-attachments/assets/668be244-c3b9-4b1c-84b8-82debaca3b1c)
+
+### iOS
+![GravacaodeTela2025-11-19as03 38 45-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/a2b75cb9-f67f-429b-990d-55bcd0da6656)
 
 ## 🛠️ Technologies
 
@@ -326,7 +310,3 @@ This project uses Apple's public **[iTunes Search API](https://developer.apple.c
 **Default Parameters**: `limit=200`, `country=US`, `lang=en_us`
 
 **Note**: The API has a maximum limit of 200 results per request with no pagination support.
-
----
-
-**Built with ❤️ using Kotlin Multiplatform**
