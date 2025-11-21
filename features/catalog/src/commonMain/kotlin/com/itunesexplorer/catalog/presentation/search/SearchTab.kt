@@ -28,13 +28,12 @@ fun SearchTab() {
     val state by screenModel.state.collectAsState()
     val strings = LocalCatalogStrings.current
     val navigator = LocalNavigator.currentOrThrow
-    val di = localDI()
 
     LaunchedEffect(Unit) {
         screenModel.effect.collect { effect ->
             when (effect) {
                 is SearchEffect.NavigateToDetails -> {
-                    navigator.push(DetailsScreen(effect.itemId, di))
+                    navigator.push(DetailsScreen(effect.itemId))
                 }
             }
         }

@@ -1,7 +1,6 @@
 package com.itunesexplorer.catalog.presentation.details
 
 import com.itunesexplorer.foundation.mvi.MviViewModel
-import com.itunesexplorer.foundation.mvi.NoEffect
 import com.itunesexplorer.foundation.mvi.ViewIntent
 import com.itunesexplorer.foundation.mvi.ViewState
 import cafe.adriel.voyager.core.model.screenModelScope
@@ -18,7 +17,7 @@ internal data class DetailsViewState(
 ) : ViewState
 
 internal sealed class DetailsIntent : ViewIntent {
-    data object LoadDetails : DetailsIntent()
+    data class LoadDetails(val itemId: String) : DetailsIntent()
     data object Retry : DetailsIntent()
     data object Back: DetailsIntent()
 }
@@ -29,24 +28,24 @@ internal sealed class DetailsEffect: ViewEffect {
 
 internal class DetailsScreenModel(
     private val detailsRepository: DetailsRepository,
-    private val itemId: String
+
 ) : MviViewModel<DetailsViewState, DetailsIntent, DetailsEffect>(
     initialState = DetailsViewState(isLoading = true)
 ) {
 
-    init {
-        onAction(DetailsIntent.LoadDetails)
-    }
+    private lateinit var itemId: String
+
 
     override fun onAction(intent: DetailsIntent) {
         when (intent) {
-            is DetailsIntent.LoadDetails -> loadDetails()
-            is DetailsIntent.Retry -> loadDetails()
+            is DetailsIntent.LoadDetails -> loadDetails(intent.itemId)
+            is DetailsIntent.Retry -> loadDetails(itemId)
             is DetailsIntent.Back -> sendEffect(DetailsEffect.Back)
         }
     }
 
-    private fun loadDetails() {
+    private fun loadDetails(itemId: String) {
+        this.itemId = itemId
         screenModelScope.launch {
             updateState { it.copy(isLoading = true, error = null) }
 

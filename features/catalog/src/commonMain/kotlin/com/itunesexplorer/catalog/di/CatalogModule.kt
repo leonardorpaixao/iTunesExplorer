@@ -20,7 +20,7 @@ import com.itunesexplorer.settings.CountryManager
 import com.itunesexplorer.settings.LanguageManager
 import org.kodein.di.DI
 import org.kodein.di.bindSingleton
-import org.kodein.di.bindFactory
+import org.kodein.di.bindProvider
 import org.kodein.di.instance
 
 private const val BASE_URL = "https://itunes.apple.com/"
@@ -79,7 +79,7 @@ val catalogModule = DI.Module("catalogModule") {
         )
     }
     bindSingleton { SearchTabModel(instance(), CountryManager) }
-    bindFactory<String, DetailsScreenModel> { itemId ->
-        DetailsScreenModel(instance(), itemId)
+    bindProvider {
+        DetailsScreenModel(instance())
     }
 }

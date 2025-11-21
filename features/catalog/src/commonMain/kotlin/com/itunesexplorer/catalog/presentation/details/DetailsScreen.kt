@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import cafe.adriel.lyricist.LocalCatalogStrings
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.kodein.rememberScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.itunesexplorer.catalog.presentation.details.components.ItemDetailsCard
@@ -22,17 +23,19 @@ import org.kodein.di.instance
 
 data class DetailsScreen(
     val itemId: String,
-    override val di: DI
-) : Screen, DIAware {
+) : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel: DetailsScreenModel by instance(arg = itemId)
+        val screenModel = rememberScreenModel<DetailsScreenModel>()
         val state by screenModel.state.collectAsState()
         val strings = LocalCatalogStrings.current
 
+        LaunchedEffect(Unit){
+            screenModel.dispatch(DetailsIntent.LoadDetails(itemId))
+        }
         DetailsEffectHandler(screenModel.effect)
 
         Scaffold(
